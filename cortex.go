@@ -1,11 +1,53 @@
 package neocortex
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
-var y = 2019
+type HandleResolver func(c context.Context, in *Input, out *Output) (*Output, error)
 
-func hi() {
+type CortexMiddleware struct {
+	Brain               CognitiveService
+	Channel             CommunicationChannel
+	RegisteredResolvers map[string]*HandleResolver
+}
 
-	hello := fmt.Sprintf("Hello from %d", y)
-	fmt.Println(hello)
+func (cortex *CortexMiddleware) onMessage(in *Input, out *Output) {
+	for _, n := range in.NodesVisited {
+		c := context.WithValue(context.Background(), "metadata", in.Context)
+		go func(c *context.Context) {
+			f, ok := cortex.RegisteredResolvers[n.Name]
+			if !ok {
+				err := cortex.Channel.sendResponse(*c, &Output{
+					OutputText: []string{"unimplemented smart response"},
+				})
+				if err != nil {
+					panic(err)
+				}
+			} else {
+				ff := *f
+				out, err := ff(*c, in, out)
+				if err != nil {
+					panic(err)
+				}
+				err = cortex.Channel.sendResponse(*c, out)
+				if err != nil {
+					panic(err)
+				}
+			}
+
+		}(&c)
+	}
+}
+
+func (cortex *CortexMiddleware) Resolver(node *DialogNode, handler HandleResolver) {
+	if cortex.RegisteredResolvers == nil {
+		cortex.RegisteredResolvers = map[string]*HandleResolver{}
+	}
+	cortex.RegisteredResolvers[node.Name] = &handler
+}
+
+func (cortex *CortexMiddleware) When(node *DialogNode) {
+	fmt.Println(node.Title)
 }

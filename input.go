@@ -4,7 +4,7 @@ package neocortex
 type Input struct {
 	Text         string
 	Context      Context
-	Entities     []Entity
-	Intents      []Intent
-	NodesVisited []DialogNode
+	Entities     []*Entity
+	Intents      []*Intent
+	NodesVisited []*DialogNode
 }

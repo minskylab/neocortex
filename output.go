@@ -41,11 +41,11 @@ type ResponseGeneric struct {
 type Output struct {
 	InputText       string
 	Context         Context
-	Entities        []Entity
-	Intents         []Intent
-	NodesVisited    []DialogNode
-	Actions         []Action
-	Logs            []LogMessage
+	Entities        []*Entity
+	Intents         []*Intent
+	NodesVisited    []*DialogNode
+	Actions         []*Action
+	Logs            []*LogMessage
 	OutputText      []string
-	GenericResponse []ResponseGeneric
+	GenericResponse []*ResponseGeneric
 }
