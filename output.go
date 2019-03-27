@@ -1,51 +1,39 @@
 package neocortex
 
-import "time"
-
-// ResponseGenericType define the types of generic response
-type ResponseGenericType string
+// ResponseType define the types of generic response
+type ResponseType string
 
 // Text is a kind of generic response
-var Text ResponseGenericType = "text"
+var Text ResponseType = "text"
 
 // Pause is a kind of generic response
-var Pause ResponseGenericType = "pause"
+var Pause ResponseType = "pause"
 
 // Image is a kind of generic response
-var Image ResponseGenericType = "image"
+var Image ResponseType = "image"
 
 // Option is a kind of generic response
-var Option ResponseGenericType = "option"
+var Option ResponseType = "option"
 
 // ConnectToAgent is a kind of generic response
-var ConnectToAgent ResponseGenericType = "connect_to_agent"
+var ConnectToAgent ResponseType = "connect_to_agent"
 
-// var Suggestion ResponseGenericType = "suggestion"
+var Suggestion ResponseType = "suggestion"
 
-// ResponseGeneric wraps and define a response from cognitive service
-type ResponseGeneric struct {
-	ResponseType        ResponseGenericType
-	Text                string
-	Time                time.Time
-	Typing              bool
-	Source              string
-	Description         string
-	Preference          string
-	Options             map[string]string
-	MessageToHumanAgent string
-	Topic               string
-	// Suggestion is a future feature
+var Unknown ResponseType = "unknown"
+
+type Response interface {
+	IsTyping() bool
+	Type() ResponseType
+	Value() interface{} // TODO: Evaluate
 }
 
 // Output represents the response of an input from the cognitive service
-type Output struct {
-	InputText    string
-	Context      Context
-	Entities     []*Entity
-	Intents      []*Intent
-	NodesVisited []*DialogNode
-	// Actions         []*Action
-	Actions  map[string]string
-	Logs     []*LogMessage
-	Response []*ResponseGeneric
+type Output interface {
+	Context() *Context
+	Entities() []Entity
+	Intents() []Intent
+	VisitedNodes() []*DialogNode
+	Logs() []*LogMessage
+	Responses() []Response
 }

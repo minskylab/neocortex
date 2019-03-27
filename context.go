@@ -4,7 +4,7 @@ import "context"
 
 // Context represent the context of a conversation
 type Context struct {
+	Context   *context.Context
 	SessionID string
-	Context   context.Context
-	Metadata  map[string]string
+	Variables map[string]interface{}
 }

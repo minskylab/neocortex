@@ -1,6 +1,7 @@
 package channels
 
 import (
+	"fmt"
 	"github.com/bregydoc/neocortex"
 	"github.com/mileusna/facebook-messenger"
 
@@ -15,7 +16,6 @@ type FacebookChannel struct {
 func CreateNewFacebookChannel(accessToken, verifyToken, pageID string) (*FacebookChannel, error) {
 	channel := &FacebookChannel{}
 	hook := func(msn *messenger.Messenger, userID int64, m messenger.FacebookMessage) {
-		msn.SendTextMessage(userID, "I'm a man in the middle ["+m.Text+"]")
 		in := &neocortex.Input{
 			Text: m.Text,
 		}
@@ -50,5 +50,6 @@ func (fb *FacebookChannel) RegisterMessageEndpoint(handler neocortex.MiddleHandl
 
 func (fb *FacebookChannel) LaunchAndWait() error {
 	http.Handle("/fb-channel", fb.m)
-	return http.ListenAndServe(":8008", nil)
+	fmt.Println("listening on :8080 facebook webhook: /fb-channel")
+	return http.ListenAndServe(":8080", nil)
 }
