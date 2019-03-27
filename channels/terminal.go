@@ -29,20 +29,13 @@ func NewTerminalChannel(opts *TerminalChannelOptions) *TerminalChannel {
 			PersonName: "User",
 			BotIcon:    "🤖",
 			BotName:    "Bot",
-			SaysSymbol: "|>",
+			SaysSymbol: " >",
 		}
 	}
 	t := &TerminalChannel{
 		reader:  bufio.NewReader(os.Stdin),
 		options: opts,
 	}
-
-	go func() {
-		err := t.renderUserInterface(false)
-		if err != nil {
-			panic(err)
-		}
-	}()
 
 	return t
 }
@@ -54,6 +47,7 @@ func (term *TerminalChannel) getInput() string {
 }
 
 func (term *TerminalChannel) renderUserInterface(done bool) error {
+
 	if !done {
 		fmt.Printf("%s %s%s ", term.options.PersonIcon, term.options.PersonName, term.options.SaysSymbol)
 		input := term.getInput()
@@ -64,6 +58,7 @@ func (term *TerminalChannel) renderUserInterface(done bool) error {
 			return nil
 		})
 		if err != nil {
+
 			err := term.renderUserInterface(true)
 			if err != nil {
 				return err
@@ -71,14 +66,19 @@ func (term *TerminalChannel) renderUserInterface(done bool) error {
 			return nil
 		}
 
+		err = term.renderUserInterface(false)
+		if err != nil {
+			return err
+		}
+		return nil
 	} else {
 		return nil
 	}
-	err := term.renderUserInterface(false)
-	if err != nil {
-		return err
-	}
-	return nil
+
+}
+
+func (term *TerminalChannel) LaunchAndWait() error {
+	return term.renderUserInterface(false)
 }
 
 func (term *TerminalChannel) RegisterMessageEndpoint(handler neocortex.MiddleHandler) error {

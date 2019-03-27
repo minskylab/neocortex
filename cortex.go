@@ -1,25 +1,27 @@
 package neocortex
 
 import (
-	"context"
 	"fmt"
-	"github.com/k0kubun/pp"
 )
 
-type HandleResolver func(in *Input, out *Output, response func(output *Output) error) error
+type OutputResponse func(output *Output) error
+type HandleResolver func(in *Input, out *Output, response OutputResponse) error
 
 type CortexMiddleware struct {
+	Context             *Context
 	Cognitive           CognitiveService
 	Channel             CommunicationChannel
 	registeredResolvers map[string]*HandleResolver
+	genericResolver     *HandleResolver
 }
 
-func NewCortex(cognitive CognitiveService, channel CommunicationChannel) (*CortexMiddleware, error) {
+func NewCortex(cognitive CognitiveService, channel CommunicationChannel, c *Context) (*CortexMiddleware, error) {
 	middle := &CortexMiddleware{}
 	middle.Channel = channel
 	middle.Cognitive = cognitive
 	middle.registeredResolvers = map[string]*HandleResolver{}
-	err := channel.RegisterMessageEndpoint(func(message *Input, response func(output *Output) error) error {
+	middle.Context = c
+	err := channel.RegisterMessageEndpoint(func(message *Input, response OutputResponse) error {
 		return middle.onMessage(message, response)
 	})
 	if err != nil {
@@ -28,13 +30,39 @@ func NewCortex(cognitive CognitiveService, channel CommunicationChannel) (*Corte
 	return middle, nil
 }
 
-func (cortex *CortexMiddleware) onMessage(in *Input, response func(output *Output) error) error {
-	c := context.WithValue(context.Background(), "metadata", in.Context)
-	go func(c *context.Context) {
-		pp.Println(in.Intents[0].Intent)
-		f, ok := cortex.registeredResolvers[in.Intents[0].Intent]
-		if !ok {
-			err := out(&Output{
+func (cortex *CortexMiddleware) onMessage(in *Input, response OutputResponse) error {
+	out, err := cortex.Cognitive.GetProtoResponse(cortex.Context, in)
+	if err != nil {
+		panic(err)
+	}
+
+	if len(out.Intents) == 0 {
+		if cortex.genericResolver != nil {
+			resolver := *cortex.genericResolver
+			err = resolver(in, out, response)
+			if err != nil {
+				panic(err)
+			}
+			return nil
+		}
+		err := response(out)
+		if err != nil {
+			panic(err)
+		}
+
+		return nil
+	}
+
+	f, ok := cortex.registeredResolvers[out.Intents[0].Intent]
+	if !ok {
+		if cortex.genericResolver != nil {
+			resolver := *cortex.genericResolver
+			err = resolver(in, out, response)
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			err := response(&Output{
 				Response: []*ResponseGeneric{{
 					Text: "unimplemented smart response",
 				}},
@@ -42,28 +70,29 @@ func (cortex *CortexMiddleware) onMessage(in *Input, response func(output *Outpu
 			if err != nil {
 				panic(err)
 			}
-		} else {
-			ff := *f
-			ff(in, out)
-			if err != nil {
-				panic(err)
-			}
-			err = out(finalOut)
-			if err != nil {
-				panic(err)
-			}
 		}
 
-	}(&c)
+	} else {
+		ff := *f
+		err = ff(in, out, response)
+		if err != nil {
+			panic(err)
+		}
+
+	}
 
 	return nil
 }
 
-func (cortex *CortexMiddleware) Resolver(node *DialogNode, handler HandleResolver) {
+func (cortex *CortexMiddleware) ResolverAll(handler HandleResolver) {
+	cortex.genericResolver = &handler
+}
+
+func (cortex *CortexMiddleware) Resolver(entity string, handler HandleResolver) {
 	if cortex.registeredResolvers == nil {
 		cortex.registeredResolvers = map[string]*HandleResolver{}
 	}
-	cortex.registeredResolvers[node.Title] = &handler
+	cortex.registeredResolvers[entity] = &handler
 }
 
 func (cortex *CortexMiddleware) When(node *DialogNode) {

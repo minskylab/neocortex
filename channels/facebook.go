@@ -40,13 +40,15 @@ func CreateNewFacebookChannel(accessToken, verifyToken, pageID string) (*Faceboo
 		MessageReceived: hook,
 	}
 
-	http.Handle("/mychatbot", channel.m)
-	go http.ListenAndServe(":8008", nil)
-
 	return channel, nil
 }
 
 func (fb *FacebookChannel) RegisterMessageEndpoint(handler neocortex.MiddleHandler) error {
 	fb.messageIn = handler
 	return nil
+}
+
+func (fb *FacebookChannel) LaunchAndWait() error {
+	http.Handle("/fb-channel", fb.m)
+	return http.ListenAndServe(":8008", nil)
 }
