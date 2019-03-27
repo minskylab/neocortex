@@ -39,13 +39,13 @@ type ResponseGeneric struct {
 
 // Output represents the response of an input from the cognitive service
 type Output struct {
-	InputText       string
-	Context         Context
-	Entities        []*Entity
-	Intents         []*Intent
-	NodesVisited    []*DialogNode
-	Actions         []*Action
-	Logs            []*LogMessage
-	OutputText      []string
-	GenericResponse []*ResponseGeneric
+	InputText    string
+	Context      Context
+	Entities     []*Entity
+	Intents      []*Intent
+	NodesVisited []*DialogNode
+	// Actions         []*Action
+	Actions  map[string]string
+	Logs     []*LogMessage
+	Response []*ResponseGeneric
 }

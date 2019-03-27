@@ -1,23 +1,28 @@
 package cognitives
 
 import (
+	"context"
 	"errors"
-	"github.com/k0kubun/pp"
+	"github.com/jeremywohl/flatten"
+	"github.com/watson-developer-cloud/go-sdk/core"
+
+	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 
 	"github.com/bregydoc/neocortex"
-	"github.com/watson-developer-cloud/go-sdk/assistantv1"
+
 	"time"
 )
 
 // WatsonCognitiveService represents a Watson Assistant cognitive service
 type WatsonCognitiveService struct {
-	workspaceID string
-	assistant   *assistantv1.AssistantV1
+	AssistantID string
+	assistant   *assistantv2.AssistantV2
+	// session *assistantv2.SessionResponse
 }
 
 // CreateNewWatsonCognitive create a new watson based cognitive service
-func CreateNewWatsonCognitive(url, username, password, version, workspace string) (*WatsonCognitiveService, error) {
-	assistant, err := assistantv1.NewAssistantV1(&assistantv1.AssistantV1Options{
+func CreateNewWatsonCognitive(url, username, password, version, assistantID string) (*WatsonCognitiveService, error) {
+	assistant, err := assistantv2.NewAssistantV2(&assistantv2.AssistantV2Options{
 		Version:  version,
 		Username: username,
 		Password: password,
@@ -27,154 +32,171 @@ func CreateNewWatsonCognitive(url, username, password, version, workspace string
 		return nil, err
 	}
 
-	// r, err := assistant.CreateWorkspace(
-	// 	&assistantv1.CreateWorkspaceOptions{
-	// 		Name: core.StringPtr("API test"),
-	// 		Description: core.StringPtr("Example workspace created via API"),
-	// 	},
-	// )
-	// if err != nil {
-	// 	return nil, err
-	// }
-	//
-	// ws := assistant.GetCreateWorkspaceResult(r)
-	// pp.Println(ws)
 	return &WatsonCognitiveService{
-		workspaceID: workspace,
 		assistant:   assistant,
+		AssistantID: assistantID,
 	}, nil
 }
 
-func (watson *WatsonCognitiveService) getNativeEntity(e *neocortex.Entity) *assistantv1.RuntimeEntity {
-	ent := &assistantv1.RuntimeEntity{}
-	// ent.SetMetadata(&(e.Metadata))
-	ent.SetConfidence(&e.Confidence)
-	ent.SetEntity(&e.Entity)
-	ent.SetLocation(&e.Location)
-	ent.SetValue(&e.Value)
-	// Groups work in progress
+func (watson *WatsonCognitiveService) CreateNewSession(c context.Context, userID string) *neocortex.Context {
+	response, responseErr := watson.assistant.CreateSession(watson.assistant.NewCreateSessionOptions(watson.AssistantID))
+	if responseErr != nil {
+		panic(responseErr)
+	}
+	sess := watson.assistant.GetCreateSessionResult(response)
+	return &neocortex.Context{
+		SessionID: *sess.SessionID,
+		Context:   c,
+		Metadata:  map[string]string{},
+	}
+}
+
+func (watson *WatsonCognitiveService) getNativeEntity(e *neocortex.Entity) *assistantv2.RuntimeEntity {
+	ent := &assistantv2.RuntimeEntity{
+		Confidence: &e.Confidence,
+		Entity:     &e.Entity,
+		Location:   e.Location,
+		Value:      &e.Value,
+		Metadata:   e.Metadata,
+	}
+	// TODO: Groups work in progress
 	return ent
 }
 
-func (watson *WatsonCognitiveService) getNativeIntent(i *neocortex.Intent) *assistantv1.RuntimeIntent {
-	intent := &assistantv1.RuntimeIntent{}
-	intent.SetConfidence(&i.Confidence)
-	intent.SetIntent(&i.Intent)
+func (watson *WatsonCognitiveService) getNativeIntent(i *neocortex.Intent) *assistantv2.RuntimeIntent {
+	intent := &assistantv2.RuntimeIntent{
+		Confidence: &i.Confidence,
+		Intent:     &i.Intent,
+	}
+
 	return intent
 }
 
-func (watson *WatsonCognitiveService) getNativeIn(in *neocortex.Input) *assistantv1.MessageOptions {
-	input := &assistantv1.InputData{}
-	input.SetText(&in.Text)
-	context := &assistantv1.Context{}
-	context.SetConversationID(&in.Context.ConversationID)
-	entities := make([]assistantv1.RuntimeEntity, 0)
+func (watson *WatsonCognitiveService) getNativeIn(c *neocortex.Context, in *neocortex.Input) *assistantv2.MessageOptions {
+	input := &assistantv2.MessageInput{
+		Text: &in.Text,
+	}
+
+	entities := make([]assistantv2.RuntimeEntity, 0)
 	for _, e := range in.Entities {
 		entities = append(entities, *watson.getNativeEntity(e))
 	}
-	intents := make([]assistantv1.RuntimeIntent, 0)
+	intents := make([]assistantv2.RuntimeIntent, 0)
 	for _, i := range in.Intents {
 		intents = append(intents, *watson.getNativeIntent(i))
 
 	}
-	output := &assistantv1.OutputData{}
-	nodes := make([]string, 0)
-	nodesDetails := make([]assistantv1.DialogNodeVisitedDetails, 0)
-	for _, n := range in.NodesVisited {
-		nodes = append(nodes, n.Name)
-		l := assistantv1.DialogNodeVisitedDetails{
-			Title:      &n.Title,
-			Conditions: &n.Conditions,
-			DialogNode: &n.Name,
-		}
-		nodesDetails = append(nodesDetails, l)
-	}
-	output.SetNodesVisited(&nodes)
-	output.SetNodesVisitedDetails(&nodesDetails)
 
-	return &assistantv1.MessageOptions{
-		WorkspaceID: &watson.workspaceID,
-		Context:     context,
-		Input:       input,
-		Entities:    entities,
-		Intents:     intents,
-		Output:      output,
-	}
+	opts := watson.assistant.NewMessageOptions(watson.AssistantID, c.SessionID)
+	opts.SetInput(input)
+
+	return opts
 }
 
-func (watson *WatsonCognitiveService) getNeoCortexOut(res *assistantv1.MessageResponse) *neocortex.Output {
-
-	// conversationID := *(res.Context)["conversation_id"]
-	context := neocortex.Context{
-		// ConversationID: *conversationID,
-	}
+func (watson *WatsonCognitiveService) getNeoCortexOut(c *neocortex.Context, res *assistantv2.MessageResponse) *neocortex.Output {
 
 	intents := make([]*neocortex.Intent, 0)
-	for _, i := range res.Intents {
+	for _, i := range res.Output.Intents {
 		intents = append(intents, &neocortex.Intent{
-			Intent:     *i.GetIntent(),
-			Confidence: *i.GetConfidence(),
+			Intent:     *i.Intent,
+			Confidence: *i.Confidence,
 		})
 	}
 
 	entities := make([]*neocortex.Entity, 0)
-	for _, e := range res.Entities {
+	for _, e := range res.Output.Entities {
+		metadata, ok := e.Metadata.(map[string]string)
+		if !ok {
+			metadata = make(map[string]string)
+		}
 		entities = append(entities, &neocortex.Entity{
-			Entity:     *e.GetEntity(),
-			Confidence: *e.GetConfidence(),
-			Value:      *e.GetValue(),
-			Location:   *e.GetLocation(),
-			Metadata:   (*e.GetMetadata()).(map[string]string),
+			Entity:     *e.Entity,
+			Confidence: *e.Confidence,
+			Value:      *e.Value,
+			Location:   e.Location,
+			Metadata:   metadata,
 			// Groups work in progress
 		})
 	}
 
-	nodes := make([]*neocortex.DialogNode, 0)
+	genResponses := make([]*neocortex.ResponseGeneric, 0)
+	for _, g := range res.Output.Generic {
+		if g.Text == nil {
+			g.Text = core.StringPtr("")
+		}
 
-	pp.Println(res.Output.GetNodesVisitedDetails())
+		if g.Typing == nil {
+			g.Typing = core.BoolPtr(false)
+		}
 
-	res.Output.GetNodesVisitedDetails()
-	for _, n := range *res.Output.GetNodesVisitedDetails() {
-		nodes = append(nodes, &neocortex.DialogNode{
-			Name:       *n.DialogNode,
-			Conditions: *n.Conditions,
-			Title:      *n.Title,
+		if g.Source == nil {
+			g.Source = core.StringPtr("")
+		}
+
+		if g.Time == nil {
+			g.Time = core.Int64Ptr(0)
+		}
+
+		if g.Topic == nil {
+			g.Topic = core.StringPtr("")
+		}
+
+		if g.Description == nil {
+			g.Description = core.StringPtr("")
+		}
+
+		if g.ResponseType == nil {
+			g.ResponseType = core.StringPtr("")
+		}
+
+		if g.MessageToHumanAgent == nil {
+			g.MessageToHumanAgent = core.StringPtr("")
+		}
+
+		if g.Preference == nil {
+			g.Preference = core.StringPtr("")
+		}
+		genResponses = append(genResponses, &neocortex.ResponseGeneric{
+			Text:                *g.Text,
+			Typing:              *g.Typing,
+			Source:              *g.Source,
+			Time:                time.Unix(*g.Time, 0),
+			Topic:               *g.Topic,
+			Description:         *g.Description,
+			ResponseType:        neocortex.ResponseGenericType(*g.ResponseType),
+			MessageToHumanAgent: *g.MessageToHumanAgent,
+			Preference:          *g.Preference,
 		})
-
 	}
 
-	genResponses := make([]*neocortex.ResponseGeneric, 0)
-
-	for _, r := range *(res.Output.GetGeneric()) {
-		genResponses = append(genResponses, &neocortex.ResponseGeneric{
-			Text:                *r.Text,
-			Typing:              *r.Typing,
-			Source:              *r.Source,
-			Time:                time.Unix(*r.Time, 0),
-			Topic:               *r.Topic,
-			Description:         *r.Description,
-			ResponseType:        neocortex.ResponseGenericType(*r.ResponseType),
-			MessageToHumanAgent: *r.MessageToHumanAgent,
-			Preference:          *r.Preference,
-		})
+	var pseudoActions map[string]string
+	if res.Output.UserDefined != nil {
+		pseudoActions = make(map[string]string)
+		definitions, err := flatten.Flatten(res.Output.UserDefined.(map[string]interface{}), "", flatten.DotStyle)
+		if err != nil {
+			panic(err)
+		}
+		for k, d := range definitions {
+			info, ok := d.(string)
+			if !ok {
+				info = ""
+			}
+			pseudoActions[k] = info
+		}
 	}
 
 	return &neocortex.Output{
-		Context:         context,
-		Intents:         intents,
-		Entities:        entities,
-		InputText:       *res.Input.Text,
-		NodesVisited:    nodes,
-		OutputText:      *res.Output.GetText(),
-		GenericResponse: []*neocortex.ResponseGeneric{},
-		// TODO: Actions
-		// TODO: Logs
+		Context:  *c,
+		Actions:  pseudoActions,
+		Intents:  intents,
+		Entities: entities,
+		Response: genResponses,
 	}
 }
 
-func (watson *WatsonCognitiveService) GetProtoResponse(in *neocortex.Input) (*neocortex.Output, error) {
-	opts := watson.getNativeIn(in)
-	pp.Println(opts)
+func (watson *WatsonCognitiveService) GetProtoResponse(c *neocortex.Context, in *neocortex.Input) (*neocortex.Output, error) {
+	opts := watson.getNativeIn(c, in)
+	// pp.Println(opts)
 	r, err := watson.assistant.Message(opts)
 	if err != nil {
 		return nil, err
@@ -186,7 +208,7 @@ func (watson *WatsonCognitiveService) GetProtoResponse(in *neocortex.Input) (*ne
 
 	response := watson.assistant.GetMessageResult(r)
 
-	pp.Println(response)
-	out := watson.getNeoCortexOut(response)
+	out := watson.getNeoCortexOut(c, response)
 	return out, nil
+
 }

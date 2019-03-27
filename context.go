@@ -1,7 +1,10 @@
 package neocortex
 
+import "context"
+
 // Context represent the context of a conversation
 type Context struct {
-	ConversationID string
-	Metadata       map[string]string
+	SessionID string
+	Context   context.Context
+	Metadata  map[string]string
 }

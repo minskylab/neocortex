@@ -1,8 +1,7 @@
 package neocortex
 
-import "context"
+type MiddleHandler func(message *Input, response func(output *Output) error) error
 
 type CommunicationChannel interface {
-	registerMessageEndpoint(func(c context.Context, message *Input) error) error
-	sendResponse(c context.Context, message *Output) error
+	RegisterMessageEndpoint(handler MiddleHandler) error
 }
