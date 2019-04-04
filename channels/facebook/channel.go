@@ -15,6 +15,12 @@ type Channel struct {
 	contexts   map[int64]*neocortex.Context
 }
 
+type ChannelOptions struct {
+	AccessToken string
+	VerifyToken string
+	PageID      string
+}
+
 func (fb *Channel) RegisterMessageEndpoint(handler neocortex.MiddleHandler) error {
 	fb.messageIn = handler
 	return nil
@@ -30,20 +36,25 @@ func (fb *Channel) GetContextFabric() neocortex.ContextFabric {
 	return fb.newContext
 }
 
-func CreateNewFacebookChannel(accessToken, verifyToken, pageID string) (*Channel, error) {
-	channel := &Channel{}
+func CreateNewChannel(factory neocortex.ContextFabric, options ChannelOptions) (*Channel, error) {
+	channel := &Channel{
+		newContext: factory,
+		contexts:   map[int64]*neocortex.Context{},
+	}
+
 	hook := func(msn *messenger.Messenger, userID int64, m messenger.FacebookMessage) {
-		c, contextAlreadyExist := channel.contexts[userID]
-		if !contextAlreadyExist {
+		c, contextExist := channel.contexts[userID]
+		if !contextExist {
 			c = channel.newContext(strconv.Itoa(int(userID)))
+			channel.contexts[userID] = c
 		}
 		// This is because facebook channel not support entities or intents as input (from messenger chat)
 		in := channel.NewInputText(c, m.Text, nil, nil)
-		err := channel.messageIn(in, func(output neocortex.Output) error {
-			channel.contexts[userID] = output.Context()
-			in = channel.NewInputText(channel.contexts[userID], m.Text, output.Entities(), output.Intents())
-			for _, r := range output.Responses() {
-				_, err := msn.SendTextMessage(userID, r.Value().(string))
+		err := channel.messageIn(in, func(out *neocortex.Output) error {
+			channel.contexts[userID] = out.Context
+			in = channel.NewInputText(channel.contexts[userID], m.Text, out.Intents, out.Entities)
+			for _, r := range out.Responses {
+				_, err := msn.SendTextMessage(userID, r.Value.(string))
 				if err != nil {
 					return err
 				}
@@ -56,9 +67,9 @@ func CreateNewFacebookChannel(accessToken, verifyToken, pageID string) (*Channel
 	}
 
 	channel.m = &messenger.Messenger{
-		AccessToken:     accessToken,
-		VerifyToken:     verifyToken,
-		PageID:          pageID,
+		AccessToken:     options.AccessToken,
+		VerifyToken:     options.VerifyToken,
+		PageID:          options.PageID,
 		MessageReceived: hook,
 	}
 

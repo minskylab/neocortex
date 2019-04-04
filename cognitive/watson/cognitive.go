@@ -50,17 +50,16 @@ func (watson *Cognitive) CreateNewContext(c *context.Context, userID string) *ne
 	}
 }
 
-func (watson *Cognitive) GetProtoResponse(c *neocortex.Context, in neocortex.Input) (neocortex.Output, error) {
-
-	var input *Input
-	switch in.InputType().Type() {
+func (watson *Cognitive) GetProtoResponse(in *neocortex.Input) (*neocortex.Output, error) {
+	var opts *assistantv2.MessageOptions
+	switch in.InputType.Type {
 	case neocortex.PrimitiveInputText:
-		input = watson.NewInputText(c, in.InputType().Value(), in.Intents(), in.Entities())
+		_, opts = watson.NewInputText(in.Context, in.InputType.Value, in.Intents, in.Entities)
 	default:
 		return nil, neocortex.ErrInvalidInputType
 	}
 
-	r, err := watson.service.Message(input.opts)
+	r, err := watson.service.Message(opts)
 	if err != nil {
 		return nil, neocortex.ErrSessionNotExist
 	}
@@ -71,7 +70,7 @@ func (watson *Cognitive) GetProtoResponse(c *neocortex.Context, in neocortex.Inp
 
 	response := watson.service.GetMessageResult(r)
 
-	out := watson.NewOutput(c, response)
+	out := watson.NewOutput(in.Context, response)
 
 	return out, nil
 

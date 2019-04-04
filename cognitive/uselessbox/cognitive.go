@@ -2,24 +2,27 @@ package uselessbox
 
 import (
 	"context"
-	"github.com/bregydoc/neocortex"
+	neo "github.com/bregydoc/neocortex"
+	"github.com/rs/xid"
 )
 
-type Cognitive struct {
-	sessions map[string]string
-}
+type Cognitive struct{}
 
 func NewCognitive() *Cognitive {
 	return &Cognitive{}
 }
 
-func (useless *Cognitive) CreateNewContext(c *context.Context, userID string) *neocortex.Context {
-	return &neocortex.Context{
+func (useless *Cognitive) CreateNewContext(c *context.Context, userID string) *neo.Context {
+	id := xid.New()
+	return &neo.Context{
 		Context:   c,
-		SessionID: "useless session",
+		SessionID: id.String(),
 	}
 }
 
-func (useless *Cognitive) GetProtoResponse(c *neocortex.Context, in neocortex.Input) (neocortex.Output, error) {
-	return NewOutput(c), nil
+func (useless *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
+	if in.Context == nil {
+		return nil, neo.ErrContextNotExist
+	}
+	return useless.NewOutputText(in.Context), nil
 }

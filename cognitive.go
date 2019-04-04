@@ -4,5 +4,5 @@ import "context"
 
 type CognitiveService interface {
 	CreateNewContext(c *context.Context, userID string) *Context
-	GetProtoResponse(c *Context, in Input) (Output, error)
+	GetProtoResponse(in *Input) (*Output, error)
 }

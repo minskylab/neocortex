@@ -29,9 +29,13 @@ func getNeocortexIntent(i assistantv2.RuntimeIntent) neocortex.Intent {
 	}
 }
 func getNeocortexEntity(i assistantv2.RuntimeEntity) neocortex.Entity {
+	metadata, ok := i.Metadata.(map[string]interface{})
+	if !ok {
+		metadata = map[string]interface{}{}
+	}
 	return neocortex.Entity{
 		Entity:     *i.Entity,
-		Metadata:   i.Metadata.(map[string]interface{}),
+		Metadata:   metadata,
 		Confidence: *i.Confidence,
 		Location:   i.Location,
 		Value:      *i.Value,

@@ -5,26 +5,10 @@ import (
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
 
-type OutputUnknown struct {
-	context *neocortex.Context
-	generic assistantv2.DialogRuntimeResponseGeneric
-}
-
-func (out *Output) NewOutputUnknown(generic assistantv2.DialogRuntimeResponseGeneric) *OutputUnknown {
-	return &OutputUnknown{
-		context: out.context,
-		generic: generic,
+func (watson *Cognitive) NewUnknownResponse(gen assistantv2.DialogRuntimeResponseGeneric) neocortex.Response {
+	return neocortex.Response{
+		Type:     neocortex.Unknown,
+		Value:    "unknown or not implemented type: " + *gen.ResponseType,
+		IsTyping: false,
 	}
-}
-
-func (out *OutputUnknown) Type() neocortex.ResponseType {
-	return neocortex.Unknown
-}
-
-func (out *OutputUnknown) Value() interface{} {
-	return "unknown or not implemented type: " + *out.generic.ResponseType
-}
-
-func (out *OutputUnknown) IsTyping() bool {
-	return false
 }

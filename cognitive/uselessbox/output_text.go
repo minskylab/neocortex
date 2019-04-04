@@ -1,25 +1,12 @@
 package uselessbox
 
-import "github.com/bregydoc/neocortex"
+import neo "github.com/bregydoc/neocortex"
 
-type OutputText struct {
-	response string
-}
-
-func NewOutputText(text ...string) *OutputText {
-	return &OutputText{
-		response: "I'm useless, you don't wait more from me",
-	}
-}
-
-func (out *OutputText) IsTyping() bool {
-	return false
-}
-
-func (out *OutputText) Type() neocortex.ResponseType {
-	return neocortex.Text
-}
-
-func (out *OutputText) Value() interface{} {
-	return out.response
+func (useless *Cognitive) NewOutputText(c *neo.Context) *neo.Output {
+	res := []neo.Response{{
+		Type:     neo.Text,
+		Value:    "I'm useless, you don't wait more from me",
+		IsTyping: false,
+	}}
+	return useless.NewOutput(c, res, nil, nil)
 }

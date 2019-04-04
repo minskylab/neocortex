@@ -1,37 +1,25 @@
 package watson
 
 import (
-	"github.com/bregydoc/neocortex"
+	neo "github.com/bregydoc/neocortex"
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
 
-type Input struct {
-	context   *neocortex.Context
-	opts      *assistantv2.MessageOptions
-	inputType neocortex.InputType
-}
-
-func (i *Input) Context() *neocortex.Context {
-	i.context.SessionID = *i.opts.SessionID
-	return i.context
-}
-
-func (i *Input) InputType() neocortex.InputType {
-	return i.inputType
-}
-
-func (i *Input) Entities() []neocortex.Entity {
-	entities := make([]neocortex.Entity, 0)
-	for _, e := range i.opts.Input.Entities {
+func (watson *Cognitive) NewInput(c *neo.Context, opts *assistantv2.MessageOptions, inputType neo.InputType) *neo.Input {
+	entities := make([]neo.Entity, 0)
+	for _, e := range opts.Input.Entities {
 		entities = append(entities, getNeocortexEntity(e))
 	}
-	return entities
-}
 
-func (i *Input) Intents() []neocortex.Intent {
-	intents := make([]neocortex.Intent, 0)
-	for _, intent := range i.opts.Input.Intents {
-		intents = append(intents, getNeocortexIntent(intent))
+	intents := make([]neo.Intent, 0)
+	for _, i := range opts.Input.Intents {
+		intents = append(intents, getNeocortexIntent(i))
 	}
-	return intents
+
+	return &neo.Input{
+		Context:   c,
+		InputType: inputType,
+		Intents:   intents,
+		Entities:  entities,
+	}
 }

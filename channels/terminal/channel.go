@@ -27,7 +27,7 @@ type ChannelOptions struct {
 	SaysSymbol string
 }
 
-func NewTerminalChannel(opts *ChannelOptions) *Channel {
+func NewChannel(factory neocortex.ContextFabric, opts *ChannelOptions) *Channel {
 	if opts == nil { // default
 		opts = &ChannelOptions{
 			PersonIcon: "😀",
@@ -38,9 +38,10 @@ func NewTerminalChannel(opts *ChannelOptions) *Channel {
 		}
 	}
 	t := &Channel{
-		reader:   bufio.NewReader(os.Stdin),
-		options:  opts,
-		contexts: map[int64]*neocortex.Context{},
+		reader:     bufio.NewReader(os.Stdin),
+		options:    opts,
+		contexts:   map[int64]*neocortex.Context{},
+		newContext: factory,
 	}
 
 	return t
@@ -53,21 +54,29 @@ func (term *Channel) getInput() string {
 
 func (term *Channel) renderUserInterface(done bool) error {
 	c, contextExist := term.contexts[uniqueUserID]
-	if contextExist {
+	if !contextExist {
 		c = term.newContext(strconv.Itoa(uniqueUserID))
+		term.contexts[uniqueUserID] = c
 	}
 	if !done {
-		fmt.Printf("%s %s%s ", term.options.PersonIcon, term.options.PersonName, term.options.SaysSymbol)
+		fmt.Printf("%s %s[sess:%s]%s ", term.options.PersonIcon, term.options.PersonName, c.SessionID, term.options.SaysSymbol)
 		inStr := term.getInput()
 		input := term.NewInputText(c, inStr, nil, nil)
-		err := term.messageIn(input, func(output neocortex.Output) error {
-			for _, r := range output.Responses() {
-				if r.Type() == neocortex.Text {
-					fmt.Printf("%s %s%s %s\n", term.options.BotIcon, term.options.BotName, term.options.SaysSymbol, r.Value().(string))
+		err := term.messageIn(input, func(out *neocortex.Output) error {
+			for _, r := range out.Responses {
+				if r.Type == neocortex.Text {
+					fmt.Printf("%s %s[sess:%s]%s %s\n",
+						term.options.BotIcon,
+						term.options.BotName,
+						out.Context.SessionID,
+						term.options.SaysSymbol,
+						r.Value.(string),
+					)
 				}
 			}
 			return nil
 		})
+
 		if err != nil {
 
 			err := term.renderUserInterface(true)

@@ -5,26 +5,14 @@ import (
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
 
-type OutputText struct {
-	context *neocortex.Context
-	generic assistantv2.DialogRuntimeResponseGeneric
-}
-
-func (out *Output) NewOutputText(generic assistantv2.DialogRuntimeResponseGeneric) *OutputText {
-	return &OutputText{
-		context: out.context,
-		generic: generic,
+func (watson *Cognitive) NewTextResponse(gen assistantv2.DialogRuntimeResponseGeneric) neocortex.Response {
+	typing := false
+	if gen.Typing != nil {
+		typing = *gen.Typing
 	}
-}
-
-func (out *OutputText) Type() neocortex.ResponseType {
-	return neocortex.Text
-}
-
-func (out *OutputText) Value() interface{} {
-	return *out.generic.Text
-}
-
-func (out *OutputText) IsTyping() bool {
-	return *out.generic.Typing
+	return neocortex.Response{
+		Type:     neocortex.Text,
+		Value:    *gen.Text,
+		IsTyping: typing,
+	}
 }

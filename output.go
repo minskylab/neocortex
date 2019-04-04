@@ -16,24 +16,24 @@ var Image ResponseType = "image"
 var Option ResponseType = "option"
 
 // ConnectToAgent is a kind of generic response
-var ConnectToAgent ResponseType = "connect_to_agent"
+// var ConnectToAgent ResponseType = "connect_to_agent"
 
 var Suggestion ResponseType = "suggestion"
 
 var Unknown ResponseType = "unknown"
 
-type Response interface {
-	IsTyping() bool
-	Type() ResponseType
-	Value() interface{} // TODO: Evaluate
+type Response struct {
+	IsTyping bool
+	Type     ResponseType
+	Value    interface{} // TODO: Evaluate
 }
 
 // Output represents the response of an input from the cognitive service
-type Output interface {
-	Context() *Context
-	Entities() []Entity
-	Intents() []Intent
-	VisitedNodes() []*DialogNode
-	Logs() []*LogMessage
-	Responses() []Response
+type Output struct {
+	Context      *Context
+	Entities     []Entity
+	Intents      []Intent
+	VisitedNodes []*DialogNode
+	Logs         []*LogMessage
+	Responses    []Response
 }

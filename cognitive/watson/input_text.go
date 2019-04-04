@@ -1,28 +1,12 @@
 package watson
 
 import (
-	"github.com/bregydoc/neocortex"
+	neo "github.com/bregydoc/neocortex"
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 	"github.com/watson-developer-cloud/go-sdk/core"
 )
 
-type InputText struct {
-	opts *assistantv2.MessageOptions
-}
-
-func (i *InputText) Type() neocortex.PrimitiveInputType {
-	return neocortex.PrimitiveInputText
-}
-
-func (i *InputText) Value() string {
-	return *i.opts.Input.Text
-}
-
-func (i *InputText) Data() []byte {
-	return []byte(*i.opts.Input.Text)
-}
-
-func (watson *Cognitive) NewInputText(c *neocortex.Context, text string, intents []neocortex.Intent, entities []neocortex.Entity) *Input {
+func (watson *Cognitive) NewInputText(c *neo.Context, text string, intents []neo.Intent, entities []neo.Entity) (*neo.Input, *assistantv2.MessageOptions) {
 	ets := make([]assistantv2.RuntimeEntity, 0)
 	for _, e := range entities {
 		ets = append(ets, getNativeEntity(&e))
@@ -48,9 +32,11 @@ func (watson *Cognitive) NewInputText(c *neocortex.Context, text string, intents
 
 	options.SetInput(input)
 
-	return &Input{
-		context:   c,
-		opts:      options,
-		inputType: &InputText{options},
+	iType := neo.InputType{
+		Type:  neo.PrimitiveInputText,
+		Value: text,
+		Data:  []byte(text),
 	}
+
+	return watson.NewInput(c, options, iType), options
 }
