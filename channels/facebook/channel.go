@@ -36,7 +36,7 @@ func (fb *Channel) GetContextFabric() neocortex.ContextFabric {
 	return fb.newContext
 }
 
-func CreateNewChannel(factory neocortex.ContextFabric, options ChannelOptions) (*Channel, error) {
+func NewChannel(factory neocortex.ContextFabric, options ChannelOptions) (*Channel, error) {
 	channel := &Channel{
 		newContext: factory,
 		contexts:   map[int64]*neocortex.Context{},

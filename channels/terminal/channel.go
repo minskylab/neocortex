@@ -78,7 +78,6 @@ func (term *Channel) renderUserInterface(done bool) error {
 		})
 
 		if err != nil {
-
 			err := term.renderUserInterface(true)
 			if err != nil {
 				return err
