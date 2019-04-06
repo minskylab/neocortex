@@ -1,84 +1,57 @@
 package neocortex
 
 import (
-	"fmt"
+	"context"
+	"errors"
+	"github.com/asdine/storm"
 )
 
 type OutputResponse func(output *Output) error
 type HandleResolver func(in *Input, out *Output, response OutputResponse) error
 type MiddleHandler func(message *Input, response OutputResponse) error
-type ContextFabric func(userID string) *Context
+type ContextFabric func(ctx context.Context, userID string) *Context
 
-type CortexMiddleware struct {
-	Cognitive           CognitiveService
-	Channel             []CommunicationChannel
-	registeredResolvers map[Matcher]*HandleResolver
-	resolver            *HandleResolver
+type Engine struct {
+	db                  *storm.DB
+	done                chan error
+	cognitive           CognitiveService
+	channels            []CommunicationChannel
+	registeredResolvers map[CommunicationChannel]map[Matcher]*HandleResolver
+	generalResolver     map[CommunicationChannel]*HandleResolver
 }
 
-func NewCortex(cognitive CognitiveService, channel ...CommunicationChannel) (*CortexMiddleware, error) {
-	middle := &CortexMiddleware{}
-	middle.Channel = channel
-	middle.Cognitive = cognitive
-	middle.registeredResolvers = map[Matcher]*HandleResolver{}
-	for _, ch := range channel {
-		err := ch.RegisterMessageEndpoint(func(message *Input, response OutputResponse) error {
-			return middle.onMessage(message, response)
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		go func() {
-			err := ch.ToHear()
-			if err != nil {
-				panic(err)
-			}
-		}()
-	}
-
-	return middle, nil
-}
-
-func (cortex *CortexMiddleware) onMessage(in *Input, response OutputResponse) error {
-	out, err := cortex.Cognitive.GetProtoResponse(in)
+func (cortex *Engine) onMessage(channel CommunicationChannel, in *Input, response OutputResponse) error {
+	out, err := cortex.cognitive.GetProtoResponse(in)
 	if err != nil {
 		if err == ErrSessionNotExist {
-			panic(err)
+			// TODO: Check above later, it's so strange
+			f := channel.GetContextFabric()
+			f(*in.Context.Context, in.Context.UserID)
+		} else {
+			return err
 		}
+	}
+
+	resolvers, channelIsRegistered := cortex.registeredResolvers[channel]
+	if !channelIsRegistered {
+		return errors.New("channel not exist on this neocortex instance")
 	}
 
 	exist := false
-	for m, resolver := range cortex.registeredResolvers {
+	for m, resolver := range resolvers {
 		if match(out, &m) {
 			if err = (*resolver)(in, out, response); err != nil {
 				return err
 			}
 			exist = true
 		}
-
 	}
 
-	if cortex.resolver != nil && !exist {
-		if err = (*cortex.resolver)(in, out, response); err != nil {
+	if cortex.generalResolver != nil && !exist {
+		if err = (*cortex.generalResolver[channel])(in, out, response); err != nil {
 			return err
 		}
 	}
 
 	return nil
-}
-
-func (cortex *CortexMiddleware) ResolverAll(handler HandleResolver) {
-	cortex.resolver = &handler
-}
-
-func (cortex *CortexMiddleware) Resolver(matcher Matcher, handler HandleResolver) {
-	if cortex.registeredResolvers == nil {
-		cortex.registeredResolvers = map[Matcher]*HandleResolver{}
-	}
-	cortex.registeredResolvers[matcher] = &handler
-}
-
-func (cortex *CortexMiddleware) When(node *DialogNode) {
-	fmt.Println(node.Title)
 }

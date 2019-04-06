@@ -38,10 +38,10 @@ func (watson *Cognitive) NewOutput(c *neo.Context, r *assistantv2.MessageRespons
 	for _, gen := range r.Output.Generic {
 		switch *gen.ResponseType {
 		case "text":
-			rText := watson.NewTextResponse(gen)
+			rText := watson.newTextResponse(gen)
 			responses = append(responses, rText)
 		default:
-			rUnknown := watson.NewUnknownResponse(gen)
+			rUnknown := watson.newUnknownResponse(gen)
 			responses = append(responses, rUnknown)
 		}
 	}

@@ -32,11 +32,11 @@ func (watson *Cognitive) NewInputText(c *neo.Context, text string, intents []neo
 
 	options.SetInput(input)
 
-	iType := neo.InputType{
-		Type:  neo.PrimitiveInputText,
+	data := neo.InputData{
+		Type:  neo.InputText,
 		Value: text,
 		Data:  []byte(text),
 	}
 
-	return watson.NewInput(c, options, iType), options
+	return watson.NewInput(c, options, data), options
 }

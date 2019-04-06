@@ -4,4 +4,5 @@ type CommunicationChannel interface {
 	RegisterMessageEndpoint(handler MiddleHandler) error
 	ToHear() error
 	GetContextFabric() ContextFabric // TODO: Rev
+	SetContextFabric(fabric ContextFabric)
 }

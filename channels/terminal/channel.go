@@ -2,6 +2,7 @@ package terminal
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"github.com/bregydoc/neocortex"
 	"os"
@@ -27,7 +28,12 @@ type ChannelOptions struct {
 	SaysSymbol string
 }
 
-func NewChannel(factory neocortex.ContextFabric, opts *ChannelOptions) *Channel {
+func NewChannel(opts *ChannelOptions, fabric ...neocortex.ContextFabric) *Channel {
+	var f neocortex.ContextFabric
+	if len(fabric) > 0 {
+		f = fabric[0]
+	}
+
 	if opts == nil { // default
 		opts = &ChannelOptions{
 			PersonIcon: "😀",
@@ -41,7 +47,7 @@ func NewChannel(factory neocortex.ContextFabric, opts *ChannelOptions) *Channel 
 		reader:     bufio.NewReader(os.Stdin),
 		options:    opts,
 		contexts:   map[int64]*neocortex.Context{},
-		newContext: factory,
+		newContext: f,
 	}
 
 	return t
@@ -55,7 +61,7 @@ func (term *Channel) getInput() string {
 func (term *Channel) renderUserInterface(done bool) error {
 	c, contextExist := term.contexts[uniqueUserID]
 	if !contextExist {
-		c = term.newContext(strconv.Itoa(uniqueUserID))
+		c = term.newContext(context.Background(), strconv.Itoa(uniqueUserID))
 		term.contexts[uniqueUserID] = c
 	}
 	if !done {
@@ -107,4 +113,8 @@ func (term *Channel) ToHear() error {
 
 func (term *Channel) GetContextFabric() neocortex.ContextFabric {
 	return term.newContext
+}
+
+func (term *Channel) SetContextFabric(fabric neocortex.ContextFabric) {
+	term.newContext = fabric
 }

@@ -4,23 +4,23 @@ package neocortex
 type ResponseType string
 
 // Text is a kind of generic response
-var Text ResponseType = "text"
+const Text ResponseType = "text"
 
 // Pause is a kind of generic response
-var Pause ResponseType = "pause"
+const Pause ResponseType = "pause"
 
 // Image is a kind of generic response
-var Image ResponseType = "image"
+const Image ResponseType = "image"
 
-// Option is a kind of generic response
-var Option ResponseType = "option"
+// Options is a kind of generic response
+const Options ResponseType = "option"
 
 // ConnectToAgent is a kind of generic response
 // var ConnectToAgent ResponseType = "connect_to_agent"
 
-var Suggestion ResponseType = "suggestion"
+const Suggestion ResponseType = "suggestion"
 
-var Unknown ResponseType = "unknown"
+const Unknown ResponseType = "unknown"
 
 type Response struct {
 	IsTyping bool

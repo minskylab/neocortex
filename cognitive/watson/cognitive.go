@@ -45,6 +45,7 @@ func (watson *Cognitive) CreateNewContext(c *context.Context, userID string) *ne
 	sess := watson.service.GetCreateSessionResult(r)
 	return &neocortex.Context{
 		SessionID: *sess.SessionID,
+		UserID:    userID,
 		Context:   c,
 		Variables: map[string]interface{}{},
 	}
@@ -52,9 +53,10 @@ func (watson *Cognitive) CreateNewContext(c *context.Context, userID string) *ne
 
 func (watson *Cognitive) GetProtoResponse(in *neocortex.Input) (*neocortex.Output, error) {
 	var opts *assistantv2.MessageOptions
-	switch in.InputType.Type {
-	case neocortex.PrimitiveInputText:
-		_, opts = watson.NewInputText(in.Context, in.InputType.Value, in.Intents, in.Entities)
+	switch in.Data.Type {
+	// Watson only supports one type of input: InputText
+	case neocortex.InputText:
+		_, opts = watson.NewInputText(in.Context, in.Data.Value, in.Intents, in.Entities)
 	default:
 		return nil, neocortex.ErrInvalidInputType
 	}

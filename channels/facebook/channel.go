@@ -1,8 +1,10 @@
 package facebook
 
 import (
+	"context"
 	"fmt"
 	"github.com/bregydoc/neocortex"
+	"github.com/k0kubun/pp"
 	"github.com/mileusna/facebook-messenger"
 	"net/http"
 	"strconv"
@@ -36,28 +38,36 @@ func (fb *Channel) GetContextFabric() neocortex.ContextFabric {
 	return fb.newContext
 }
 
-func NewChannel(factory neocortex.ContextFabric, options ChannelOptions) (*Channel, error) {
+func (fb *Channel) SetContextFabric(fabric neocortex.ContextFabric) {
+	fb.newContext = fabric
+}
+
+func NewChannel(options ChannelOptions, fabric ...neocortex.ContextFabric) (*Channel, error) {
+	var f neocortex.ContextFabric
+	if len(fabric) > 0 {
+		f = fabric[0]
+	}
 	channel := &Channel{
-		newContext: factory,
+		newContext: f,
 		contexts:   map[int64]*neocortex.Context{},
 	}
 
 	hook := func(msn *messenger.Messenger, userID int64, m messenger.FacebookMessage) {
+		pp.Println(userID)
+		uID := strconv.FormatInt(userID, 10)
+		pp.Println(uID)
 		c, contextExist := channel.contexts[userID]
 		if !contextExist {
-			c = channel.newContext(strconv.Itoa(int(userID)))
+			c = channel.newContext(context.Background(), uID)
 			channel.contexts[userID] = c
 		}
 		// This is because facebook channel not support entities or intents as input (from messenger chat)
 		in := channel.NewInputText(c, m.Text, nil, nil)
 		err := channel.messageIn(in, func(out *neocortex.Output) error {
 			channel.contexts[userID] = out.Context
-			in = channel.NewInputText(channel.contexts[userID], m.Text, out.Intents, out.Entities)
-			for _, r := range out.Responses {
-				_, err := msn.SendTextMessage(userID, r.Value.(string))
-				if err != nil {
-					return err
-				}
+			err := decodeOutput(userID, msn, out)
+			if err != nil {
+				return err
 			}
 			return nil
 		})

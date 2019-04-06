@@ -1,18 +1,13 @@
 package neocortex
 
-type EntityMatch struct {
-	Is         string
-	Confidence float64
-}
-
-type IntentMatch struct {
+type Match struct {
 	Is         string
 	Confidence float64
 }
 
 type Matcher struct {
-	Entity EntityMatch
-	Intent IntentMatch
+	Entity Match
+	Intent Match
 	AND    *Matcher
 	OR     *Matcher
 }

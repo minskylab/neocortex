@@ -8,7 +8,7 @@ func (useless *Cognitive) NewOutput(c *neo.Context, res []neo.Response, i []neo.
 		Entities:     e,
 		Intents:      i,
 		Responses:    res,
-		VisitedNodes: nil, // Proper of this Uselessbox
-		Logs:         nil, // Proper of this Uselessbox
+		VisitedNodes: nil, // own of Uselessbox
+		Logs:         nil, // own of this Uselessbox
 	}
 }

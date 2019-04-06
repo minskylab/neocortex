@@ -5,7 +5,7 @@ import (
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
 
-func (watson *Cognitive) NewInput(c *neo.Context, opts *assistantv2.MessageOptions, inputType neo.InputType) *neo.Input {
+func (watson *Cognitive) NewInput(c *neo.Context, opts *assistantv2.MessageOptions, data neo.InputData) *neo.Input {
 	entities := make([]neo.Entity, 0)
 	for _, e := range opts.Input.Entities {
 		entities = append(entities, getNeocortexEntity(e))
@@ -17,9 +17,9 @@ func (watson *Cognitive) NewInput(c *neo.Context, opts *assistantv2.MessageOptio
 	}
 
 	return &neo.Input{
-		Context:   c,
-		InputType: inputType,
-		Intents:   intents,
-		Entities:  entities,
+		Context:  c,
+		Data:     data,
+		Intents:  intents,
+		Entities: entities,
 	}
 }
