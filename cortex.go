@@ -4,14 +4,17 @@ import (
 	"context"
 	"errors"
 	"github.com/asdine/storm"
+	"github.com/sirupsen/logrus"
+	"reflect"
 )
 
 type OutputResponse func(output *Output) error
 type HandleResolver func(in *Input, out *Output, response OutputResponse) error
 type MiddleHandler func(message *Input, response OutputResponse) error
-type ContextFabric func(ctx context.Context, userID string) *Context
+type ContextFabric func(ctx context.Context, info PersonInfo) *Context
 
 type Engine struct {
+	logger              *logrus.Logger
 	db                  *storm.DB
 	done                chan error
 	cognitive           CognitiveService
@@ -20,21 +23,24 @@ type Engine struct {
 	generalResolver     map[CommunicationChannel]*HandleResolver
 }
 
-func (cortex *Engine) onMessage(channel CommunicationChannel, in *Input, response OutputResponse) error {
-	out, err := cortex.cognitive.GetProtoResponse(in)
+func (engine *Engine) onMessage(channel CommunicationChannel, in *Input, response OutputResponse) error {
+	entry := engine.logger.WithField("from", reflect.ValueOf(channel).Type())
+	entry.Debug("new message in")
+	out, err := engine.cognitive.GetProtoResponse(in)
 	if err != nil {
+		entry.WithField("error", err).Debug("error launched")
 		if err == ErrSessionNotExist {
 			// TODO: Check above later, it's so strange
 			f := channel.GetContextFabric()
-			f(*in.Context.Context, in.Context.UserID)
+			f(*in.Context.Context, in.Context.Person)
 		} else {
 			return err
 		}
 	}
 
-	resolvers, channelIsRegistered := cortex.registeredResolvers[channel]
+	resolvers, channelIsRegistered := engine.registeredResolvers[channel]
 	if !channelIsRegistered {
-		return errors.New("channel not exist on this neocortex instance")
+		return errors.New("channel not exist on this engine instance")
 	}
 
 	exist := false
@@ -47,8 +53,8 @@ func (cortex *Engine) onMessage(channel CommunicationChannel, in *Input, respons
 		}
 	}
 
-	if cortex.generalResolver != nil && !exist {
-		if err = (*cortex.generalResolver[channel])(in, out, response); err != nil {
+	if engine.generalResolver != nil && !exist {
+		if err = (*engine.generalResolver[channel])(in, out, response); err != nil {
 			return err
 		}
 	}

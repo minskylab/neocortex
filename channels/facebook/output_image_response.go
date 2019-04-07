@@ -1,6 +1,6 @@
 package facebook
 
-import "github.com/mileusna/facebook-messenger"
+import "github.com/bregydoc/neocortex/channels/facebook/messenger"
 
 func sendImageResponse(userID int64, msn *messenger.Messenger, url string) error {
 	gm := msn.NewGenericMessage(userID)

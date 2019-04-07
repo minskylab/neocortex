@@ -37,7 +37,7 @@ func NewCognitive(params NewCognitiveParams) (*Cognitive, error) {
 	}, nil
 }
 
-func (watson *Cognitive) CreateNewContext(c *context.Context, userID string) *neocortex.Context {
+func (watson *Cognitive) CreateNewContext(c *context.Context, info neocortex.PersonInfo) *neocortex.Context {
 	r, responseErr := watson.service.CreateSession(watson.service.NewCreateSessionOptions(watson.assistantID))
 	if responseErr != nil {
 		panic(responseErr)
@@ -45,7 +45,7 @@ func (watson *Cognitive) CreateNewContext(c *context.Context, userID string) *ne
 	sess := watson.service.GetCreateSessionResult(r)
 	return &neocortex.Context{
 		SessionID: *sess.SessionID,
-		UserID:    userID,
+		Person:    info,
 		Context:   c,
 		Variables: map[string]interface{}{},
 	}
@@ -71,7 +71,7 @@ func (watson *Cognitive) GetProtoResponse(in *neocortex.Input) (*neocortex.Outpu
 	}
 
 	response := watson.service.GetMessageResult(r)
-
+	// pp.Println(response)
 	out := watson.NewOutput(in.Context, response)
 
 	return out, nil

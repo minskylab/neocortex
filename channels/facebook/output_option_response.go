@@ -2,7 +2,7 @@ package facebook
 
 import (
 	"github.com/bregydoc/neocortex"
-	"github.com/mileusna/facebook-messenger"
+	"github.com/bregydoc/neocortex/channels/facebook/messenger"
 )
 
 func sendOneOptionResponse(userID int64, msn *messenger.Messenger, options neocortex.OptionsResponse) error {

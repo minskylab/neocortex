@@ -29,7 +29,14 @@ func (watson *Cognitive) NewInputText(c *neo.Context, text string, intents []neo
 	}
 
 	options := watson.service.NewMessageOptions(watson.assistantID, c.SessionID)
-
+	options.SetContext(&assistantv2.MessageContext{
+		Global: &assistantv2.MessageContextGlobal{
+			System: &assistantv2.MessageContextGlobalSystem{
+				UserID:   core.StringPtr(c.Person.ID),
+				Timezone: core.StringPtr(c.Person.Timezone),
+			},
+		},
+	})
 	options.SetInput(input)
 
 	data := neo.InputData{
