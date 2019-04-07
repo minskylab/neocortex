@@ -40,6 +40,9 @@ func (watson *Cognitive) NewOutput(c *neo.Context, r *assistantv2.MessageRespons
 		case "text":
 			rText := watson.newTextResponse(gen)
 			responses = append(responses, rText)
+		case "option":
+			rOption := watson.newOptionResponse(gen)
+			responses = append(responses, rOption)
 		default:
 			rUnknown := watson.newUnknownResponse(gen)
 			responses = append(responses, rUnknown)

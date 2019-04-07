@@ -2,7 +2,7 @@ package watson
 
 import (
 	"context"
-	"github.com/bregydoc/neocortex"
+	neo "github.com/bregydoc/neocortex"
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
 
@@ -37,13 +37,13 @@ func NewCognitive(params NewCognitiveParams) (*Cognitive, error) {
 	}, nil
 }
 
-func (watson *Cognitive) CreateNewContext(c *context.Context, info neocortex.PersonInfo) *neocortex.Context {
+func (watson *Cognitive) CreateNewContext(c *context.Context, info neo.PersonInfo) *neo.Context {
 	r, responseErr := watson.service.CreateSession(watson.service.NewCreateSessionOptions(watson.assistantID))
 	if responseErr != nil {
 		panic(responseErr)
 	}
 	sess := watson.service.GetCreateSessionResult(r)
-	return &neocortex.Context{
+	return &neo.Context{
 		SessionID: *sess.SessionID,
 		Person:    info,
 		Context:   c,
@@ -51,23 +51,23 @@ func (watson *Cognitive) CreateNewContext(c *context.Context, info neocortex.Per
 	}
 }
 
-func (watson *Cognitive) GetProtoResponse(in *neocortex.Input) (*neocortex.Output, error) {
+func (watson *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
 	var opts *assistantv2.MessageOptions
 	switch in.Data.Type {
 	// Watson only supports one type of input: InputText
-	case neocortex.InputText:
+	case neo.InputText:
 		_, opts = watson.NewInputText(in.Context, in.Data.Value, in.Intents, in.Entities)
 	default:
-		return nil, neocortex.ErrInvalidInputType
+		return nil, neo.ErrInvalidInputType
 	}
 
 	r, err := watson.service.Message(opts)
 	if err != nil {
-		return nil, neocortex.ErrSessionNotExist
+		return nil, neo.ErrSessionNotExist
 	}
 
 	if r.StatusCode != 200 {
-		return nil, neocortex.ErrInvalidResponseFromCognitiveService
+		return nil, neo.ErrInvalidResponseFromCognitiveService
 	}
 
 	response := watson.service.GetMessageResult(r)

@@ -1,6 +1,8 @@
 package neocortex
 
-func (out *Output) AddTextResponse(resp string) {
+import "time"
+
+func (out *Output) AddTextResponse(resp string) *Output {
 	if out.Responses == nil {
 		out.Responses = []Response{}
 	}
@@ -9,9 +11,11 @@ func (out *Output) AddTextResponse(resp string) {
 		Value:    resp,
 		IsTyping: false,
 	})
+
+	return out
 }
 
-func (out *Output) AddOptionsResponse(title string, subtitle string, options ...Option) {
+func (out *Output) AddOptionsResponse(title string, subtitle string, options ...Option) *Output {
 	if out.Responses == nil {
 		out.Responses = []Response{}
 	}
@@ -22,15 +26,31 @@ func (out *Output) AddOptionsResponse(title string, subtitle string, options ...
 	out.Responses = append(out.Responses, Response{
 		Type: Options,
 		Value: OptionsResponse{
-			Title:    title,
-			Subtitle: subtitle,
-			Options:  opts,
+			Title:       title,
+			Description: subtitle,
+			Options:     opts,
 		},
 		IsTyping: false,
 	})
+
+	return out
 }
 
-func (out *Output) AddImageResponse(url string) {
+func (out *Output) AddListOfOptionsResponse(options []OptionsResponse) *Output {
+	if out.Responses == nil {
+		out.Responses = []Response{}
+	}
+
+	out.Responses = append(out.Responses, Response{
+		Type:     Options,
+		Value:    options,
+		IsTyping: false,
+	})
+
+	return out
+}
+
+func (out *Output) AddImageResponse(url string) *Output {
 	if out.Responses == nil {
 		out.Responses = []Response{}
 	}
@@ -40,4 +60,20 @@ func (out *Output) AddImageResponse(url string) {
 		Value:    url,
 		IsTyping: false,
 	})
+
+	return out
+}
+
+func (out *Output) AddPauseResponse(duration time.Duration) *Output {
+	if out.Responses == nil {
+		out.Responses = []Response{}
+	}
+
+	out.Responses = append(out.Responses, Response{
+		Type:     Pause,
+		Value:    duration,
+		IsTyping: false,
+	})
+
+	return out
 }

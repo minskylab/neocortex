@@ -12,7 +12,7 @@ func NewCognitive() *Cognitive {
 	return &Cognitive{}
 }
 
-func (useless *Cognitive) CreateNewContext(c *context.Context, userID string) *neo.Context {
+func (useless *Cognitive) CreateNewContext(c *context.Context, info neo.PersonInfo) *neo.Context {
 	id := xid.New()
 	return &neo.Context{
 		Context:   c,

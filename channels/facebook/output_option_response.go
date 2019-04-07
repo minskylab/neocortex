@@ -15,7 +15,7 @@ func sendOneOptionResponse(userID int64, msn *messenger.Messenger, options neoco
 			buttons = append(buttons, msn.NewWebURLButton(o.Text, o.Action))
 		}
 	}
-	gm.AddNewElement(options.Title, options.Subtitle, options.ItemURL, options.Image, buttons)
+	gm.AddNewElement(options.Title, options.Description, options.ItemURL, options.Image, buttons)
 	_, err := msn.SendMessage(gm)
 	return err
 }
@@ -31,7 +31,7 @@ func sendManyOptionsResponse(userID int64, msn *messenger.Messenger, optionsArra
 				buttons = append(buttons, msn.NewWebURLButton(o.Text, o.Action))
 			}
 		}
-		gm.AddNewElement(options.Title, options.Subtitle, options.ItemURL, options.Image, buttons)
+		gm.AddNewElement(options.Title, options.Description, options.ItemURL, options.Image, buttons)
 	}
 	_, err := msn.SendMessage(gm)
 	return err

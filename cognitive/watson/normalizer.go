@@ -1,11 +1,11 @@
 package watson
 
 import (
-	"github.com/bregydoc/neocortex"
+	neo "github.com/bregydoc/neocortex"
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
 
-func getNativeEntity(e *neocortex.Entity) assistantv2.RuntimeEntity {
+func getNativeEntity(e *neo.Entity) assistantv2.RuntimeEntity {
 	return assistantv2.RuntimeEntity{
 		Confidence: &e.Confidence,
 		Entity:     &e.Entity,
@@ -15,25 +15,25 @@ func getNativeEntity(e *neocortex.Entity) assistantv2.RuntimeEntity {
 	}
 }
 
-func getNativeIntent(i *neocortex.Intent) assistantv2.RuntimeIntent {
+func getNativeIntent(i *neo.Intent) assistantv2.RuntimeIntent {
 	return assistantv2.RuntimeIntent{
 		Intent:     &i.Intent,
 		Confidence: &i.Confidence,
 	}
 }
 
-func getNeocortexIntent(i assistantv2.RuntimeIntent) neocortex.Intent {
-	return neocortex.Intent{
+func getNeocortexIntent(i assistantv2.RuntimeIntent) neo.Intent {
+	return neo.Intent{
 		Intent:     *i.Intent,
 		Confidence: *i.Confidence,
 	}
 }
-func getNeocortexEntity(i assistantv2.RuntimeEntity) neocortex.Entity {
+func getNeocortexEntity(i assistantv2.RuntimeEntity) neo.Entity {
 	metadata, ok := i.Metadata.(map[string]interface{})
 	if !ok {
 		metadata = map[string]interface{}{}
 	}
-	return neocortex.Entity{
+	return neo.Entity{
 		Entity:     *i.Entity,
 		Metadata:   metadata,
 		Confidence: *i.Confidence,

@@ -16,7 +16,7 @@ var TestURL = ""
 type UserInfo struct {
 	ID         int64
 	Name       string
-	Timezone   string
+	Timezone   float64
 	Locale     string
 	ProfilePic string
 }
@@ -95,7 +95,7 @@ func (msng *Messenger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 			_ = json.NewDecoder(r.Body).Decode(&data)
 			name := data["first_name"].(string) + " " + data["last_name"].(string)
-			tz := fmt.Sprintf("%f", data["timezone"].(float64))
+			tz := data["timezone"].(float64)
 			locale := data["locale"].(string)
 			pic := data["profile_pic"].(string)
 			user := UserInfo{

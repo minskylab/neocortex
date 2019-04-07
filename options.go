@@ -7,9 +7,9 @@ type Option struct {
 }
 
 type OptionsResponse struct {
-	Title    string
-	Subtitle string
-	ItemURL  string
-	Image    string
-	Options  []*Option
+	Title       string
+	Description string
+	ItemURL     string
+	Image       string
+	Options     []*Option
 }

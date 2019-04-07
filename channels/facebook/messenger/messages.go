@@ -75,6 +75,8 @@ type attachment struct {
 }
 
 type payload struct {
+	Url          string    `json:"url,omitempty"`
+	IsReusable   bool      `json:"is_reusable,omitempty"`
 	TemplateType string    `json:"template_type,omitempty"`
 	Elements     []Element `json:"elements,omitempty"`
 }
@@ -115,6 +117,18 @@ func (msng Messenger) NewGenericMessage(userID int64) GenericMessage {
 			Attachment: &attachment{
 				Type:    "template",
 				Payload: payload{TemplateType: "generic"},
+			},
+		},
+	}
+}
+
+func (msng Messenger) NewImageMessage(userID int64, imageURL string) GenericMessage {
+	return GenericMessage{
+		Recipient: recipient{ID: userID},
+		Message: genericMessageContent{
+			Attachment: &attachment{
+				Type:    "image",
+				Payload: payload{Url: imageURL, IsReusable: true},
 			},
 		},
 	}

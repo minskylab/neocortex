@@ -26,9 +26,11 @@ func decodeOutput(userID int64, msn *messenger.Messenger, out *neocortex.Output)
 				if err := sendManyOptionsResponse(userID, msn, optionsArray); err != nil {
 					return err
 				}
+			} else {
+				return errors.New("invalid value, it cannot be parsed as OptionResponse struct")
 			}
+			return nil
 
-			return errors.New("invalid value, it cannot be parsed as OptionResponse struct")
 		case neocortex.Pause:
 			// Unsupported by facebook messenger
 			// emulated with delay (it's so stupid)
