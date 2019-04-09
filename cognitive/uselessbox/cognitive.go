@@ -17,6 +17,8 @@ func (useless *Cognitive) CreateNewContext(c *context.Context, info neo.PersonIn
 	return &neo.Context{
 		Context:   c,
 		SessionID: id.String(),
+		Person:    info,
+		Variables: map[string]interface{}{},
 	}
 }
 

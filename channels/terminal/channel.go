@@ -2,107 +2,19 @@ package terminal
 
 import (
 	"bufio"
-	"context"
-	"fmt"
-	"github.com/bregydoc/neocortex"
-	"os"
-	"strconv"
+	neo "github.com/bregydoc/neocortex"
 )
 
-// This channel have particularity only one user, then we have only one user ID for all
-const uniqueUserID = 0
-
 type Channel struct {
-	reader     *bufio.Reader
-	options    *ChannelOptions
-	messageIn  neocortex.MiddleHandler      // req
-	newContext neocortex.ContextFabric      // req
-	contexts   map[int64]*neocortex.Context // req
+	reader              *bufio.Reader
+	options             *ChannelOptions
+	messageIn           neo.MiddleHandler      // req
+	newContext          neo.ContextFabric      // req
+	contexts            map[int64]*neo.Context // req
+	newContextCallbacks []*func(c *neo.Context)
 }
 
-type ChannelOptions struct {
-	PersonIcon string
-	PersonName string
-	BotIcon    string
-	BotName    string
-	SaysSymbol string
-}
-
-func NewChannel(opts *ChannelOptions, fabric ...neocortex.ContextFabric) *Channel {
-	var f neocortex.ContextFabric
-	if len(fabric) > 0 {
-		f = fabric[0]
-	}
-
-	if opts == nil { // default
-		opts = &ChannelOptions{
-			PersonIcon: "😀",
-			PersonName: "User",
-			BotIcon:    "🤖",
-			BotName:    "Bot",
-			SaysSymbol: " >",
-		}
-	}
-	t := &Channel{
-		reader:     bufio.NewReader(os.Stdin),
-		options:    opts,
-		contexts:   map[int64]*neocortex.Context{},
-		newContext: f,
-	}
-
-	return t
-}
-func (term *Channel) getInput() string {
-	input, _ := term.reader.ReadString('\n')
-	input = input[:len(input)-1]
-	return input
-}
-
-func (term *Channel) renderUserInterface(done bool) error {
-	c, contextExist := term.contexts[uniqueUserID]
-	if !contextExist {
-		c = term.newContext(context.Background(), strconv.Itoa(uniqueUserID))
-		term.contexts[uniqueUserID] = c
-	}
-	if !done {
-		fmt.Printf("%s %s[sess:%s]%s ", term.options.PersonIcon, term.options.PersonName, c.SessionID, term.options.SaysSymbol)
-		inStr := term.getInput()
-		input := term.NewInputText(c, inStr, nil, nil)
-		err := term.messageIn(input, func(out *neocortex.Output) error {
-			for _, r := range out.Responses {
-				if r.Type == neocortex.Text {
-					fmt.Printf("%s %s[sess:%s]%s %s\n",
-						term.options.BotIcon,
-						term.options.BotName,
-						out.Context.SessionID,
-						term.options.SaysSymbol,
-						r.Value.(string),
-					)
-				}
-			}
-			return nil
-		})
-
-		if err != nil {
-			err := term.renderUserInterface(true)
-			if err != nil {
-				return err
-			}
-			return nil
-		}
-
-		err = term.renderUserInterface(false)
-		if err != nil {
-			return err
-		}
-		return nil
-	} else {
-		return nil
-	}
-
-}
-
-func (term *Channel) RegisterMessageEndpoint(handler neocortex.MiddleHandler) error {
+func (term *Channel) RegisterMessageEndpoint(handler neo.MiddleHandler) error {
 	term.messageIn = handler
 	return nil
 }
@@ -111,10 +23,17 @@ func (term *Channel) ToHear() error {
 	return term.renderUserInterface(false)
 }
 
-func (term *Channel) GetContextFabric() neocortex.ContextFabric {
+func (term *Channel) GetContextFabric() neo.ContextFabric {
 	return term.newContext
 }
 
-func (term *Channel) SetContextFabric(fabric neocortex.ContextFabric) {
+func (term *Channel) SetContextFabric(fabric neo.ContextFabric) {
 	term.newContext = fabric
+}
+
+func (term *Channel) OnNewContextCreated(callback func(c *neo.Context)) {
+	if term.newContextCallbacks == nil {
+		term.newContextCallbacks = []*func(c *neo.Context){}
+	}
+	term.newContextCallbacks = append(term.newContextCallbacks, &callback)
 }

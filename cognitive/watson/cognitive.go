@@ -54,6 +54,7 @@ func (watson *Cognitive) CreateNewContext(c *context.Context, info neo.PersonInf
 func (watson *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
 	var opts *assistantv2.MessageOptions
 	switch in.Data.Type {
+
 	// Watson only supports one type of input: InputText
 	case neo.InputText:
 		_, opts = watson.NewInputText(in.Context, in.Data.Value, in.Intents, in.Entities)
@@ -71,7 +72,6 @@ func (watson *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
 	}
 
 	response := watson.service.GetMessageResult(r)
-	// pp.Println(response)
 	out := watson.NewOutput(in.Context, response)
 
 	return out, nil

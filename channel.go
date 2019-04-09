@@ -5,4 +5,5 @@ type CommunicationChannel interface {
 	ToHear() error
 	GetContextFabric() ContextFabric // TODO: Rev
 	SetContextFabric(fabric ContextFabric)
+	OnNewContextCreated(callback func(c *Context))
 }
