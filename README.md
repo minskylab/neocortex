@@ -58,29 +58,35 @@ Currently, neocortex has 2 implementations of Cognitive Services (Useless-box cr
 package main
 
 import (
-    neo "github.com/bregydoc/neocortex"
-    "github.com/bregydoc/neocortex/channels/terminal"
-    "github.com/bregydoc/neocortex/cognitive/uselessbox"
+	neo "github.com/bregydoc/neocortex"
+	"github.com/bregydoc/neocortex/channels/terminal"
+	"github.com/bregydoc/neocortex/cognitive/uselessbox"
+	"github.com/bregydoc/neocortex/repositories/boltdb"
 )
 
 // Example of use useless box with terminal channel
 func main() {
-    box := uselessbox.NewCognitive()
-    term := terminal.NewChannel(nil)
-    
-    engine, err := neo.New(box, term)
-    if err != nil {
-        panic(err)
-    }
+	box := uselessbox.NewCognitive()
+	term := terminal.NewChannel(nil)
 
-    engine.ResolveAny(term, func(in *neo.Input, out *neo.Output, response neo.OutputResponse) error {
-        out.AddTextResponse("-----Watermark-----")
-        return response(out)
-    })
+	repo, err  := boltdb.New("neocortex.db")
+	if err != nil {
+		panic(err)
+	}
+	
+	engine, err := neo.New(repo, box, term)
+	if err != nil {
+		panic(err)
+	}
 
-    if err = engine.Run(); err != nil {
-        panic(err)
-    }
+	engine.ResolveAny(term, func(in *neo.Input, out *neo.Output, response neo.OutputResponse) error {
+		out.AddTextResponse("-----Watermark-----")
+		return response(out)
+	})
+
+	if err = engine.Run(); err != nil {
+		panic(err)
+	}
 }
 
 ```

@@ -4,6 +4,7 @@ import (
 	neo "github.com/bregydoc/neocortex"
 	"github.com/bregydoc/neocortex/channels/facebook"
 	"github.com/bregydoc/neocortex/cognitive/watson"
+	"github.com/bregydoc/neocortex/repositories/boltdb"
 )
 
 func main() {
@@ -27,7 +28,12 @@ func main() {
 		panic(err)
 	}
 
-	engine, err := neo.New(watsonAgent, fb)
+	repo, err := boltdb.New("neocortex.db")
+	if err != nil {
+		panic(err)
+	}
+
+	engine, err := neo.New(repo, watsonAgent, fb)
 
 	if err != nil {
 		panic(err)

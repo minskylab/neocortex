@@ -22,9 +22,9 @@ func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChann
 	return engine
 }
 
-func New(cognitive CognitiveService, channels ...CommunicationChannel) (*Engine, error) {
+func New(repository Repository, cognitive CognitiveService, channels ...CommunicationChannel) (*Engine, error) {
 	engine := newDefaultEngine(cognitive, channels...)
-
+	engine.Repository = repository
 	fabric := func(ctx context.Context, info PersonInfo) *Context {
 		return cognitive.CreateNewContext(&ctx, info)
 	}
