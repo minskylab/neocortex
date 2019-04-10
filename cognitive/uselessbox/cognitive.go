@@ -6,7 +6,9 @@ import (
 	"github.com/rs/xid"
 )
 
-type Cognitive struct{}
+type Cognitive struct {
+	doneContextCallbacks []*func(c *neo.Context)
+}
 
 func NewCognitive() *Cognitive {
 	return &Cognitive{}
@@ -27,4 +29,11 @@ func (useless *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
 		return nil, neo.ErrContextNotExist
 	}
 	return useless.NewOutputText(in.Context), nil
+}
+
+func (useless *Cognitive) OnContextIsDone(callback func(c *neo.Context)) {
+	if useless.doneContextCallbacks == nil {
+		useless.doneContextCallbacks = []*func(c *neo.Context){}
+	}
+	useless.doneContextCallbacks = append(useless.doneContextCallbacks, &callback)
 }

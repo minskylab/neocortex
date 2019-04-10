@@ -6,12 +6,13 @@ import (
 )
 
 type Channel struct {
-	reader              *bufio.Reader
-	options             *ChannelOptions
-	messageIn           neo.MiddleHandler      // req
-	newContext          neo.ContextFabric      // req
-	contexts            map[int64]*neo.Context // req
-	newContextCallbacks []*func(c *neo.Context)
+	reader               *bufio.Reader
+	options              *ChannelOptions
+	messageIn            neo.MiddleHandler      // req
+	newContext           neo.ContextFabric      // req
+	contexts             map[int64]*neo.Context // req
+	newContextCallbacks  []*func(c *neo.Context)
+	doneContextCallbacks []*func(c *neo.Context)
 }
 
 func (term *Channel) RegisterMessageEndpoint(handler neo.MiddleHandler) error {
@@ -36,4 +37,11 @@ func (term *Channel) OnNewContextCreated(callback func(c *neo.Context)) {
 		term.newContextCallbacks = []*func(c *neo.Context){}
 	}
 	term.newContextCallbacks = append(term.newContextCallbacks, &callback)
+}
+
+func (term *Channel) OnContextIsDone(callback func(c *neo.Context)) {
+	if term.doneContextCallbacks == nil {
+		term.doneContextCallbacks = []*func(c *neo.Context){}
+	}
+	term.doneContextCallbacks = append(term.doneContextCallbacks, &callback)
 }

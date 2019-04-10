@@ -21,4 +21,5 @@ type Engine struct {
 	generalResolver     map[CommunicationChannel]*HandleResolver
 	sessions            map[string]*Context
 	Repository          Repository
+	ActiveDialogs       map[*Context]*Dialog
 }

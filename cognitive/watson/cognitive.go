@@ -7,8 +7,9 @@ import (
 )
 
 type Cognitive struct {
-	service     *assistantv2.AssistantV2
-	assistantID string
+	service              *assistantv2.AssistantV2
+	assistantID          string
+	doneContextCallbacks []*func(c *neo.Context)
 }
 
 type NewCognitiveParams struct {
@@ -63,11 +64,18 @@ func (watson *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
 	}
 
 	r, err := watson.service.Message(opts)
+
 	if err != nil {
+		for _, call := range watson.doneContextCallbacks {
+			(*call)(in.Context)
+		}
 		return nil, neo.ErrSessionNotExist
 	}
 
 	if r.StatusCode != 200 {
+		for _, call := range watson.doneContextCallbacks {
+			(*call)(in.Context)
+		}
 		return nil, neo.ErrInvalidResponseFromCognitiveService
 	}
 
@@ -76,4 +84,11 @@ func (watson *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
 
 	return out, nil
 
+}
+
+func (watson *Cognitive) OnContextIsDone(callback func(c *neo.Context)) {
+	if watson.doneContextCallbacks == nil {
+		watson.doneContextCallbacks = []*func(c *neo.Context){}
+	}
+	watson.doneContextCallbacks = append(watson.doneContextCallbacks, &callback)
 }

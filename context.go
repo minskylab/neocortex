@@ -1,6 +1,8 @@
 package neocortex
 
-import "context"
+import (
+	"context"
+)
 
 type PersonInfo struct {
 	ID       string `json:"id"`
