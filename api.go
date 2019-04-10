@@ -49,6 +49,6 @@ func (api *API) Launch() error {
 		}
 		c.JSON(http.StatusOK, dialogs)
 	})
-	log.Println("\nAPI listening at " + api.Port)
+	log.Println("API listening at " + api.Port)
 	return api.engine.Run(api.Port)
 }
