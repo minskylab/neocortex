@@ -8,15 +8,15 @@ const InputImage InputType = "image"
 const InputEmoji InputType = "emoji"
 
 type InputData struct {
-	Type  InputType
-	Value string
-	Data  []byte
+	Type  InputType `json:"type"`
+	Value string    `json:"value"`
+	Data  []byte    `json:"data"`
 }
 
 // Input represent an Input for the cognitive service
 type Input struct {
-	Context  *Context
-	Data     InputData
-	Entities []Entity
-	Intents  []Intent
+	Context  *Context  `json:"context"`
+	Data     InputData `json:"data"`
+	Entities []Entity  `json:"entities"`
+	Intents  []Intent  `json:"intents"`
 }

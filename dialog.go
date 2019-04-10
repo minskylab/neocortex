@@ -4,8 +4,8 @@ import (
 	"time"
 )
 
-type TimelineOutputs map[time.Time]Output
-type TimelineInputs map[time.Time]Input
+type TimelineOutputs map[time.Time]*Output
+type TimelineInputs map[time.Time]*Input
 
 type Dialog struct {
 	ID      string          `json:"id"`

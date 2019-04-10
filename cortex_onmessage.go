@@ -1,12 +1,13 @@
 package neocortex
 
 import (
-	"reflect"
+	"time"
 )
 
 func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, response OutputResponse) error {
-	entry := engine.logger.WithField("from", reflect.ValueOf(channel).Type())
-	entry.Debug("new message in")
+
+	engine.ActiveDialogs[in.Context].Ins[time.Now()] = in
+
 	out, err := engine.cognitive.GetProtoResponse(in)
 	if err != nil {
 		if err == ErrSessionNotExist {
@@ -34,6 +35,7 @@ func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, respon
 			if err = (*resolver)(in, out, response); err != nil {
 				return err
 			}
+			engine.ActiveDialogs[in.Context].Outs[time.Now()] = out
 			exist = true
 		}
 	}
@@ -42,6 +44,7 @@ func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, respon
 		if err = (*engine.generalResolver[*channel])(in, out, response); err != nil {
 			return err
 		}
+		engine.ActiveDialogs[in.Context].Outs[time.Now()] = out
 	}
 
 	return nil

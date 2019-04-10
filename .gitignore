@@ -13,3 +13,4 @@
 examples_
 .idea
 .idea
+*.db

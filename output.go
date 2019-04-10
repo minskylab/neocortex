@@ -23,17 +23,17 @@ const Suggestion ResponseType = "suggestion"
 const Unknown ResponseType = "unknown"
 
 type Response struct {
-	IsTyping bool
-	Type     ResponseType
-	Value    interface{} // TODO: Evaluate
+	IsTyping bool         `json:"is_typing"`
+	Type     ResponseType `json:"type"`
+	Value    interface{}  `json:"value"`
 }
 
 // Output represents the response of an input from the cognitive service
 type Output struct {
-	Context      *Context
-	Entities     []Entity
-	Intents      []Intent
-	VisitedNodes []*DialogNode
-	Logs         []*LogMessage
-	Responses    []Response
+	Context      *Context      `json:"context"`
+	Entities     []Entity      `json:"entities"`
+	Intents      []Intent      `json:"intents"`
+	VisitedNodes []*DialogNode `json:"visited_nodes"`
+	Logs         []*LogMessage `json:"logs"`
+	Responses    []Response    `json:"responses"`
 }

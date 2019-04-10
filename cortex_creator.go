@@ -2,6 +2,7 @@ package neocortex
 
 import (
 	"context"
+	"github.com/gin-gonic/gin"
 	"os"
 	"os/signal"
 
@@ -25,6 +26,14 @@ func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChann
 func New(repository Repository, cognitive CognitiveService, channels ...CommunicationChannel) (*Engine, error) {
 	engine := newDefaultEngine(cognitive, channels...)
 	engine.Repository = repository
+	gin.SetMode(gin.ReleaseMode)
+	engine.api = API{
+		engine:     gin.New(),
+		repository: repository,
+		prefix:     "/api",
+		Port:       ":4200",
+	}
+
 	fabric := func(ctx context.Context, info PersonInfo) *Context {
 		return cognitive.CreateNewContext(&ctx, info)
 	}
@@ -74,6 +83,9 @@ func (engine *Engine) Run() error {
 			engine.OnContextIsDone(d.Context)
 		}
 		engine.done <- nil
+	}()
+	go func() {
+		engine.done <- engine.api.Launch()
 	}()
 	return <-engine.done
 }

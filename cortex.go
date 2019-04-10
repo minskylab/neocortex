@@ -24,6 +24,7 @@ type Engine struct {
 	sessions            map[string]*Context
 	Repository          Repository
 	ActiveDialogs       map[*Context]*Dialog
+	api                 API
 }
 
 func (engine *Engine) OnNewContextCreated(c *Context) {
