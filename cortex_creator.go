@@ -2,11 +2,11 @@ package neocortex
 
 import (
 	"context"
+	"os"
+	"os/signal"
 
-	"github.com/rs/xid"
 	"github.com/sirupsen/logrus"
 	"reflect"
-	"time"
 )
 
 func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChannel) *Engine {
@@ -30,12 +30,7 @@ func New(repository Repository, cognitive CognitiveService, channels ...Communic
 	}
 
 	cognitive.OnContextIsDone(func(c *Context) {
-		engine.ActiveDialogs[c].EndAt = time.Now()
-		_, err := engine.Repository.SaveNewDialog(engine.ActiveDialogs[c])
-		delete(engine.ActiveDialogs, c)
-		if err != nil {
-			engine.done <- err
-		}
+		engine.OnContextIsDone(c)
 	})
 
 	for _, ch := range channels {
@@ -52,16 +47,12 @@ func New(repository Repository, cognitive CognitiveService, channels ...Communic
 		}
 
 		ch.OnNewContextCreated(func(c *Context) {
-			engine.ActiveDialogs[c] = &Dialog{
-				ID:      xid.New().String(),
-				Context: c,
-				StartAt: time.Now(),
-				EndAt:   time.Time{},
-				Ins:     TimelineInputs{},
-				Outs:    TimelineOutputs{},
-			}
+			engine.OnNewContextCreated(c)
 		})
 
+		ch.OnContextIsDone(func(c *Context) {
+			engine.OnContextIsDone(c)
+		})
 		go func(ch CommunicationChannel) {
 			err := ch.ToHear()
 			if err != nil {
@@ -74,5 +65,15 @@ func New(repository Repository, cognitive CognitiveService, channels ...Communic
 }
 
 func (engine *Engine) Run() error {
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt)
+	go func() {
+		<-signalChan
+		engine.logger.Infoln("Closing all dialogs")
+		for _, d := range engine.ActiveDialogs {
+			engine.OnContextIsDone(d.Context)
+		}
+		engine.done <- nil
+	}()
 	return <-engine.done
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/bregydoc/neocortex/channels/terminal"
 	"github.com/bregydoc/neocortex/cognitive/uselessbox"
 	"github.com/bregydoc/neocortex/repositories/boltdb"
+	"github.com/k0kubun/pp"
 )
 
 // Example of use useless box with terminal channel
@@ -21,6 +22,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	d, err := repo.GetAllDialogs()
+	if err != nil {
+		panic(err)
+	}
+
+	pp.Println(d[0])
 
 	engine.ResolveAny(term, func(in *neo.Input, out *neo.Output, response neo.OutputResponse) error {
 		out.AddTextResponse("-----Watermark-----")
