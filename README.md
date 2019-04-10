@@ -2,13 +2,13 @@
 
 Neocortex is a tool to connect your cognitive service with your services and communication channels.
 
-The main goal of neocortex is offer a reliable and modern api to connect any kind of cognitive service* with any communication channel**. 
+The main goal of neocortex is offered a reliable and modern API to connect any kind of cognitive service* with any communication channel**. 
 
-*Currently neocortex offers only two cognitive services: Watson and a simple Uselessbox as dummy service, you can collaborate to implement another cognitive services like DialogFlow or Amazon Lex, later I'm going to documment how to implement this services but you can read the source code to understand how to.
+*Currently neocortex offers only two cognitive services: Watson and a simple Useless box as dummy service, you can collaborate to implement another cognitive service like DialogFlow or Amazon Lex, later I'm going to document how to implement this services but you can read the source code to understand how to.
 
-**Like cognitive services, I could only implement only two channels: Facebook Messenger and a simple Terminal chat (very simple to emulate a chat in your terminal), if you want you can collaborate implementing another channels like Slack, Whatsapp or Gmail, for example.
+**Like cognitive services, I could only implement only two channels: Facebook Messenger and a simple Terminal chat (very simple to emulate a chat in your terminal), if you want you can collaborate implementing other channels like Slack, Whatsapp or Gmail, for example.
 
-*🚧 Neocortex is work in progress, it pretends to be a big collaboratibe project*
+*🚧 Neocortex is work in progress, it pretends to be a big collaborative project*
 
 ###  TODO
 
@@ -22,7 +22,7 @@ The main goal of neocortex is offer a reliable and modern api to connect any kin
 
 - [ ] Write unit tests
 
-- [ ] Make a iteration of the Communication channel's architecture 
+- [ ] Make an iteration of the Communication channel's architecture 
 
 - [ ] Think more in the Cognitive's orientation (paradigm, architecture, etc)
 
@@ -30,7 +30,7 @@ The main goal of neocortex is offer a reliable and modern api to connect any kin
 
 - [ ] Write the Gmail channel implementation
 
-- [ ] Write the Dialogflow service implementation
+- [ ] Write the Dialog flow service implementation
 
 - [ ] Improve facebook messenger API
 
@@ -46,7 +46,7 @@ Install with:
 
 ```go get -u github.com/bregydoc/neocortex```
 
-Currently neocortex have 2 implementations of Cognitive Services (Useless-box and Watson Assistant based on the [watson official api v2](https://github.com/watson-developer-cloud/go-sdk)) and 2 implementation of Communication Channels (Terminal based UI and Facebook Messenger forked from [Facebook-messenger API](https://github.com/mileusna/facebook-messenger) by [mileusna](https://github.com/mileusna)).
+Currently, neocortex has 2 implementations of Cognitive Services (Useless-box and Watson Assistant based on the [watson official API v2](https://github.com/watson-developer-cloud/go-sdk)) and 2 implementations of Communication Channels (Terminal based UI and Facebook Messenger forked from [Facebook-messenger API](https://github.com/mileusna/facebook-messenger) by [mileusna](https://github.com/mileusna)).
 
 ### Basic Example
 
@@ -54,42 +54,42 @@ Currently neocortex have 2 implementations of Cognitive Services (Useless-box an
 package main
 
 import (
-	neo "github.com/bregydoc/neocortex"
-	"github.com/bregydoc/neocortex/channels/terminal"
-	"github.com/bregydoc/neocortex/cognitive/uselessbox"
+    neo "github.com/bregydoc/neocortex"
+    "github.com/bregydoc/neocortex/channels/terminal"
+    "github.com/bregydoc/neocortex/cognitive/uselessbox"
 )
 
 // Example of use useless box with terminal channel
 func main() {
-	box := uselessbox.NewCognitive()
-	term := terminal.NewChannel(nil)
-	
-	engine, err := neo.New(box, term)
-	if err != nil {
-		panic(err)
-	}
+    box := uselessbox.NewCognitive()
+    term := terminal.NewChannel(nil)
+    
+    engine, err := neo.New(box, term)
+    if err != nil {
+        panic(err)
+    }
 
-	engine.ResolveAny(term, func(in *neo.Input, out *neo.Output, response neo.OutputResponse) error {
-		out.AddTextResponse("-----Watermark-----")
-		return response(out)
-	})
+    engine.ResolveAny(term, func(in *neo.Input, out *neo.Output, response neo.OutputResponse) error {
+        out.AddTextResponse("-----Watermark-----")
+        return response(out)
+    })
 
-	if err = engine.Run(); err != nil {
-		panic(err)
-	}
+    if err = engine.Run(); err != nil {
+        panic(err)
+    }
 }
 
 ```
 
 ## Paradigm
 
-Neocortex is like a middleware with a mux, with it you can catch your message input, pass to your cognitive service, inflate or modify them and response.
+Neocortex is like a middleware with a mux, with it you can catch your message input, pass to your cognitive service, inflate or modify them and respond.
 
 ### Concepts
 
 1. **Cognitive Service**
 
-   Represents a any service that decode and find intents and entities in a human message. In neocortex this is described by a simple interface.
+   Represents any service that decodes and find intents and entities in a human message. In neocortex, this is described by a simple interface.
 
    ```go
    type CognitiveService interface {
@@ -102,7 +102,7 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
 
 2. **Communication Channel**
 
-   A Communication Channel is any human interface where a person can to send a message and receive a response. Currently I think we need to work more in the paradigm behind Communication channels. In neocortex a communication channel is described by the following interface:
+   A Communication Channel is any human interface where a person can to send a message and receive a response. Currently, I think we need to work more in the paradigm behind Communication channels. In neocortex a communication channel is described by the following interface:
 
    ```go
    type CommunicationChannel interface {
@@ -118,7 +118,7 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
 
 3. **Context**
 
-   Neocortex's Context represents a "session" or "dialog" with a human, it contains essencial information about the person with we're conversation.
+   Neocortex's Context represents a "session" or "dialog" with a human, it contains essential information about the person with we're a conversation.
 
    ```go
    // Context represent the context of one conversation
@@ -132,7 +132,7 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
 
 4. **Input**
 
-   An input is a message input, that's all. An input have a specified type and in neocortex is a struct:
+   An input is a message input, that's all. Input has a specified type and in the neocortex is a struct:
 
    ```go
    type Input struct {
@@ -147,7 +147,7 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
 
 5. **Output**
 
-   An output represents a response in a conversation, with this you can define the response to your communication channel (e.g. facebook messenger) and if your channel allow you can responde different types of response (e.g. Image, Audio,  Attachment, etc).
+   An output represents a response in a conversation, with this you can define the response to your communication channel (e.g. facebook messenger) and if your channel allows you can respond different types of response (e.g. Image, Audio,  Attachment, etc).
 
    ```go
    type Output struct {
@@ -160,15 +160,15 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
    }
    
    type Response struct {
-   	IsTyping bool
-   	Type     neocortex.ResponseType
-   	Value    interface{}
+       IsTyping bool
+       Type     neocortex.ResponseType
+       Value    interface{}
    }
    ```
 
 6. **Engine**
 
-   This is the core of neocortex it can to connect and manage your Cognitive service and your Communication channels. the engine have a different methods for intercept a message and modify it.
+   This is the core of neocortex it can to connect and manage your Cognitive service and your Communication channels. the engine has different methods for intercept a message and modifies it.
 
    ```go
    // Create a New neocortex Engine
@@ -179,15 +179,15 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
    
    // Maatcher
    type Matcher struct {
-   	Entity Match
-   	Intent Match
-   	AND    *Matcher
-   	OR     *Matcher
+       Entity Match
+       Intent Match
+       AND    *Matcher
+       OR     *Matcher
    }
    // Match
    type Match struct {
-   	Is         string
-   	Confidence float64
+       Is         string
+       Confidence float64
    }
    ```
 
@@ -195,13 +195,13 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
 
 7. **Resolver**
 
-   This is core of the neocortex paradigm, with this you can intercept message and modify or only bypass it. You need to pass a Matcher who is used to match with your message inputs, you can see below how looks like a Matcher struct. Above you can see two examples of a matcher:
+   This is the core of the neocortex paradigm, with this you can intercept a message and modify or only bypass it. You need to pass a Matcher who is used to match with your message inputs, you can see below how looks like a Matcher struct. Above you can see two examples of a matcher:
 
    ```go
-   // match if the input have a Regard or Goodbye intents
-   match := neo.Matcher{Intent: neo.Match{Is: "REGARD"}, OR: &neo.Matcher{Intent: neo.Match{Is: "GOODBYE"}}}
+   // match if the input has a Regard or Goodbye intents 
+match:= neo.Matcher{Intent: neo.Match{Is: "REGARD"}, OR: &neo.Matcher{Intent: neo.Match{Is: "GOODBYE"}}}
    
-   // match if the input is an insult intent and have a bad_word entity
+   // match if the input is an insult intent and has a bad_word entity
    match := neo.Matcher{
      Intent: neo.Match{Is:"INSULT", Confidence: 0.8}, 
      AND: &neo.Matcher{
@@ -212,7 +212,7 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
    }
    ```
 
-   Register a new resolver is simple, see the follow example above
+   Register a new resolver is simple, see the following example above
 
    ```go
    match := neo.Matcher{Intent: neo.Match{Is:"HELLO", Confidence: 0.8}}
@@ -222,7 +222,7 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
    })
    ```
 
-   You can make another types of Resolves.
+   You can make another type of Resolves.
 
    ```go
    func (engine *Engine) ResolveAny(channel CommunicationChannel, handler HandleResolver) 
@@ -236,8 +236,5 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
 🚧 Work in progress documentation, if you want to help, only send me an email.
 
 
-
 ![love open source](https://github.com/bregydoc/torioux-hands/raw/master/I_love_opensource.png)
-
-
 
