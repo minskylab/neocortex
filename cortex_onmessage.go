@@ -5,9 +5,10 @@ import (
 )
 
 func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, response OutputResponse) error {
-
-	engine.ActiveDialogs[in.Context].Ins[time.Now()] = in
-
+	_, activeDialogExist := engine.ActiveDialogs[in.Context]
+	if activeDialogExist {
+		engine.ActiveDialogs[in.Context].Ins[time.Now()] = in
+	}
 	out, err := engine.cognitive.GetProtoResponse(in)
 	if err != nil {
 		if err == ErrSessionNotExist {
