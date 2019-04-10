@@ -2,6 +2,7 @@ package neocortex
 
 import (
 	"context"
+
 	"github.com/rs/xid"
 	"github.com/sirupsen/logrus"
 	"reflect"
@@ -16,13 +17,14 @@ func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChann
 	engine.generalResolver = map[CommunicationChannel]*HandleResolver{}
 	engine.done = make(chan error, 1)
 	engine.logger = logrus.StandardLogger()
-	engine.logger.SetLevel(logrus.DebugLevel)
-
+	// engine.logger.SetLevel(logrus.DebugLevel)
+	engine.ActiveDialogs = map[*Context]*Dialog{}
 	return engine
 }
 
 func New(cognitive CognitiveService, channels ...CommunicationChannel) (*Engine, error) {
 	engine := newDefaultEngine(cognitive, channels...)
+
 	fabric := func(ctx context.Context, info PersonInfo) *Context {
 		return cognitive.CreateNewContext(&ctx, info)
 	}
@@ -54,7 +56,7 @@ func New(cognitive CognitiveService, channels ...CommunicationChannel) (*Engine,
 				ID:      xid.New().String(),
 				Context: c,
 				StartAt: time.Now(),
-				EndAt:   nil,
+				EndAt:   time.Time{},
 				Ins:     TimelineInputs{},
 				Outs:    TimelineOutputs{},
 			}
