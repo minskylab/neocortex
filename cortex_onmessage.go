@@ -26,7 +26,7 @@ func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, respon
 
 	exist := false
 	for m, resolver := range resolvers {
-		if match(out, &m) {
+		if out.Match(&m) {
 			if err = (*resolver)(in, out, response); err != nil {
 				return err
 			}

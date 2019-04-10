@@ -12,22 +12,22 @@ type Matcher struct {
 	OR     *Matcher
 }
 
-func match(output *Output, matcher *Matcher) bool {
+func (out *Output) Match(matcher *Matcher) bool {
 	ok := false
-	for _, i := range output.Intents {
+	for _, i := range out.Intents {
 		if i.Intent == matcher.Intent.Is && i.Confidence > matcher.Intent.Confidence {
 			ok = true
 		}
 	}
 
-	for _, e := range output.Entities {
+	for _, e := range out.Entities {
 		if e.Entity == matcher.Entity.Is && e.Confidence > matcher.Entity.Confidence {
 			ok = true
 		}
 	}
 
 	if matcher.AND != nil {
-		if match(output, matcher.AND) && ok {
+		if out.Match(matcher.AND) && ok {
 			ok = true
 		} else {
 			ok = false
@@ -35,7 +35,7 @@ func match(output *Output, matcher *Matcher) bool {
 	}
 
 	if matcher.OR != nil {
-		if match(output, matcher.OR) || ok {
+		if out.Match(matcher.OR) || ok {
 			ok = true
 		} else {
 			ok = false
