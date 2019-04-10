@@ -9,11 +9,15 @@ func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, respon
 	entry.Debug("new message in")
 	out, err := engine.cognitive.GetProtoResponse(in)
 	if err != nil {
-		entry.WithField("error", err).Debug("error launched")
 		if err == ErrSessionNotExist {
-			// TODO: Check above later, it's so strange
 			f := (*channel).GetContextFabric()
-			f(*in.Context.Context, in.Context.Person)
+			// Creating new context
+			c := f(*in.Context.Context, in.Context.Person)
+			in.Context = c
+			out, err = engine.cognitive.GetProtoResponse(in)
+			if err != nil {
+				return err
+			}
 		} else {
 			return err
 		}
