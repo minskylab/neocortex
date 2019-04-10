@@ -11,6 +11,7 @@ The main goal of neocortex is offered a reliable and modern API to connect any k
 *🚧 Neocortex is work in progress, it pretends to be a big collaborative project*
 
 ###  TODO
+- [x] Think the paradigm and write the first types of neocortex.
 
 - [x] Describe a Cognitive Service interface (`type CognitiveService interface`)
 
@@ -19,6 +20,10 @@ The main goal of neocortex is offered a reliable and modern API to connect any k
 - [x] Implement the Watson cognitive service 
 
 - [x] Implement the Facebook channel
+
+- [ ] Implement persistence contexts and dialog sessions
+
+- [ ] Implement analytics reports
 
 - [ ] Write unit tests
 
@@ -38,7 +43,6 @@ The main goal of neocortex is offered a reliable and modern API to connect any k
 
 - [ ] Document more more!
 
-  
 
 ## Install
 
