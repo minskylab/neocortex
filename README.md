@@ -84,6 +84,7 @@ func main() {
 }
 
 ```
+You can see more examples [here](https://github.com/bregydoc/neocortex/tree/master/examples).
 
 ## Paradigm
 
