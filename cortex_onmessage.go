@@ -44,7 +44,10 @@ func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, respon
 		if err = (*engine.generalResolver[*channel])(in, out, response); err != nil {
 			return err
 		}
-		engine.ActiveDialogs[in.Context].Outs[time.Now()] = out
+		_, activeDialogExist := engine.ActiveDialogs[in.Context]
+		if activeDialogExist {
+			engine.ActiveDialogs[in.Context].Outs[time.Now()] = out
+		}
 	}
 
 	return nil
