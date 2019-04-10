@@ -8,7 +8,7 @@ The main goal of neocortex is offer a reliable and modern api to connect any kin
 
 **Like cognitive services, I could only implement only two channels: Facebook Messenger and a simple Terminal chat (very simple to emulate a chat in your terminal), if you want you can collaborate implementing another channels like Slack, Whatsapp or Gmail, for example.
 
-*Neocortex is work in progress, it pretends to be a big collaboratibe project*
+*🚧 Neocortex is work in progress, it pretends to be a big collaboratibe project*
 
 ###  TODO
 
@@ -233,7 +233,7 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
 
 
 
-🚧 Work in progress documentation, if you can help, only send me an email.
+🚧 Work in progress documentation, if you want to help, only send me an email.
 
 
 
