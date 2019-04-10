@@ -200,41 +200,41 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
 
 7. **Resolver**
 
-   This is the core of the neocortex paradigm, with this you can intercept a message and modify or only bypass it. You need to pass a Matcher who is used to match with your message inputs, you can see below how looks like a Matcher struct. Above you can see two examples of a matcher:
+This is the core of the neocortex paradigm, with this you can intercept a message and modify or only bypass it. You need to pass a Matcher who is used to match with your message inputs, you can see below how looks like a Matcher struct. Above you can see two examples of a matcher:
 
-   ```go
-   // match if the input has a Regard or Goodbye intents 
-match:= neo.Matcher{Intent: neo.Match{Is: "REGARD"}, OR: &neo.Matcher{Intent: neo.Match{Is: "GOODBYE"}}}
-   
-   // match if the input is an insult intent and has a bad_word entity
-   match := neo.Matcher{
-     Intent: neo.Match{Is:"INSULT", Confidence: 0.8}, 
-     AND: &neo.Matcher{
-       Entity: neo.Match{
-         Is: "bad_word",
-       },
-     },
-   }
-   ```
+```go
+// match if the input has a Regard or Goodbye intents 
+match := neo.Matcher{Intent: neo.Match{Is: "REGARD"}, OR: &neo.Matcher{Intent: neo.Match{Is: "GOODBYE"}}}
 
-   Register a new resolver is simple, see the following example above
+// match if the input is an insult intent and has a bad_word entity
+match := neo.Matcher{
+ Intent: neo.Match{Is:"INSULT", Confidence: 0.8}, 
+ AND: &neo.Matcher{
+   Entity: neo.Match{
+     Is: "bad_word",
+   },
+ },
+}
+```
 
-   ```go
-   match := neo.Matcher{Intent: neo.Match{Is:"HELLO", Confidence: 0.8}}
-   engine.Resolve(fb, match, func(in *neo.Input, out *neo.Output, response neo.OutputResponse) error {
-      out.AddTextResponse("Powered by neocortex")
-      return response(out)
-   })
-   ```
+Register a new resolver is simple, see the following example above
 
-   You can make another type of Resolves.
+```go
+match := neo.Matcher{Intent: neo.Match{Is:"HELLO", Confidence: 0.8}}
+engine.Resolve(fb, match, func(in *neo.Input, out *neo.Output, response neo.OutputResponse) error {
+  out.AddTextResponse("Powered by neocortex")
+  return response(out)
+})
+```
 
-   ```go
-   func (engine *Engine) ResolveAny(channel CommunicationChannel, handler HandleResolver) 
-   func (engine *Engine) Resolve(channel CommunicationChannel, matcher Matcher, handler HandleResolver)
-   func (engine *Engine) ResolveMany(channels []CommunicationChannel, matcher Matcher, handler HandleResolver)
-   func (engine *Engine) ResolveManyAny(channels []CommunicationChannel, handler HandleResolver)
-   ```
+You can make another type of Resolves.
+
+```go
+func (engine *Engine) ResolveAny(channel CommunicationChannel, handler HandleResolver) {}
+func (engine *Engine) Resolve(channel CommunicationChannel, matcher Matcher, handler HandleResolver) {}
+func (engine *Engine) ResolveMany(channels []CommunicationChannel, matcher Matcher, handler HandleResolver) {}
+func (engine *Engine) ResolveManyAny(channels []CommunicationChannel, handler HandleResolver) {}
+```
 
 
 
