@@ -46,7 +46,7 @@ Install with:
 
 ```go get -u github.com/bregydoc/neocortex```
 
-Currently, neocortex has 2 implementations of Cognitive Services (Useless-box and Watson Assistant based on the [watson official API v2](https://github.com/watson-developer-cloud/go-sdk)) and 2 implementations of Communication Channels (Terminal based UI and Facebook Messenger forked from [Facebook-messenger API](https://github.com/mileusna/facebook-messenger) by [mileusna](https://github.com/mileusna)).
+Currently, neocortex has 2 implementations of Cognitive Services (Useless-box created by me and Watson Assistant based on the [watson official API v2](https://github.com/watson-developer-cloud/go-sdk)) and 2 implementations of Communication Channels (Terminal based UI written by me and Facebook Messenger forked from [Facebook-messenger API](https://github.com/mileusna/facebook-messenger) by [mileusna](https://github.com/mileusna)).
 
 ### Basic Example
 
