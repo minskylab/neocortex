@@ -33,6 +33,14 @@ func (api *API) Launch() error {
 		until, _ := time.Parse(time.RFC3339, c.Query("until"))
 		sessionID := c.Query("session")
 		timezone := c.Query("timezone")
+		batch, _ := strconv.Atoi(c.DefaultQuery("items", "10"))
+		page, _ := strconv.Atoi(c.DefaultQuery("items", "1"))
+		if page <= 0 {
+			page = 1
+		}
+		if batch <= 0 {
+			batch = 10
+		}
 
 		dialogs, err := api.repository.GetDialogs(DialogFilter{
 			Limit:     int64(limit),
@@ -47,7 +55,11 @@ func (api *API) Launch() error {
 			c.JSON(http.StatusInternalServerError, err)
 			return
 		}
-		c.JSON(http.StatusOK, dialogs)
+		page -= 1
+		length := len(dialogs)
+		f := length * page / batch
+		t := length*page/batch + batch
+		c.JSON(http.StatusOK, dialogs[f:t])
 	})
 	log.Println("API listening at " + api.Port)
 	return api.engine.Run(api.Port)
