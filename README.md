@@ -21,11 +21,11 @@ The main goal of neocortex is offered a reliable and modern API to connect any k
 
 - [x] Implement the Facebook channel
 
-- [ ] Implement persistence contexts and dialog sessions
+- [x] Implement persistence contexts and dialog sessions
 
-- [ ] Implement analytics reports
+- [x] Implement analytics reports
 
-- [ ] Write unit tests
+- [ ] Write unit tests // working on
 
 - [ ] Make an iteration of the Communication channel's architecture 
 

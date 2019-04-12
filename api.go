@@ -58,7 +58,7 @@ func (api *API) Launch() error {
 		page -= 1
 		length := len(dialogs)
 		f := length * page / batch
-		t := length*page/batch + batch
+		t := f + batch
 		c.JSON(http.StatusOK, dialogs[f:t])
 	})
 	log.Println("API listening at " + api.Port)
