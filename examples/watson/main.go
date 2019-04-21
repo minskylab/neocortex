@@ -26,7 +26,7 @@ func main() {
 		panic(err)
 	}
 
-	engine, err := neo.Default(repo, watsonAgent, fb)
+	engine, err := neo.Default(repo, watsonAgent, term)
 	if err != nil {
 		panic(err)
 	}
