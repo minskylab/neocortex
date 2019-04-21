@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	neo "github.com/bregydoc/neocortex"
-	"github.com/k0kubun/pp"
 	"os"
 	"strconv"
 )
@@ -58,7 +57,7 @@ func (term *Channel) renderUserInterface(done bool) error {
 			ID:   strconv.Itoa(uniqueUserID),
 			Name: "Jhon Doe",
 		})
-		pp.Println("term.newContextCallbacks", len(term.newContextCallbacks))
+
 		for _, call := range term.newContextCallbacks {
 			(*call)(c)
 		}

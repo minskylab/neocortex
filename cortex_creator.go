@@ -2,12 +2,9 @@ package neocortex
 
 import (
 	"context"
-	"github.com/gin-gonic/gin"
+
 	"os"
 	"os/signal"
-
-	"github.com/sirupsen/logrus"
-	"reflect"
 )
 
 func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChannel) *Engine {
@@ -17,18 +14,15 @@ func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChann
 	engine.registeredResolvers = map[CommunicationChannel]map[Matcher]*HandleResolver{}
 	engine.generalResolver = map[CommunicationChannel]*HandleResolver{}
 	engine.done = make(chan error, 1)
-	engine.logger = logrus.StandardLogger()
-	// engine.logger.SetLevel(logrus.DebugLevel)
+	// engine.logger = logrus.StandardLogger() // In the future
 	engine.ActiveDialogs = map[*Context]*Dialog{}
 	return engine
 }
 
-func New(repository Repository, cognitive CognitiveService, channels ...CommunicationChannel) (*Engine, error) {
+func Default(repository Repository, cognitive CognitiveService, channels ...CommunicationChannel) (*Engine, error) {
 	engine := newDefaultEngine(cognitive, channels...)
 	engine.Repository = repository
-	gin.SetMode(gin.ReleaseMode)
 	engine.api = API{
-		engine:     gin.New(),
 		repository: repository,
 		prefix:     "/api",
 		Port:       ":4200",
@@ -43,7 +37,7 @@ func New(repository Repository, cognitive CognitiveService, channels ...Communic
 	})
 
 	for _, ch := range channels {
-		engine.logger.Debug("Registering channel ", reflect.ValueOf(ch).Type())
+		// engine.logger.Debug("Registering channel ", reflect.ValueOf(ch).Type())
 		engine.registeredResolvers[ch] = map[Matcher]*HandleResolver{}
 
 		ch.SetContextFabric(fabric)
@@ -78,7 +72,7 @@ func (engine *Engine) Run() error {
 	signal.Notify(signalChan, os.Interrupt)
 	go func() {
 		<-signalChan
-		engine.logger.Infoln("Closing all dialogs")
+		// engine.logger.Infoln("Closing all dialogs")
 		for _, d := range engine.ActiveDialogs {
 			engine.OnContextIsDone(d.Context)
 		}

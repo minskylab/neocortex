@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/asdine/storm"
 	"github.com/rs/xid"
-	"github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -14,7 +13,6 @@ type MiddleHandler func(message *Input, response OutputResponse) error
 type ContextFabric func(ctx context.Context, info PersonInfo) *Context
 
 type Engine struct {
-	logger              *logrus.Logger
 	db                  *storm.DB
 	done                chan error
 	cognitive           CognitiveService

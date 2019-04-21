@@ -22,7 +22,7 @@ func main() {
 		panic(err)
 	}
 
-	engine, err := neo.New(repo, box, fb)
+	engine, err := neo.Default(repo, box, fb)
 
 	if err != nil {
 		panic(err)
