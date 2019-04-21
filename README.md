@@ -2,7 +2,7 @@
 
 Neocortex is a tool to connect your cognitive service with your services and communication channels.
 
-The main goal of neocortex is offered a reliable and modern API to connect any kind of cognitive service* with any communication channel**. 
+The main goal of neocortex is offers a reliable and modern API to connect any kind of cognitive service* with any communication channel**. 
 
 *Currently neocortex offers only two cognitive services: Watson and a simple Useless box as dummy service, you can collaborate to implement another cognitive service like DialogFlow or Amazon Lex, later I'm going to document how to implement this services but you can read the source code to understand how to.
 
@@ -24,6 +24,8 @@ The main goal of neocortex is offered a reliable and modern API to connect any k
 - [x] Implement persistence contexts and dialog sessions
 
 - [x] Implement analytics reports
+
+- [x] MongoDB repository driver
 
 - [ ] Write unit tests // working on
 
