@@ -3,7 +3,6 @@ package watson
 import (
 	"context"
 	neo "github.com/bregydoc/neocortex"
-	"github.com/k0kubun/pp"
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
 
@@ -80,9 +79,8 @@ func (watson *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
 		return nil, neo.ErrInvalidResponseFromCognitiveService
 	}
 
-	pp.Println("--> In message context", opts.Context)
 	response := watson.service.GetMessageResult(r)
-	pp.Println("--> Response context", response.Context)
+
 	out := watson.NewOutput(in.Context, response)
 
 	return out, nil
