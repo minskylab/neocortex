@@ -12,8 +12,8 @@ type PersonInfo struct {
 
 // Context represent the context of a conversation
 type Context struct {
-	Context   *context.Context       `json:"-"`
-	SessionID string                 `json:"session_id"`
-	Person    PersonInfo             `json:"person"`
-	Variables map[string]interface{} `json:"variables"`
+	Context   *context.Context       `json:"-" bson:"-"`
+	SessionID string                 `json:"session_id" bson:"session_id"`
+	Person    PersonInfo             `json:"person" bson:"person"`
+	Variables map[string]interface{} `json:"variables" bson:"variables"`
 }

@@ -23,17 +23,24 @@ func (watson *Cognitive) NewInputText(c *neo.Context, text string, intents []neo
 		Intents:     its,
 		Entities:    ets,
 		Options: &assistantv2.MessageInputOptions{
+			Restart:       core.BoolPtr(true),
 			Debug:         core.BoolPtr(true),
 			ReturnContext: core.BoolPtr(true),
 		},
 	}
 
 	options := watson.service.NewMessageOptions(watson.assistantID, c.SessionID)
+
 	options.SetContext(&assistantv2.MessageContext{
 		Global: &assistantv2.MessageContextGlobal{
 			System: &assistantv2.MessageContextGlobalSystem{
 				UserID:   core.StringPtr(c.Person.ID),
 				Timezone: core.StringPtr(c.Person.Timezone),
+			},
+		},
+		Skills: &assistantv2.MessageContextSkills{
+			"main skill": map[string]interface{}{
+				"user_defined": c.Variables,
 			},
 		},
 	})

@@ -11,8 +11,7 @@ func (repo *Repository) SaveNewDialog(dialog *neocortex.Dialog) (*neocortex.Dial
 	if dialog.ID == "" {
 		dialog.ID = xid.New().String()
 	}
-
-	_, err := repo.dialogsCollection.InsertOne(context.Background(), dialog)
+	_, err := repo.dialogsCollection.InsertOne(context.Background(), dialogToDocument(dialog))
 	if err != nil {
 		return nil, err
 	}
@@ -20,16 +19,16 @@ func (repo *Repository) SaveNewDialog(dialog *neocortex.Dialog) (*neocortex.Dial
 }
 
 func (repo *Repository) GetDialogByID(id string) (*neocortex.Dialog, error) {
-	result := repo.dialogsCollection.FindOne(context.Background(), bson.M{"ID": id})
+	result := repo.dialogsCollection.FindOne(context.Background(), bson.M{"id": id})
 	if result.Err() != nil {
 		return nil, result.Err()
 	}
-	dialog := new(neocortex.Dialog)
+	dialog := new(DialogDocument)
 	err := result.Decode(dialog)
 	if err != nil {
 		return nil, err
 	}
-	return dialog, nil
+	return documentToDialog(dialog), nil
 }
 
 func (repo *Repository) GetAllDialogs() ([]*neocortex.Dialog, error) {
@@ -42,12 +41,12 @@ func (repo *Repository) GetAllDialogs() ([]*neocortex.Dialog, error) {
 		if cursor.Err() != nil {
 			return nil, cursor.Err()
 		}
-		dialog := new(neocortex.Dialog)
+		dialog := new(DialogDocument)
 		err := cursor.Decode(dialog)
 		if err != nil {
 			return nil, err
 		}
-		dialogs = append(dialogs, dialog)
+		dialogs = append(dialogs, documentToDialog(dialog))
 	}
 
 	return dialogs, nil
@@ -108,7 +107,7 @@ func (repo *Repository) DeleteDialog(id string) (*neocortex.Dialog, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = repo.dialogsCollection.DeleteOne(context.Background(), bson.M{"ID": id})
+	_, err = repo.dialogsCollection.DeleteOne(context.Background(), bson.M{"id": id})
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +115,8 @@ func (repo *Repository) DeleteDialog(id string) (*neocortex.Dialog, error) {
 }
 
 func (repo *Repository) UpdateDialog(dialog *neocortex.Dialog) (*neocortex.Dialog, error) {
-	_, err := repo.dialogsCollection.UpdateOne(context.Background(), bson.M{"ID": dialog.ID}, dialog)
+
+	_, err := repo.dialogsCollection.UpdateOne(context.Background(), bson.M{"id": dialog.ID}, dialogToDocument(dialog))
 	if err != nil {
 		return nil, err
 	}

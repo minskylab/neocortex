@@ -27,10 +27,25 @@ func (watson *Cognitive) NewOutput(c *neo.Context, r *assistantv2.MessageRespons
 
 	nodes := make([]*neo.DialogNode, 0)
 	for _, n := range r.Output.Debug.NodesVisited {
+		title := ""
+		conditions := ""
+		name := ""
+
+		if n.Title != nil {
+			title = *n.Title
+		}
+		if n.Conditions != nil {
+			conditions = *n.Conditions
+		}
+
+		if n.DialogNode != nil {
+			name = *n.DialogNode
+		}
+
 		nodes = append(nodes, &neo.DialogNode{
-			Title:      *n.Title,
-			Conditions: *n.Conditions,
-			Name:       *n.DialogNode,
+			Title:      title,
+			Conditions: conditions,
+			Name:       name,
 		})
 	}
 

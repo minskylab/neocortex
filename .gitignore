@@ -12,5 +12,4 @@
 *.out
 examples_
 .idea
-.idea
 *.db
