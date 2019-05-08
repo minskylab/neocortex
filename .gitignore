@@ -13,3 +13,6 @@
 examples_
 .idea
 *.db
+.vscode
+.DS_Store
+cli
