@@ -7,17 +7,17 @@ func (engine *Engine) ResolveAny(channel CommunicationChannel, handler HandleRes
 	engine.generalResolver[channel] = &handler
 }
 
-func (engine *Engine) Resolve(channel CommunicationChannel, matcher Matcher, handler HandleResolver) {
+func (engine *Engine) Resolve(channel CommunicationChannel, matcher *Matcher, handler HandleResolver) {
 	if engine.registeredResolvers == nil {
-		engine.registeredResolvers = map[CommunicationChannel]map[Matcher]*HandleResolver{}
+		engine.registeredResolvers = map[CommunicationChannel]map[*Matcher]*HandleResolver{}
 	}
 	if engine.registeredResolvers[channel] == nil {
-		engine.registeredResolvers[channel] = map[Matcher]*HandleResolver{}
+		engine.registeredResolvers[channel] = map[*Matcher]*HandleResolver{}
 	}
 	engine.registeredResolvers[channel][matcher] = &handler
 }
 
-func (engine *Engine) ResolveMany(channels []CommunicationChannel, matcher Matcher, handler HandleResolver) {
+func (engine *Engine) ResolveMany(channels []CommunicationChannel, matcher *Matcher, handler HandleResolver) {
 	for _, ch := range channels {
 		engine.Resolve(ch, matcher, handler)
 	}

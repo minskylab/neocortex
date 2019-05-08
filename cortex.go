@@ -2,9 +2,10 @@ package neocortex
 
 import (
 	"context"
+	"time"
+
 	"github.com/asdine/storm"
 	"github.com/rs/xid"
-	"time"
 )
 
 type OutputResponse func(output *Output) error
@@ -17,7 +18,7 @@ type Engine struct {
 	done                chan error
 	cognitive           CognitiveService
 	channels            []CommunicationChannel
-	registeredResolvers map[CommunicationChannel]map[Matcher]*HandleResolver
+	registeredResolvers map[CommunicationChannel]map[*Matcher]*HandleResolver
 	generalResolver     map[CommunicationChannel]*HandleResolver
 	sessions            map[string]*Context
 	Repository          Repository
@@ -37,7 +38,6 @@ func (engine *Engine) OnNewContextCreated(c *Context) {
 }
 
 func (engine *Engine) OnContextIsDone(c *Context) {
-
 	engine.ActiveDialogs[c].EndAt = time.Now()
 	_, err := engine.Repository.SaveNewDialog(engine.ActiveDialogs[c])
 	delete(engine.ActiveDialogs, c)

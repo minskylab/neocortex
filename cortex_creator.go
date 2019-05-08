@@ -11,7 +11,7 @@ func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChann
 	engine := &Engine{}
 	engine.channels = channels
 	engine.cognitive = cognitive
-	engine.registeredResolvers = map[CommunicationChannel]map[Matcher]*HandleResolver{}
+	engine.registeredResolvers = map[CommunicationChannel]map[*Matcher]*HandleResolver{}
 	engine.generalResolver = map[CommunicationChannel]*HandleResolver{}
 	engine.done = make(chan error, 1)
 	// engine.logger = logrus.StandardLogger() // In the future
@@ -38,7 +38,7 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 
 	for _, ch := range channels {
 		// engine.logger.Debug("Registering channel ", reflect.ValueOf(ch).Type())
-		engine.registeredResolvers[ch] = map[Matcher]*HandleResolver{}
+		engine.registeredResolvers[ch] = map[*Matcher]*HandleResolver{}
 
 		ch.SetContextFabric(fabric)
 		err := ch.RegisterMessageEndpoint(func(message *Input, response OutputResponse) error {
@@ -56,12 +56,12 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 		ch.OnContextIsDone(func(c *Context) {
 			engine.OnContextIsDone(c)
 		})
-		go func(ch CommunicationChannel) {
-			err := ch.ToHear()
+		go func(ch *CommunicationChannel) {
+			err := (*ch).ToHear()
 			if err != nil {
 				engine.done <- err
 			}
-		}(ch)
+		}(&ch)
 	}
 
 	return engine, nil

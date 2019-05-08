@@ -1,6 +1,7 @@
 package neocortex
 
 import (
+	"fmt"
 	"github.com/k0kubun/pp"
 	"time"
 )
@@ -33,10 +34,12 @@ func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, respon
 	if !channelIsRegistered {
 		return ErrChannelIsNotRegistered
 	}
-
+	
+	fmt.Printf("channel: %p\n", channel)
+	pp.Println(len(resolvers))
 	exist := false
 	for m, resolver := range resolvers {
-		if out.Match(&m) {
+		if out.Match(m) {
 			if err = (*resolver)(in, out, response); err != nil {
 				return err
 			}
