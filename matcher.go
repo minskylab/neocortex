@@ -10,7 +10,13 @@ type CMatch struct {
 	Value interface{}
 }
 
+type DialogNodeMatch struct {
+	Title string
+	Name  string
+}
+
 type Matcher struct {
+	DialogNode      DialogNodeMatch
 	Entity          Match
 	Intent          Match
 	ContextVariable CMatch
@@ -36,6 +42,26 @@ func (out *Output) Match(matcher *Matcher) bool {
 		for varName, varValue := range out.Context.Variables {
 			if matcher.ContextVariable.Name == varName {
 				if matcher.ContextVariable.Value == varValue {
+					ok = true
+				}
+			}
+		}
+	}
+
+	if matcher.DialogNode.Title != "" || matcher.DialogNode.Name != "" {
+		for _, n := range out.VisitedNodes {
+			if matcher.DialogNode.Name != "" {
+				if matcher.DialogNode.Title != "" {
+					if n.Name == matcher.DialogNode.Name && n.Title == matcher.DialogNode.Title {
+						ok = true
+					}
+				}
+
+				if n.Name == matcher.DialogNode.Name {
+					ok = true
+				}
+			} else if matcher.DialogNode.Title != "" {
+				if n.Title == matcher.DialogNode.Title {
 					ok = true
 				}
 			}
