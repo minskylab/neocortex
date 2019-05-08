@@ -13,6 +13,8 @@ func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChann
 	engine.cognitive = cognitive
 	engine.registeredResolvers = map[CommunicationChannel]map[*Matcher]*HandleResolver{}
 	engine.generalResolver = map[CommunicationChannel]*HandleResolver{}
+	engine.registeredInjection = map[CommunicationChannel]map[*Matcher]*InInjection{}
+	engine.generalInjection = map[CommunicationChannel]*InInjection{}
 	engine.done = make(chan error, 1)
 	// engine.logger = logrus.StandardLogger() // In the future
 	engine.ActiveDialogs = map[*Context]*Dialog{}
@@ -42,7 +44,7 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 
 		ch.SetContextFabric(fabric)
 		err := ch.RegisterMessageEndpoint(func(message *Input, response OutputResponse) error {
-			return engine.onMessage(&ch, message, response)
+			return engine.onMessage(ch, message, response)
 		})
 
 		if err != nil {

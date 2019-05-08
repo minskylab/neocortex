@@ -21,9 +21,12 @@ type Engine struct {
 	registeredResolvers map[CommunicationChannel]map[*Matcher]*HandleResolver
 	generalResolver     map[CommunicationChannel]*HandleResolver
 	sessions            map[string]*Context
-	Repository          Repository
-	ActiveDialogs       map[*Context]*Dialog
-	api                 API
+	registeredInjection map[CommunicationChannel]map[*Matcher]*InInjection
+	generalInjection    map[CommunicationChannel]*InInjection
+
+	Repository    Repository
+	ActiveDialogs map[*Context]*Dialog
+	api           API
 }
 
 func (engine *Engine) OnNewContextCreated(c *Context) {

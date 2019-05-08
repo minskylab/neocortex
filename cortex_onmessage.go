@@ -2,11 +2,25 @@ package neocortex
 
 import (
 	"fmt"
-	"github.com/k0kubun/pp"
 	"time"
+
+	"github.com/k0kubun/pp"
 )
 
-func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, response OutputResponse) error {
+func (engine *Engine) onMessage(channel CommunicationChannel, in *Input, response OutputResponse) error {
+	inMatched := false
+	for matcher, injector := range engine.registeredInjection[channel] {
+		if in.Match(matcher) {
+			in = (*injector)(in)
+			inMatched = true
+		}
+	}
+
+	if engine.generalInjection[channel] != nil && !inMatched {
+		f := *engine.generalInjection[channel]
+		in = f(in)
+	}
+
 	pp.Println("IN: ", in)
 	_, activeDialogExist := engine.ActiveDialogs[in.Context]
 	if activeDialogExist {
@@ -15,7 +29,7 @@ func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, respon
 	out, err := engine.cognitive.GetProtoResponse(in)
 	if err != nil {
 		if err == ErrSessionNotExist {
-			f := (*channel).GetContextFabric()
+			f := channel.GetContextFabric()
 			// Creating new context
 			c := f(*in.Context.Context, in.Context.Person)
 			in.Context = c
@@ -23,6 +37,7 @@ func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, respon
 			if err != nil {
 				return err
 			}
+
 		} else {
 			return err
 		}
@@ -30,11 +45,11 @@ func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, respon
 
 	pp.Println("OUT: ", out)
 
-	resolvers, channelIsRegistered := engine.registeredResolvers[*channel]
+	resolvers, channelIsRegistered := engine.registeredResolvers[channel]
 	if !channelIsRegistered {
 		return ErrChannelIsNotRegistered
 	}
-	
+
 	fmt.Printf("channel: %p\n", channel)
 	pp.Println(len(resolvers))
 	exist := false
@@ -52,8 +67,8 @@ func (engine *Engine) onMessage(channel *CommunicationChannel, in *Input, respon
 		}
 	}
 
-	if engine.generalResolver[*channel] != nil && !exist {
-		if err = (*engine.generalResolver[*channel])(in, out, response); err != nil {
+	if engine.generalResolver[channel] != nil && !exist {
+		if err = (*engine.generalResolver[channel])(in, out, response); err != nil {
 			return err
 		}
 		if _, ok := engine.ActiveDialogs[in.Context]; ok {

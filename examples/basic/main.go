@@ -22,6 +22,17 @@ func main() {
 		panic(err)
 	}
 
+	engine.InjectAll(term, func(in *neo.Input) *neo.Input {
+		in.Context.Variables["user_name"] = "Bregy"
+		if in.Context.Variables["count"] == nil {
+			in.Context.Variables["count"] = 0
+		}
+
+		in.Context.Variables["count"] = in.Context.Variables["count"].(int) + 1
+
+		return in
+	})
+
 	engine.ResolveAny(term, func(in *neo.Input, out *neo.Output, response neo.OutputResponse) error {
 		out.AddTextResponse("-----Watermark-----")
 		return response(out)

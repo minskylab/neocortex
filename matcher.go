@@ -86,3 +86,47 @@ func (out *Output) Match(matcher *Matcher) bool {
 
 	return ok
 }
+
+func (in *Input) Match(matcher *Matcher) bool {
+	ok := false
+	for _, i := range in.Intents {
+		if i.Intent == matcher.Intent.Is && i.Confidence > matcher.Intent.Confidence {
+			ok = true
+		}
+	}
+
+	for _, e := range in.Entities {
+		if e.Entity == matcher.Entity.Is && e.Confidence > matcher.Entity.Confidence {
+			ok = true
+		}
+	}
+
+	if in.Context.Variables != nil {
+		for varName, varValue := range in.Context.Variables {
+			if matcher.ContextVariable.Name == varName {
+				if matcher.ContextVariable.Value == varValue {
+					ok = true
+				}
+			}
+		}
+	}
+
+	if matcher.AND != nil {
+		if in.Match(matcher.AND) && ok {
+			ok = true
+		} else {
+			ok = false
+		}
+	}
+
+	if matcher.OR != nil {
+		if in.Match(matcher.OR) || ok {
+			ok = true
+		} else {
+			ok = false
+		}
+	}
+
+	return ok
+
+}
