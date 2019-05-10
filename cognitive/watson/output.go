@@ -25,6 +25,10 @@ func (watson *Cognitive) NewOutput(c *neo.Context, r *assistantv2.MessageRespons
 			})
 	}
 
+	if c.Variables == nil {
+		c.Variables = map[string]interface{}{}
+	}
+
 	nodes := make([]*neo.DialogNode, 0)
 	for _, n := range r.Output.Debug.NodesVisited {
 		title := ""
@@ -63,6 +67,33 @@ func (watson *Cognitive) NewOutput(c *neo.Context, r *assistantv2.MessageRespons
 			responses = append(responses, rUnknown)
 		}
 	}
+
+	if r.Context != nil {
+		if r.Context.Skills != nil {
+			if main, exist := (*r.Context.Skills)["main skill"]; exist {
+				if mmain, ok := main.(map[string]interface{}); ok {
+					if vars, isOk := mmain["user_defined"].(map[string]interface{}); isOk {
+						for k, v := range vars {
+							c.Variables[k] = v
+						}
+
+					}
+				}
+			}
+		}
+
+	}
+
+	// if r.Context != nil {
+	// 	if r.Context.Global != nil {
+	// 		if r.Context.Global.System != nil {
+	// 			if r.Context.Global.System.TurnCount != nil {
+	// 				watson.turnsMap[c.SessionID] = int(*r.Context.Global.System.TurnCount)
+	// 			}
+	// 		}
+	// 	}
+	// }
+
 	return &neo.Output{
 		Context:      c,
 		Logs:         logs,

@@ -2,13 +2,15 @@ package watson
 
 import (
 	"context"
+
 	neo "github.com/bregydoc/neocortex"
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
 
 type Cognitive struct {
-	service              *assistantv2.AssistantV2
-	assistantID          string
+	service     *assistantv2.AssistantV2
+	assistantID string
+	// turnsMap             map[string]int
 	doneContextCallbacks []*func(c *neo.Context)
 }
 
@@ -35,6 +37,7 @@ func NewCognitive(params NewCognitiveParams) (*Cognitive, error) {
 	return &Cognitive{
 		service:     assistant,
 		assistantID: params.AssistantID,
+		// turnsMap:    map[string]int{},
 	}, nil
 }
 
@@ -44,6 +47,8 @@ func (watson *Cognitive) CreateNewContext(c *context.Context, info neo.PersonInf
 		panic(responseErr)
 	}
 	sess := watson.service.GetCreateSessionResult(r)
+
+	// watson.turnsMap[*sess.SessionID] = 1
 	return &neo.Context{
 		SessionID: *sess.SessionID,
 		Person:    info,
@@ -53,6 +58,7 @@ func (watson *Cognitive) CreateNewContext(c *context.Context, info neo.PersonInf
 }
 
 func (watson *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
+
 	var opts *assistantv2.MessageOptions
 	switch in.Data.Type {
 
@@ -64,7 +70,6 @@ func (watson *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
 	}
 
 	r, err := watson.service.Message(opts)
-
 	if err != nil {
 		for _, call := range watson.doneContextCallbacks {
 			(*call)(in.Context)

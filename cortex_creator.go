@@ -81,7 +81,9 @@ func (engine *Engine) Run() error {
 		engine.done <- nil
 	}()
 	go func() {
-		engine.done <- engine.api.Launch()
+		if engine.api.repository != nil {
+			engine.done <- engine.api.Launch()
+		}
 	}()
 	return <-engine.done
 }

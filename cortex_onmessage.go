@@ -1,10 +1,7 @@
 package neocortex
 
 import (
-	"fmt"
 	"time"
-
-	"github.com/k0kubun/pp"
 )
 
 func (engine *Engine) onMessage(channel CommunicationChannel, in *Input, response OutputResponse) error {
@@ -21,7 +18,6 @@ func (engine *Engine) onMessage(channel CommunicationChannel, in *Input, respons
 		in = f(in)
 	}
 
-	pp.Println("IN: ", in)
 	_, activeDialogExist := engine.ActiveDialogs[in.Context]
 	if activeDialogExist {
 		engine.ActiveDialogs[in.Context].Ins[time.Now()] = in
@@ -43,15 +39,11 @@ func (engine *Engine) onMessage(channel CommunicationChannel, in *Input, respons
 		}
 	}
 
-	pp.Println("OUT: ", out)
-
 	resolvers, channelIsRegistered := engine.registeredResolvers[channel]
 	if !channelIsRegistered {
 		return ErrChannelIsNotRegistered
 	}
 
-	fmt.Printf("channel: %p\n", channel)
-	pp.Println(len(resolvers))
 	exist := false
 	for m, resolver := range resolvers {
 		if out.Match(m) {

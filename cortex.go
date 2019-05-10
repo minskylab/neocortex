@@ -42,9 +42,11 @@ func (engine *Engine) OnNewContextCreated(c *Context) {
 
 func (engine *Engine) OnContextIsDone(c *Context) {
 	engine.ActiveDialogs[c].EndAt = time.Now()
-	_, err := engine.Repository.SaveNewDialog(engine.ActiveDialogs[c])
-	delete(engine.ActiveDialogs, c)
-	if err != nil {
-		engine.done <- err
+	if engine.Repository != nil {
+		_, err := engine.Repository.SaveNewDialog(engine.ActiveDialogs[c])
+		delete(engine.ActiveDialogs, c)
+		if err != nil {
+			engine.done <- err
+		}
 	}
 }

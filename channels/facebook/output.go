@@ -3,6 +3,7 @@ package facebook
 import (
 	"errors"
 	"fmt"
+
 	"github.com/bregydoc/neocortex"
 	"github.com/bregydoc/neocortex/channels/facebook/messenger"
 )
