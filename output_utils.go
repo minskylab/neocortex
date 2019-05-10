@@ -1,5 +1,15 @@
 package neocortex
 
+func (out *Output) ClearResponses() *Output {
+	out.Responses = []Response{}
+	return out
+}
+
+func (out *Output) Clean() *Output {
+	out.Responses = []Response{}
+	return out
+}
+
 func (out *Output) SetContextVariable(name string, value interface{}) *Output {
 	if out.Context.Variables == nil {
 		out.Context.Variables = map[string]interface{}{}
