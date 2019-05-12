@@ -21,7 +21,11 @@ func (out *Output) AddOptionsResponse(title string, subtitle string, options ...
 	}
 	opts := make([]*Option, 0)
 	for _, o := range options {
-		opts = append(opts, &o)
+		opts = append(opts, &Option{
+			Text:       o.Text,
+			IsPostBack: o.IsPostBack,
+			Action:     o.Action,
+		})
 	}
 	out.Responses = append(out.Responses, Response{
 		Type: Options,
