@@ -2,6 +2,7 @@ package neocortex
 
 import (
 	"context"
+	"log"
 
 	"os"
 	"os/signal"
@@ -75,7 +76,7 @@ func (engine *Engine) Run() error {
 	signal.Notify(signalChan, os.Interrupt)
 	go func() {
 		<-signalChan
-		// engine.logger.Infoln("Closing all dialogs")
+		log.Println("Closing all dialogs, total: ", len(engine.ActiveDialogs))
 		for _, d := range engine.ActiveDialogs {
 			engine.OnContextIsDone(d.Context)
 		}
