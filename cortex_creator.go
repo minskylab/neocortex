@@ -31,7 +31,8 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 	}
 
 	fabric := func(ctx context.Context, info PersonInfo) *Context {
-		return cognitive.CreateNewContext(&ctx, info)
+		c := context.WithValue(ctx, "id", info.ID)
+		return cognitive.CreateNewContext(&c, info)
 	}
 
 	cognitive.OnContextIsDone(func(c *Context) {
