@@ -62,6 +62,9 @@ func (watson *Cognitive) NewOutput(c *neo.Context, r *assistantv2.MessageRespons
 		case "option":
 			rOption := watson.newOptionResponse(gen)
 			responses = append(responses, rOption)
+		case "image":
+			rImage := watson.newImageResponse(gen)
+			responses = append(responses, rImage)
 		default:
 			rUnknown := watson.newUnknownResponse(gen)
 			responses = append(responses, rUnknown)
@@ -83,16 +86,6 @@ func (watson *Cognitive) NewOutput(c *neo.Context, r *assistantv2.MessageRespons
 		}
 
 	}
-
-	// if r.Context != nil {
-	// 	if r.Context.Global != nil {
-	// 		if r.Context.Global.System != nil {
-	// 			if r.Context.Global.System.TurnCount != nil {
-	// 				watson.turnsMap[c.SessionID] = int(*r.Context.Global.System.TurnCount)
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	return &neo.Output{
 		Context:      c,

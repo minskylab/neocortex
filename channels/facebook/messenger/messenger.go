@@ -105,6 +105,7 @@ func (msng *Messenger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				Locale:     locale,
 				ProfilePic: pic,
 			}
+
 			switch {
 			case msg.Message != nil && msng.MessageReceived != nil:
 				go msng.MessageReceived(msng, user, *msg.Message)

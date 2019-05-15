@@ -32,8 +32,8 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 	}
 
 	fabric := func(ctx context.Context, info PersonInfo) *Context {
-		c := context.WithValue(ctx, "id", info.ID)
-		return cognitive.CreateNewContext(&c, info)
+		neoContext := cognitive.CreateNewContext(&ctx, info)
+		return neoContext
 	}
 
 	cognitive.OnContextIsDone(func(c *Context) {
@@ -60,6 +60,7 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 		ch.OnContextIsDone(func(c *Context) {
 			engine.OnContextIsDone(c)
 		})
+
 		go func(ch *CommunicationChannel) {
 			err := (*ch).ToHear()
 			if err != nil {

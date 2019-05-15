@@ -2,6 +2,7 @@ package neocortex
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/asdine/storm"
@@ -30,6 +31,7 @@ type Engine struct {
 }
 
 func (engine *Engine) OnNewContextCreated(c *Context) {
+	log.Println("creating new context: ", c.SessionID)
 	engine.ActiveDialogs[c] = &Dialog{
 		ID:      xid.New().String(),
 		Context: c,
@@ -41,6 +43,8 @@ func (engine *Engine) OnNewContextCreated(c *Context) {
 }
 
 func (engine *Engine) OnContextIsDone(c *Context) {
+	log.Println("closing context: ", c.SessionID)
+	log.Printf("%v\n", engine.ActiveDialogs)
 	if _, exist := engine.ActiveDialogs[c]; exist {
 		engine.ActiveDialogs[c].EndAt = time.Now()
 		if engine.Repository != nil {

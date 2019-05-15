@@ -25,10 +25,13 @@ func NewChannel(options ChannelOptions, fabric ...neo.ContextFabric) (*Channel, 
 		tz := fmt.Sprintf("%d", int(user.Timezone))
 		c, contextExist := fb.contexts[user.ID]
 		if !contextExist {
+
 			c = fb.newContext(context.Background(), neo.PersonInfo{
 				ID:       uID,
 				Timezone: tz,
 				Name:     user.Name,
+				Locale:   user.Locale,
+				Picture:  user.ProfilePic,
 			})
 
 			for _, call := range fb.newContextCallbacks {
