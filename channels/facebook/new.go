@@ -24,8 +24,8 @@ func NewChannel(options ChannelOptions, fabric ...neo.ContextFabric) (*Channel, 
 		uID := strconv.FormatInt(user.ID, 10)
 		tz := fmt.Sprintf("%d", int(user.Timezone))
 		c, contextExist := fb.contexts[user.ID]
-		if !contextExist {
 
+		if !contextExist {
 			c = fb.newContext(context.Background(), neo.PersonInfo{
 				ID:       uID,
 				Timezone: tz,

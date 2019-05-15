@@ -32,8 +32,8 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 	}
 
 	fabric := func(ctx context.Context, info PersonInfo) *Context {
-		neoContext := cognitive.CreateNewContext(&ctx, info)
-		return neoContext
+		newContext := cognitive.CreateNewContext(&ctx, info)
+		return newContext
 	}
 
 	cognitive.OnContextIsDone(func(c *Context) {
@@ -41,7 +41,6 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 	})
 
 	for _, ch := range channels {
-		// engine.logger.Debug("Registering channel ", reflect.ValueOf(ch).Type())
 		engine.registeredResolvers[ch] = map[*Matcher]*HandleResolver{}
 
 		ch.SetContextFabric(fabric)

@@ -2,9 +2,10 @@ package mongodb
 
 import (
 	"context"
+
 	"github.com/bregydoc/neocortex"
-	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/rs/xid"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (repo *Repository) SaveNewDialog(dialog *neocortex.Dialog) (*neocortex.Dialog, error) {

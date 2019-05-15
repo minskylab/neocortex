@@ -2,7 +2,9 @@ package mongodb
 
 import (
 	"context"
-	"github.com/mongodb/mongo-go-driver/mongo"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Repository struct {
@@ -11,7 +13,7 @@ type Repository struct {
 }
 
 func New(uri string) (*Repository, error) {
-	client, err := mongo.NewClient(uri)
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
 	}

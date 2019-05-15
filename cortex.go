@@ -21,7 +21,6 @@ type Engine struct {
 	channels            []CommunicationChannel
 	registeredResolvers map[CommunicationChannel]map[*Matcher]*HandleResolver
 	generalResolver     map[CommunicationChannel]*HandleResolver
-	sessions            map[string]*Context
 	registeredInjection map[CommunicationChannel]map[*Matcher]*InInjection
 	generalInjection    map[CommunicationChannel]*InInjection
 
@@ -43,17 +42,19 @@ func (engine *Engine) OnNewContextCreated(c *Context) {
 }
 
 func (engine *Engine) OnContextIsDone(c *Context) {
-	log.Println("closing context: ", c.SessionID)
+	for _, ch := range engine.channels {
+		ch.CallContextDone(c)
+	}
 	log.Printf("%v\n", engine.ActiveDialogs)
-	if _, exist := engine.ActiveDialogs[c]; exist {
-		engine.ActiveDialogs[c].EndAt = time.Now()
-		if engine.Repository != nil {
-			_, err := engine.Repository.SaveNewDialog(engine.ActiveDialogs[c])
-			delete(engine.ActiveDialogs, c)
-			if err != nil {
-				engine.done <- err
-			}
+	log.Println("closing context: ", c.SessionID)
+	log.Println("context to delete:", c)
+	engine.ActiveDialogs[c].EndAt = time.Now()
+	if engine.Repository != nil {
+		_, err := engine.Repository.SaveNewDialog(engine.ActiveDialogs[c])
+		if err != nil {
+			engine.done <- err
 		}
 	}
-
+	delete(engine.ActiveDialogs, c)
+	log.Println("finally deleting: ", c.SessionID)
 }

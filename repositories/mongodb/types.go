@@ -1,9 +1,10 @@
 package mongodb
 
 import (
-	"github.com/bregydoc/neocortex"
-	"github.com/mongodb/mongo-go-driver/bson"
 	"time"
+
+	"github.com/bregydoc/neocortex"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type DialogDocument struct {

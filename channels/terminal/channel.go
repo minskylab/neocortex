@@ -2,6 +2,7 @@ package terminal
 
 import (
 	"bufio"
+	"strconv"
 
 	neo "github.com/bregydoc/neocortex"
 )
@@ -45,4 +46,11 @@ func (term *Channel) OnContextIsDone(callback func(c *neo.Context)) {
 		term.doneContextCallbacks = []*func(c *neo.Context){}
 	}
 	term.doneContextCallbacks = append(term.doneContextCallbacks, &callback)
+}
+
+func (term *Channel) CallContextDone(c *neo.Context) {
+	id, err := strconv.ParseInt(c.Person.ID, 10, 64)
+	if err == nil {
+		delete(term.contexts, id)
+	}
 }

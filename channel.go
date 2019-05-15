@@ -7,4 +7,5 @@ type CommunicationChannel interface {
 	SetContextFabric(fabric ContextFabric)
 	OnNewContextCreated(callback func(c *Context))
 	OnContextIsDone(callback func(c *Context))
+	CallContextDone(c *Context)
 }

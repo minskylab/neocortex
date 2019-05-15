@@ -8,9 +8,8 @@ import (
 )
 
 type Cognitive struct {
-	service     *assistantv2.AssistantV2
-	assistantID string
-	// turnsMap             map[string]int
+	service              *assistantv2.AssistantV2
+	assistantID          string
 	doneContextCallbacks []*func(c *neo.Context)
 }
 

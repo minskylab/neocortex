@@ -2,9 +2,12 @@ package facebook
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"strconv"
+
 	neo "github.com/bregydoc/neocortex"
 	"github.com/bregydoc/neocortex/channels/facebook/messenger"
-	"net/http"
 )
 
 type Channel struct {
@@ -53,4 +56,12 @@ func (fb *Channel) OnContextIsDone(callback func(c *neo.Context)) {
 		fb.doneContextCallbacks = []*func(c *neo.Context){}
 	}
 	fb.doneContextCallbacks = append(fb.doneContextCallbacks, &callback)
+}
+
+func (fb *Channel) CallContextDone(c *neo.Context) {
+	log.Println("fb, CallContextDone: ", c.SessionID)
+	id, err := strconv.ParseInt(c.Person.ID, 10, 64)
+	if err == nil {
+		delete(fb.contexts, id)
+	}
 }
