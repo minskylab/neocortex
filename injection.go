@@ -1,6 +1,6 @@
 package neocortex
 
-type InInjection func(in *Input) *Input
+type InInjection func(c *Context, in *Input) *Input
 
 func (engine *Engine) InjectAll(channel CommunicationChannel, middle InInjection) {
 	if engine.generalInjection == nil {

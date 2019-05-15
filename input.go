@@ -15,7 +15,6 @@ type InputData struct {
 
 // Input represent an Input for the cognitive service
 type Input struct {
-	Context  *Context  `json:"context"`
 	Data     InputData `json:"data"`
 	Entities []Entity  `json:"entities"`
 	Intents  []Intent  `json:"intents"`

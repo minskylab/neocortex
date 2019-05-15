@@ -45,8 +45,8 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 		engine.registeredResolvers[ch] = map[*Matcher]*HandleResolver{}
 
 		ch.SetContextFabric(fabric)
-		err := ch.RegisterMessageEndpoint(func(message *Input, response OutputResponse) error {
-			return engine.onMessage(ch, message, response)
+		err := ch.RegisterMessageEndpoint(func(c *Context, message *Input, response OutputResponse) error {
+			return engine.onMessage(ch, c, message, response)
 		})
 
 		if err != nil {

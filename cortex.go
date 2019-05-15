@@ -9,9 +9,9 @@ import (
 	"github.com/rs/xid"
 )
 
-type OutputResponse func(output *Output) error
-type HandleResolver func(in *Input, out *Output, response OutputResponse) error
-type MiddleHandler func(message *Input, response OutputResponse) error
+type OutputResponse func(c *Context, output *Output) error
+type HandleResolver func(c *Context, in *Input, out *Output, response OutputResponse) error
+type MiddleHandler func(c *Context, message *Input, response OutputResponse) error
 type ContextFabric func(ctx context.Context, info PersonInfo) *Context
 
 type Engine struct {

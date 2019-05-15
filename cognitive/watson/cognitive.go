@@ -57,14 +57,14 @@ func (watson *Cognitive) CreateNewContext(c *context.Context, info neo.PersonInf
 	}
 }
 
-func (watson *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
+func (watson *Cognitive) GetProtoResponse(c *neo.Context, in *neo.Input) (*neo.Output, error) {
 
 	var opts *assistantv2.MessageOptions
 	switch in.Data.Type {
 
 	// Watson only supports one type of input: InputText
 	case neo.InputText:
-		_, opts = watson.NewInputText(in.Context, in.Data.Value, in.Intents, in.Entities)
+		_, opts = watson.NewInputText(in.Data.Value, c, in.Intents, in.Entities)
 	default:
 		return nil, neo.ErrInvalidInputType
 	}
@@ -72,21 +72,21 @@ func (watson *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
 	r, err := watson.service.Message(opts)
 	if err != nil {
 		for _, call := range watson.doneContextCallbacks {
-			(*call)(in.Context)
+			(*call)(c)
 		}
 		return nil, neo.ErrSessionNotExist
 	}
 
 	if r.StatusCode != 200 {
 		for _, call := range watson.doneContextCallbacks {
-			(*call)(in.Context)
+			(*call)(c)
 		}
 		return nil, neo.ErrInvalidResponseFromCognitiveService
 	}
 
 	response := watson.service.GetMessageResult(r)
 
-	out := watson.NewOutput(in.Context, response)
+	out := watson.NewOutput(c, response)
 
 	return out, nil
 

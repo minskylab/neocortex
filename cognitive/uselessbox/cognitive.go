@@ -2,6 +2,7 @@ package uselessbox
 
 import (
 	"context"
+
 	neo "github.com/bregydoc/neocortex"
 	"github.com/rs/xid"
 )
@@ -24,11 +25,11 @@ func (useless *Cognitive) CreateNewContext(c *context.Context, info neo.PersonIn
 	}
 }
 
-func (useless *Cognitive) GetProtoResponse(in *neo.Input) (*neo.Output, error) {
-	if in.Context == nil {
+func (useless *Cognitive) GetProtoResponse(c *neo.Context, in *neo.Input) (*neo.Output, error) {
+	if c == nil {
 		return nil, neo.ErrContextNotExist
 	}
-	return useless.NewOutputText(in.Context), nil
+	return useless.NewOutputText(c), nil
 }
 
 func (useless *Cognitive) OnContextIsDone(callback func(c *neo.Context)) {

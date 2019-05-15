@@ -88,7 +88,6 @@ func (watson *Cognitive) NewOutput(c *neo.Context, r *assistantv2.MessageRespons
 	}
 
 	return &neo.Output{
-		Context:      c,
 		Logs:         logs,
 		VisitedNodes: nodes,
 		Intents:      intents,

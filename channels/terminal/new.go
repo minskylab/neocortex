@@ -4,9 +4,10 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	neo "github.com/bregydoc/neocortex"
 	"os"
 	"strconv"
+
+	neo "github.com/bregydoc/neocortex"
 )
 
 // This channel have particularity only one user, then we have only one user ID for all
@@ -66,14 +67,14 @@ func (term *Channel) renderUserInterface(done bool) error {
 	if !done {
 		fmt.Printf("%s %s[sess:%s]%s ", term.options.PersonIcon, term.options.PersonName, c.SessionID, term.options.SaysSymbol)
 		inStr := term.getInput()
-		input := term.NewInputText(c, inStr, nil, nil)
-		err := term.messageIn(input, func(out *neo.Output) error {
+		input := term.NewInputText(inStr, nil, nil)
+		err := term.messageIn(c, input, func(c *neo.Context, out *neo.Output) error {
 			for _, r := range out.Responses {
 				if r.Type == neo.Text {
 					fmt.Printf("%s %s[sess:%s]%s %s\n",
 						term.options.BotIcon,
 						term.options.BotName,
-						out.Context.SessionID,
+						c.SessionID,
 						term.options.SaysSymbol,
 						r.Value.(string),
 					)

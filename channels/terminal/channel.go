@@ -2,6 +2,7 @@ package terminal
 
 import (
 	"bufio"
+
 	neo "github.com/bregydoc/neocortex"
 )
 

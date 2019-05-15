@@ -4,40 +4,39 @@ import (
 	"time"
 )
 
-func (engine *Engine) onMessage(channel CommunicationChannel, in *Input, response OutputResponse) error {
+func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *Input, response OutputResponse) error {
 	inMatched := false
 	for matcher, injector := range engine.registeredInjection[channel] {
-		if in.Match(matcher) {
-			in = (*injector)(in)
+		if in.Match(nil, matcher) {
+			in = (*injector)(c, in)
 			inMatched = true
 		}
 	}
 
 	if engine.generalInjection[channel] != nil && !inMatched {
 		f := *engine.generalInjection[channel]
-		in = f(in)
+		in = f(c, in)
 	}
 
-	_, activeDialogExist := engine.ActiveDialogs[in.Context]
+	_, activeDialogExist := engine.ActiveDialogs[c]
 	if activeDialogExist {
-		engine.ActiveDialogs[in.Context].Ins[time.Now()] = in
+		engine.ActiveDialogs[c].Ins[time.Now()] = in
 	}
-	out, err := engine.cognitive.GetProtoResponse(in)
-	if err != nil {
-		if err == ErrSessionNotExist {
-			f := channel.GetContextFabric()
-			// Creating new context
-			c := f(*in.Context.Context, in.Context.Person)
-			in.Context = c
-			out, err = engine.cognitive.GetProtoResponse(in)
-			if err != nil {
-				return err
-			}
+	out, err := engine.cognitive.GetProtoResponse(c, in)
+	// if err != nil {
+	// 	if err == ErrSessionNotExist {
+	// 		f := channel.GetContextFabric()
+	// 		// Creating new context
+	// 		c := f(*c.Context, c.Person)
+	// 		out, err = engine.cognitive.GetProtoResponse(in)
+	// 		if err != nil {
+	// 			return err
+	// 		}
 
-		} else {
-			return err
-		}
-	}
+	// 	} else {
+	// 		return err
+	// 	}
+	// }
 
 	resolvers, channelIsRegistered := engine.registeredResolvers[channel]
 	if !channelIsRegistered {
@@ -46,13 +45,13 @@ func (engine *Engine) onMessage(channel CommunicationChannel, in *Input, respons
 
 	exist := false
 	for m, resolver := range resolvers {
-		if out.Match(m) {
-			if err = (*resolver)(in, out, response); err != nil {
+		if out.Match(c, m) {
+			if err = (*resolver)(c, in, out, response); err != nil {
 				return err
 			}
 
-			if _, ok := engine.ActiveDialogs[in.Context]; ok {
-				engine.ActiveDialogs[in.Context].Outs[time.Now()] = out
+			if _, ok := engine.ActiveDialogs[c]; ok {
+				engine.ActiveDialogs[c].Outs[time.Now()] = out
 			}
 
 			exist = true
@@ -60,11 +59,11 @@ func (engine *Engine) onMessage(channel CommunicationChannel, in *Input, respons
 	}
 
 	if engine.generalResolver[channel] != nil && !exist {
-		if err = (*engine.generalResolver[channel])(in, out, response); err != nil {
+		if err = (*engine.generalResolver[channel])(c, in, out, response); err != nil {
 			return err
 		}
-		if _, ok := engine.ActiveDialogs[in.Context]; ok {
-			engine.ActiveDialogs[in.Context].Outs[time.Now()] = out
+		if _, ok := engine.ActiveDialogs[c]; ok {
+			engine.ActiveDialogs[c].Outs[time.Now()] = out
 		}
 	}
 

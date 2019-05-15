@@ -6,7 +6,7 @@ import (
 	"github.com/watson-developer-cloud/go-sdk/core"
 )
 
-func (watson *Cognitive) NewInputText(c *neo.Context, text string, intents []neo.Intent, entities []neo.Entity) (*neo.Input, *assistantv2.MessageOptions) {
+func (watson *Cognitive) NewInputText(text string, c *neo.Context, intents []neo.Intent, entities []neo.Entity) (*neo.Input, *assistantv2.MessageOptions) {
 	ets := make([]assistantv2.RuntimeEntity, 0)
 	for _, e := range entities {
 		ets = append(ets, getNativeEntity(&e))
@@ -53,5 +53,5 @@ func (watson *Cognitive) NewInputText(c *neo.Context, text string, intents []neo
 		Data:  []byte(text),
 	}
 
-	return watson.NewInput(c, options, data), options
+	return watson.NewInput(options, data), options
 }

@@ -24,7 +24,7 @@ type Matcher struct {
 	OR              *Matcher
 }
 
-func (out *Output) Match(matcher *Matcher) bool {
+func (out *Output) Match(c *Context, matcher *Matcher) bool {
 	ok := false
 	for _, i := range out.Intents {
 		if i.Intent == matcher.Intent.Is && i.Confidence > matcher.Intent.Confidence {
@@ -38,8 +38,8 @@ func (out *Output) Match(matcher *Matcher) bool {
 		}
 	}
 
-	if out.Context.Variables != nil {
-		for varName, varValue := range out.Context.Variables {
+	if c.Variables != nil {
+		for varName, varValue := range c.Variables {
 			if matcher.ContextVariable.Name == varName {
 				if matcher.ContextVariable.Value == varValue {
 					ok = true
@@ -69,7 +69,7 @@ func (out *Output) Match(matcher *Matcher) bool {
 	}
 
 	if matcher.AND != nil {
-		if out.Match(matcher.AND) && ok {
+		if out.Match(c, matcher.AND) && ok {
 			ok = true
 		} else {
 			ok = false
@@ -77,7 +77,7 @@ func (out *Output) Match(matcher *Matcher) bool {
 	}
 
 	if matcher.OR != nil {
-		if out.Match(matcher.OR) || ok {
+		if out.Match(c, matcher.OR) || ok {
 			ok = true
 		} else {
 			ok = false
@@ -87,7 +87,7 @@ func (out *Output) Match(matcher *Matcher) bool {
 	return ok
 }
 
-func (in *Input) Match(matcher *Matcher) bool {
+func (in *Input) Match(c *Context, matcher *Matcher) bool {
 	ok := false
 	for _, i := range in.Intents {
 		if i.Intent == matcher.Intent.Is && i.Confidence > matcher.Intent.Confidence {
@@ -101,8 +101,8 @@ func (in *Input) Match(matcher *Matcher) bool {
 		}
 	}
 
-	if in.Context.Variables != nil {
-		for varName, varValue := range in.Context.Variables {
+	if c.Variables != nil {
+		for varName, varValue := range c.Variables {
 			if matcher.ContextVariable.Name == varName {
 				if matcher.ContextVariable.Value == varValue {
 					ok = true
@@ -112,7 +112,7 @@ func (in *Input) Match(matcher *Matcher) bool {
 	}
 
 	if matcher.AND != nil {
-		if in.Match(matcher.AND) && ok {
+		if in.Match(c, matcher.AND) && ok {
 			ok = true
 		} else {
 			ok = false
@@ -120,7 +120,7 @@ func (in *Input) Match(matcher *Matcher) bool {
 	}
 
 	if matcher.OR != nil {
-		if in.Match(matcher.OR) || ok {
+		if in.Match(c, matcher.OR) || ok {
 			ok = true
 		} else {
 			ok = false

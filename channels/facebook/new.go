@@ -39,10 +39,11 @@ func NewChannel(options ChannelOptions, fabric ...neo.ContextFabric) (*Channel, 
 			}
 			fb.contexts[user.ID] = c
 		}
+
 		// This is because facebook channel not support entities or intents as input (from messenger chat)
-		in := fb.NewInputText(c, m.Text, nil, nil)
-		err := fb.messageIn(in, func(out *neo.Output) error {
-			fb.contexts[user.ID] = out.Context
+		in := fb.NewInputText(m.Text, nil, nil)
+		err := fb.messageIn(c, in, func(c *neo.Context, out *neo.Output) error {
+			fb.contexts[user.ID] = c
 			err := decodeOutput(user.ID, msn, out)
 
 			if err != nil {
@@ -74,9 +75,9 @@ func NewChannel(options ChannelOptions, fabric ...neo.ContextFabric) (*Channel, 
 			fb.contexts[user.ID] = c
 		}
 		// This is because facebook channel not support entities or intents as input (from messenger chat)
-		in := fb.NewInputText(c, text, nil, nil)
-		err := fb.messageIn(in, func(out *neo.Output) error {
-			fb.contexts[user.ID] = out.Context
+		in := fb.NewInputText(text, nil, nil)
+		err := fb.messageIn(c, in, func(c *neo.Context, out *neo.Output) error {
+			fb.contexts[user.ID] = c
 			err := decodeOutput(user.ID, msn, out)
 
 			if err != nil {
