@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -96,14 +95,19 @@ func (msng *Messenger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			url := fmt.Sprintf(urlTemplate, userID, msng.AccessToken)
 			r, _ := http.Get(url)
 			pp.Println(url)
-			data := make(map[string]interface{})
+
+			type response struct {
+				FirstName string  `json:"first_name"`
+				LastName  string  `json:"last_name"`
+				Timezone  float64 `json:"timezone"`
+			}
+			resp := new(response)
 			log.Println(r.StatusCode)
-			d, _ := ioutil.ReadAll(r.Body)
-			pp.Println(string(d))
-			_ = json.NewDecoder(r.Body).Decode(&data)
-			pp.Println(data)
-			name := data["first_name"].(string) + " " + data["last_name"].(string)
-			tz := data["timezone"].(float64)
+
+			_ = json.NewDecoder(r.Body).Decode(resp)
+			pp.Println(resp)
+			name := resp.FirstName + " " + resp.LastName
+			tz := resp.Timezone
 			// locale := data["locale"].(string)
 			// pic := data["profile_pic"].(string)
 			user := UserInfo{
