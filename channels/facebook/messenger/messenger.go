@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/k0kubun/pp"
 )
 
 const apiURL = "https://graph.facebook.com/v2.6/"
@@ -93,10 +96,10 @@ func (msng *Messenger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			url := fmt.Sprintf(urlTemplate, userID, msng.AccessToken)
 			r, _ := http.Get(url)
 			data := make(map[string]interface{})
-
+			log.Println(r.StatusCode)
+			d, _ := ioutil.ReadAll(r.Body)
+			pp.Println(d)
 			_ = json.NewDecoder(r.Body).Decode(&data)
-
-			log.Println(data)
 
 			name := data["first_name"].(string) + " " + data["last_name"].(string)
 			tz := data["timezone"].(float64)
