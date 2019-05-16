@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -94,6 +95,9 @@ func (msng *Messenger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			data := make(map[string]interface{})
 
 			_ = json.NewDecoder(r.Body).Decode(&data)
+
+			log.Println(data)
+
 			name := data["first_name"].(string) + " " + data["last_name"].(string)
 			tz := data["timezone"].(float64)
 			locale := data["locale"].(string)
