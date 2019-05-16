@@ -4,10 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
-
-	"github.com/k0kubun/pp"
 )
 
 const apiURL = "https://graph.facebook.com/v2.6/"
@@ -94,7 +91,6 @@ func (msng *Messenger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 			url := fmt.Sprintf(urlTemplate, userID, msng.AccessToken)
 			r, _ := http.Get(url)
-			pp.Println(url)
 
 			type response struct {
 				FirstName string  `json:"first_name"`
@@ -102,10 +98,9 @@ func (msng *Messenger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				Timezone  float64 `json:"timezone"`
 			}
 			resp := new(response)
-			log.Println(r.StatusCode)
 
 			_ = json.NewDecoder(r.Body).Decode(resp)
-			pp.Println(resp)
+
 			name := resp.FirstName + " " + resp.LastName
 			tz := resp.Timezone
 			// locale := data["locale"].(string)
