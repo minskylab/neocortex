@@ -98,7 +98,7 @@ func (msng *Messenger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			data := make(map[string]interface{})
 			log.Println(r.StatusCode)
 			d, _ := ioutil.ReadAll(r.Body)
-			pp.Println(d)
+			pp.Println(string(d))
 			_ = json.NewDecoder(r.Body).Decode(&data)
 
 			name := data["first_name"].(string) + " " + data["last_name"].(string)
