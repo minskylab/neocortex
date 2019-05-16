@@ -101,7 +101,7 @@ func (msng *Messenger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			d, _ := ioutil.ReadAll(r.Body)
 			pp.Println(string(d))
 			_ = json.NewDecoder(r.Body).Decode(&data)
-
+			pp.Println(data)
 			name := data["first_name"].(string) + " " + data["last_name"].(string)
 			tz := data["timezone"].(float64)
 			// locale := data["locale"].(string)
