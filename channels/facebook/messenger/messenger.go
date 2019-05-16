@@ -12,7 +12,7 @@ import (
 )
 
 const apiURL = "https://graph.facebook.com/v2.6/"
-const urlTemplate = "https://graph.facebook.com/%d?fields=first_name,last_name,profile_pic,locale,timezone&access_token=%s"
+const urlTemplate = "https://graph.facebook.com/%d?fields=first_name,last_name,locale,timezone&access_token=%s"
 
 // TestURL to mock FB server, used for testing
 var TestURL = ""
@@ -104,13 +104,13 @@ func (msng *Messenger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			name := data["first_name"].(string) + " " + data["last_name"].(string)
 			tz := data["timezone"].(float64)
 			locale := data["locale"].(string)
-			pic := data["profile_pic"].(string)
+			// pic := data["profile_pic"].(string)
 			user := UserInfo{
-				ID:         userID,
-				Name:       name,
-				Timezone:   tz,
-				Locale:     locale,
-				ProfilePic: pic,
+				ID:       userID,
+				Name:     name,
+				Timezone: tz,
+				Locale:   locale,
+				// ProfilePic: pic,
 			}
 
 			switch {
