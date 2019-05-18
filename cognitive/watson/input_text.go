@@ -1,9 +1,9 @@
 package watson
 
 import (
+	"github.com/IBM/go-sdk-core/core"
 	neo "github.com/bregydoc/neocortex"
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
-	"github.com/watson-developer-cloud/go-sdk/core"
 )
 
 func (watson *Cognitive) NewInputText(text string, c *neo.Context, intents []neo.Intent, entities []neo.Entity) (*neo.Input, *assistantv2.MessageOptions) {
