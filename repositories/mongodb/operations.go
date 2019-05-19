@@ -74,23 +74,23 @@ func (repo *Repository) GetDialogs(filter neocortex.DialogFilter) ([]*neocortex.
 			}
 		}
 
-		if filter.Timezone != "" {
-			if d.Context.Person.Timezone != filter.Timezone {
-				continue
-			}
-		}
+		// if filter.Timezone != "" {
+		// 	if d.Context.Person.Timezone != filter.Timezone {
+		// 		continue
+		// 	}
+		// }
 
-		if filter.SessionID != "" {
-			if d.Context.SessionID != filter.SessionID {
-				continue
-			}
-		}
+		// if filter.SessionID != "" {
+		// 	if d.Context.SessionID != filter.SessionID {
+		// 		continue
+		// 	}
+		// }
 
-		if filter.PersonID != "" {
-			if d.Context.Person.ID != filter.PersonID {
-				continue
-			}
-		}
+		// if filter.PersonID != "" {
+		// 	if d.Context.Person.ID != filter.PersonID {
+		// 		continue
+		// 	}
+		// }
 
 		filteredDialogs = append(filteredDialogs, d)
 	}
