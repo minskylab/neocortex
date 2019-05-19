@@ -33,23 +33,20 @@ func decodeOutput(userID int64, msn *messenger.Messenger, out *neocortex.Output)
 			return nil
 
 		case neocortex.Pause:
-			// Unsupported by facebook messenger
-			// emulated with delay (it's so stupid)
+			// * Unsupported by facebook messenger
+			// * emulated with delay (it's so stupid)
 			if err := sendPauseResponse(userID, msn, r.Value); err != nil {
 				return err
 			}
 		case neocortex.Image:
-			url, ok := r.Value.(string)
-			if !ok {
-				return errors.New("invalid value, it must be a string")
+			if url, ok := r.Value.(string); ok {
+				return sendImageResponse(userID, msn, url)
 			}
-			if err := sendImageResponse(userID, msn, url); err != nil {
-				return err
-			}
+			return errors.New("invalid value, it must be a string")
 		case neocortex.Suggestion:
-			// Unsupported by facebook messenger
+			// * Unsupported by facebook messenger
 		case neocortex.Unknown:
-			// Unsupported by facebook messenger
+			// * Unsupported by facebook messenger
 		default:
 			// by default neocortex sends a raw stringify of the value
 			_, err := msn.SendTextMessage(userID, fmt.Sprintf("%v", r.Value))

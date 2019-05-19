@@ -22,6 +22,7 @@ func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChann
 	return engine
 }
 
+// Default ...
 func Default(repository Repository, cognitive CognitiveService, channels ...CommunicationChannel) (*Engine, error) {
 	engine := newDefaultEngine(cognitive, channels...)
 	engine.Repository = repository
@@ -77,8 +78,8 @@ func (engine *Engine) Run() error {
 	go func() {
 		<-signalChan
 		log.Println("Closing all dialogs, total: ", len(engine.ActiveDialogs))
-		for _, d := range engine.ActiveDialogs {
-			engine.OnContextIsDone(d.Context)
+		for c := range engine.ActiveDialogs {
+			engine.OnContextIsDone(c)
 		}
 		engine.done <- nil
 	}()

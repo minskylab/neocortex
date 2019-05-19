@@ -23,9 +23,10 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 		in = f(c, in)
 	}
 
-	_, activeDialogExist := engine.ActiveDialogs[c]
-	if activeDialogExist {
-		engine.ActiveDialogs[c].Ins[time.Now()] = in
+	if dialog, activeDialogExist := engine.ActiveDialogs[c]; activeDialogExist {
+		dialog.LastActivity = time.Now()
+		dialog.Contexts[time.Now()] = *c
+		dialog.Ins[time.Now()] = *in
 	}
 
 	out, err := engine.cognitive.GetProtoResponse(c, in)
@@ -41,12 +42,13 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 			}
 
 			engine.ActiveDialogs[c] = &Dialog{
-				ID:      xid.New().String(),
-				Context: c,
-				StartAt: time.Now(),
-				EndAt:   time.Time{},
-				Ins:     TimelineInputs{},
-				Outs:    TimelineOutputs{},
+				ID:           xid.New().String(),
+				LastActivity: time.Now(),
+				StartAt:      time.Now(),
+				EndAt:        time.Time{},
+				Ins:          TimelineInputs{},
+				Outs:         TimelineOutputs{},
+				Contexts:     TimelineContexts{},
 			}
 
 			out, err = engine.cognitive.GetProtoResponse(c, in)
@@ -71,8 +73,10 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 				return err
 			}
 
-			if _, ok := engine.ActiveDialogs[c]; ok {
-				engine.ActiveDialogs[c].Outs[time.Now()] = out
+			if dialog, activeDialogExist := engine.ActiveDialogs[c]; activeDialogExist {
+				dialog.LastActivity = time.Now()
+				dialog.Contexts[time.Now()] = *c
+				dialog.Outs[time.Now()] = *out
 			}
 
 			exist = true
@@ -83,8 +87,11 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 		if err = (*engine.generalResolver[channel])(c, in, out, response); err != nil {
 			return err
 		}
-		if _, ok := engine.ActiveDialogs[c]; ok {
-			engine.ActiveDialogs[c].Outs[time.Now()] = out
+
+		if dialog, activeDialogExist := engine.ActiveDialogs[c]; activeDialogExist {
+			dialog.LastActivity = time.Now()
+			dialog.Contexts[time.Now()] = *c
+			dialog.Outs[time.Now()] = *out
 		}
 	}
 
