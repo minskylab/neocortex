@@ -2,9 +2,9 @@ package neocortex
 
 // Entity define any kind of object or entity
 type Entity struct {
-	Entity     string
-	Location   []int64
-	Value      string
-	Confidence float64
-	Metadata   map[string]interface{}
+	Entity     string                 `json:"entity"`
+	Location   []int64                `json:"location"`
+	Value      string                 `json:"value"`
+	Confidence float64                `json:"confidence"`
+	Metadata   map[string]interface{} `json:"metadata"`
 }

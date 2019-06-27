@@ -23,7 +23,7 @@ type Context struct {
 }
 
 func (c *Context) String() string {
-	s := "\n===== NEOCONTEXT =====\n"
+	s := "\n===== CONTEXT =====\n"
 	s = s + fmt.Sprintf("session: %s\n", c.SessionID)
 	s = s + fmt.Sprintf("context: %v\n", c.Context)
 	s = s + fmt.Sprintf("user name: %s\n", c.Person.Name)

@@ -14,6 +14,6 @@ var Warn LogLevelType = "warn"
 
 // LogMessage represents a snapshot of the messages around the dialog
 type LogMessage struct {
-	Level   LogLevelType
-	Message string
+	Level   LogLevelType `json:"level"`
+	Message string       `json:"message"`
 }

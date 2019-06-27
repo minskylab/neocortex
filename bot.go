@@ -1,8 +1,8 @@
 package neocortex
 
 type Bot struct {
-	Name          string
-	FirstGreeting string
-	Version       string
-	Author        string
+	Name          string `json:"name"`
+	FirstGreeting string `json:"first_greeting"`
+	Version       string `json:"version"`
+	Author        string `json:"author"`
 }

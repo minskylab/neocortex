@@ -19,7 +19,7 @@ type API struct {
 
 func (api *API) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" {
-		log.Println(req.URL.Path)
+		log.Println("\n[GET]", req.URL.Path)
 		if strings.HasPrefix(req.URL.Path, api.prefix+"/dialog/") {
 			var id string
 			_, err := fmt.Sscanf(req.URL.Path, api.prefix+"/dialog/%s", &id)
@@ -75,14 +75,29 @@ func (api *API) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			page -= 1
+			if page--; page < 0 {
+				page = 0
+			}
+
 			length := len(dialogs)
-			f := length * page / batch
+			f := int(float64(length) / float64(batch) * float64(page))
 			t := f + batch
+
 			if t > length {
 				t = length
 			}
-			data, err := json.Marshal(dialogs[f:t])
+
+			pickedDialogs := []*Dialog{}
+			if f <= length-batch {
+				pickedDialogs = dialogs[f:t]
+			}
+
+			data, err := json.Marshal(pickedDialogs)
+			if err != nil {
+				http.Error(res, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
 			if err != nil {
 				http.Error(res, err.Error(), http.StatusInternalServerError)
 				return
@@ -102,6 +117,6 @@ func (api *API) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 }
 
 func (api *API) Launch() error {
-	log.Println("API listening at " + api.Port)
+	log.Println("API listening at http://localhost" + api.Port)
 	return http.ListenAndServe(api.Port, api)
 }

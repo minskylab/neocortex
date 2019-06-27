@@ -4,7 +4,7 @@ import (
 	neo "github.com/bregydoc/neocortex"
 	"github.com/bregydoc/neocortex/channels/terminal"
 	"github.com/bregydoc/neocortex/cognitive/uselessbox"
-	"github.com/bregydoc/neocortex/repositories/boltdb"
+	"github.com/bregydoc/neocortex/repositories/mongodb"
 )
 
 // Example of use useless box with terminal channel
@@ -12,7 +12,7 @@ func main() {
 	box := uselessbox.NewCognitive()
 	term := terminal.NewChannel(nil)
 
-	repo, err := boltdb.New("neocortex.db")
+	repo, err := mongodb.New("mongodb+srv://amanda:LZlt2PQrqJW5r5RN@amanda-520ju.mongodb.net/test?retryWrites=true&w=majority")
 	if err != nil {
 		panic(err)
 	}

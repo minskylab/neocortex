@@ -37,6 +37,7 @@ func (repo *Repository) GetAllDialogs() ([]*neocortex.Dialog, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	dialogs := make([]*neocortex.Dialog, 0)
 	for cursor.Next(context.Background()) {
 		if cursor.Err() != nil {
