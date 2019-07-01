@@ -2,106 +2,58 @@ package mongodb
 
 import (
 	"context"
+	"time"
 
 	"github.com/bregydoc/neocortex"
+	"github.com/globalsign/mgo/bson"
 	"github.com/rs/xid"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (repo *Repository) SaveNewDialog(dialog *neocortex.Dialog) (*neocortex.Dialog, error) {
+func (repo *Repository) SaveDialog(dialog *neocortex.Dialog) error {
 	if dialog.ID == "" {
 		dialog.ID = xid.New().String()
 	}
-	_, err := repo.dialogsCollection.InsertOne(context.Background(), dialogToDocument(dialog))
+
+	dialog.LastActivity = time.Now()
+
+	_, err := repo.dialogs.InsertOne(context.Background(), dialog)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return repo.GetDialogByID(dialog.ID)
+
+	return nil
 }
 
 func (repo *Repository) GetDialogByID(id string) (*neocortex.Dialog, error) {
-	result := repo.dialogsCollection.FindOne(context.Background(), bson.M{"id": id})
-	if result.Err() != nil {
-		return nil, result.Err()
-	}
-	dialog := new(DialogDocument)
-	err := result.Decode(dialog)
-	if err != nil {
+	dialog := new(neocortex.Dialog)
+	if err := repo.dialogs.FindOne(context.Background(), bson.M{"id": id}).Decode(dialog); err != nil {
 		return nil, err
 	}
-	return documentToDialog(dialog), nil
+
+	return dialog, nil
 }
 
-func (repo *Repository) GetAllDialogs() ([]*neocortex.Dialog, error) {
-	cursor, err := repo.dialogsCollection.Find(context.Background(), bson.M{})
+func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dialog, error) {
+	cursor, err := repo.dialogs.Find(context.Background(), bson.M{
+		"start_at": bson.M{
+			"$gte": frame.From.String(),
+			"$lt":  frame.To.String(),
+		},
+	})
 	if err != nil {
 		return nil, err
 	}
 
 	dialogs := make([]*neocortex.Dialog, 0)
 	for cursor.Next(context.Background()) {
-		if cursor.Err() != nil {
-			return nil, cursor.Err()
-		}
-		dialog := new(DialogDocument)
-		err := cursor.Decode(dialog)
-		if err != nil {
+		dialog := new(neocortex.Dialog)
+		if err := cursor.Decode(dialog); err != nil {
 			return nil, err
 		}
-		dialogs = append(dialogs, documentToDialog(dialog))
+		dialogs = append(dialogs, dialog)
 	}
 
 	return dialogs, nil
-}
-
-func (repo *Repository) GetDialogs(filter neocortex.DialogFilter) ([]*neocortex.Dialog, error) {
-	allDialogs, err := repo.GetAllDialogs()
-	if err != nil {
-		return nil, err
-	}
-
-	filteredDialogs := make([]*neocortex.Dialog, 0)
-	for _, d := range allDialogs {
-
-		if !filter.From.IsZero() {
-			if !d.StartAt.After(filter.From) {
-				continue
-			}
-		}
-
-		if !filter.Until.IsZero() {
-			if !d.EndAt.Before(filter.Until) {
-				continue
-			}
-		}
-
-		// if filter.Timezone != "" {
-		// 	if d.Context.Person.Timezone != filter.Timezone {
-		// 		continue
-		// 	}
-		// }
-
-		// if filter.SessionID != "" {
-		// 	if d.Context.SessionID != filter.SessionID {
-		// 		continue
-		// 	}
-		// }
-
-		// if filter.PersonID != "" {
-		// 	if d.Context.Person.ID != filter.PersonID {
-		// 		continue
-		// 	}
-		// }
-
-		filteredDialogs = append(filteredDialogs, d)
-	}
-
-	if filter.Limit != 0 {
-		return filteredDialogs[:filter.Limit], nil
-	}
-
-	return filteredDialogs, nil
-
 }
 
 func (repo *Repository) DeleteDialog(id string) (*neocortex.Dialog, error) {
@@ -109,19 +61,288 @@ func (repo *Repository) DeleteDialog(id string) (*neocortex.Dialog, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = repo.dialogsCollection.DeleteOne(context.Background(), bson.M{"id": id})
+	_, err = repo.dialogs.DeleteOne(context.Background(), bson.M{"id": id})
 	if err != nil {
 		return nil, err
 	}
+
 	return dialog, nil
 }
 
-func (repo *Repository) UpdateDialog(dialog *neocortex.Dialog) (*neocortex.Dialog, error) {
+func checkDialogInView(dialog *neocortex.Dialog, view *neocortex.View) bool {
+	for _, c := range view.Classes {
+		switch c.Type {
+		case neocortex.EntityClass:
+			if dialog.HasEntity(c.Value) {
+				return true
+			}
+		case neocortex.IntentClass:
+			if dialog.HasIntent(c.Value) {
+				return true
+			}
+		case neocortex.DialogNodeClass:
+			if dialog.HasDialogNode(c.Value) {
+				return true
+			}
+		default:
+			return false
+		}
+	}
 
-	_, err := repo.dialogsCollection.UpdateOne(context.Background(), bson.M{"id": dialog.ID}, dialogToDocument(dialog))
+	return false
+}
+
+func (repo *Repository) DialogsByView(viewID string, frame neocortex.TimeFrame) ([]*neocortex.Dialog, error) {
+	view, err := repo.GetViewByID(viewID)
 	if err != nil {
 		return nil, err
 	}
 
-	return repo.GetDialogByID(dialog.ID)
+	dialogs, err := repo.AllDialogs(frame)
+	if err != nil {
+		return nil, err
+	}
+
+	filteredDialogs := make([]*neocortex.Dialog, 0)
+
+	for _, dialog := range dialogs {
+		if checkDialogInView(dialog, view) {
+			filteredDialogs = append(filteredDialogs, dialog)
+		}
+	}
+
+	return filteredDialogs, nil
+}
+
+func (repo *Repository) RegisterIntent(intent string) error {
+	coll := new(collection)
+	err := repo.collections.FindOne(context.Background(), bson.M{"box": "intents"}).Decode(coll)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range coll.Values {
+		if v == intent {
+			return nil
+		}
+	}
+
+	coll.Values = append(coll.Values, intent)
+
+	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "intents"}, bson.M{"values": coll.Values})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *Repository) RegisterEntity(entity string) error {
+	coll := new(collection)
+	err := repo.collections.FindOne(context.Background(), bson.M{"box": "entities"}).Decode(coll)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range coll.Values {
+		if v == entity {
+			return nil
+		}
+	}
+
+	coll.Values = append(coll.Values, entity)
+
+	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "entities"}, bson.M{"values": coll.Values})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *Repository) RegisterDialogNode(name string) error {
+	coll := new(collection)
+	err := repo.collections.FindOne(context.Background(), bson.M{"box": "nodes"}).Decode(coll)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range coll.Values {
+		if v == name {
+			return nil
+		}
+	}
+
+	coll.Values = append(coll.Values, name)
+
+	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "nodes"}, bson.M{"values": coll.Values})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *Repository) RegisterContextVar(value string) error {
+	coll := new(collection)
+	err := repo.collections.FindOne(context.Background(), bson.M{"box": "context_vars"}).Decode(coll)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range coll.Values {
+		if v == value {
+			return nil
+		}
+	}
+
+	coll.Values = append(coll.Values, value)
+
+	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "context_vars"}, bson.M{"values": coll.Values})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *Repository) Intents() []string {
+	coll := new(collection)
+	err := repo.collections.FindOne(context.Background(), bson.M{"box": "intents"}).Decode(coll)
+	if err != nil {
+		return nil
+	}
+
+	return coll.Values
+}
+
+func (repo *Repository) Entities() []string {
+	coll := new(collection)
+	err := repo.collections.FindOne(context.Background(), bson.M{"box": "entities"}).Decode(coll)
+	if err != nil {
+		return nil
+	}
+
+	return coll.Values
+}
+
+func (repo *Repository) DialogNodes() []string {
+	coll := new(collection)
+	err := repo.collections.FindOne(context.Background(), bson.M{"box": "nodes"}).Decode(coll)
+	if err != nil {
+		return nil
+	}
+
+	return coll.Values
+}
+
+func (repo *Repository) ContextVars() []string {
+	coll := new(collection)
+	err := repo.collections.FindOne(context.Background(), bson.M{"box": "context_vars"}).Decode(coll)
+	if err != nil {
+		return nil
+	}
+
+	return coll.Values
+}
+
+func (repo *Repository) SaveView(view *neocortex.View) error {
+	if view.ID == "" {
+		view.ID = xid.New().String()
+	}
+
+	_, err := repo.views.InsertOne(context.Background(), view)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *Repository) GetViewByID(id string) (*neocortex.View, error) {
+	view := new(neocortex.View)
+	if err := repo.views.FindOne(context.Background(), bson.M{"id": id}).Decode(view); err != nil {
+		return nil, err
+	}
+
+	return view, nil
+}
+
+func (repo *Repository) FindViewByName(name string) ([]*neocortex.View, error) {
+
+	c, err := repo.views.Find(context.Background(), bson.M{"name": name})
+	if err != nil {
+		return nil, err
+	}
+
+	views := make([]*neocortex.View, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	for c.Next(context.Background()) {
+		view := new(neocortex.View)
+		if err := c.Decode(view); err != nil {
+			return nil, err
+		}
+		views = append(views, view)
+	}
+
+	return views, nil
+}
+
+func (repo *Repository) AllViews() ([]*neocortex.View, error) {
+	c, err := repo.views.Find(context.Background(), bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	views := make([]*neocortex.View, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	for c.Next(context.Background()) {
+		view := new(neocortex.View)
+		if err := c.Decode(view); err != nil {
+			return nil, err
+		}
+		views = append(views, view)
+	}
+
+	return views, nil
+}
+
+func (repo *Repository) UpdateView(view *neocortex.View) error {
+	_, err := repo.views.UpdateOne(context.Background(), bson.M{"id": view.ID}, bson.M{
+		"name":     view.Name,
+		"styles":   view.Styles,
+		"classes":  view.Classes,
+		"children": view.Children,
+	})
+
+	return err
+}
+
+func (repo *Repository) SetActionVar(name string, value string) error {
+	act := new(action)
+	err := repo.actions.FindOne(context.Background(), bson.M{"name": "envs"}).Decode(act)
+	if err != nil {
+		return err
+	}
+
+	act.Vars[name] = value
+
+	_, err = repo.actions.UpdateOne(context.Background(), bson.M{"name": "envs"}, bson.M{"$set": bson.M{"vars": act.Vars}})
+	return err
+}
+
+func (repo *Repository) GetActionVar(name string) (string, error) {
+	act := new(action)
+	err := repo.actions.FindOne(context.Background(), bson.M{"name": "envs"}).Decode(act)
+	if err != nil {
+		return "", err
+	}
+
+	return act.Vars[name], nil
 }

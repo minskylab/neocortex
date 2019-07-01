@@ -38,7 +38,7 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 	}
 
 	cognitive.OnContextIsDone(func(c *Context) {
-		engine.OnContextIsDone(c)
+		engine.onContextIsDone(c)
 	})
 
 	for _, ch := range channels {
@@ -54,11 +54,11 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 		}
 
 		ch.OnNewContextCreated(func(c *Context) {
-			engine.OnNewContextCreated(c)
+			engine.onNewContextCreated(c)
 		})
 
 		ch.OnContextIsDone(func(c *Context) {
-			engine.OnContextIsDone(c)
+			engine.onContextIsDone(c)
 		})
 
 		go func(ch *CommunicationChannel) {
@@ -79,7 +79,7 @@ func (engine *Engine) Run() error {
 		<-signalChan
 		log.Println("Closing all dialogs, total: ", len(engine.ActiveDialogs))
 		for c := range engine.ActiveDialogs {
-			engine.OnContextIsDone(c)
+			engine.onContextIsDone(c)
 		}
 		engine.done <- nil
 	}()

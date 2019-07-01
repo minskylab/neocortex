@@ -4,9 +4,6 @@ import (
 	"context"
 	"log"
 	"time"
-
-	"github.com/asdine/storm"
-	"github.com/rs/xid"
 )
 
 type OutputResponse func(c *Context, output *Output) error
@@ -15,7 +12,6 @@ type MiddleHandler func(c *Context, message *Input, response OutputResponse) err
 type ContextFabric func(ctx context.Context, info PersonInfo) *Context
 
 type Engine struct {
-	db                  *storm.DB
 	done                chan error
 	cognitive           CognitiveService
 	channels            []CommunicationChannel
@@ -29,29 +25,20 @@ type Engine struct {
 	api           API
 }
 
-func (engine *Engine) OnNewContextCreated(c *Context) {
+func (engine *Engine) onNewContextCreated(c *Context) {
 	log.Println("creating new context: ", c.SessionID)
-	engine.ActiveDialogs[c] = &Dialog{
-		ID:           xid.New().String(),
-		LastActivity: time.Now(),
-		StartAt:      time.Now(),
-		EndAt:        time.Time{},
-		Ins:          TimelineInputs{},
-		Outs:         TimelineOutputs{},
-		Contexts:     TimelineContexts{},
-	}
+	engine.ActiveDialogs[c] = newDialog()
 }
 
-func (engine *Engine) OnContextIsDone(c *Context) {
+func (engine *Engine) onContextIsDone(c *Context) {
 	for _, ch := range engine.channels {
 		ch.CallContextDone(c)
 	}
-	log.Printf("%v\n", engine.ActiveDialogs)
 	log.Println("closing context: ", c.SessionID)
 	if dialog, ok := engine.ActiveDialogs[c]; ok {
 		dialog.EndAt = time.Now()
 		if engine.Repository != nil {
-			_, err := engine.Repository.SaveNewDialog(dialog)
+			err := engine.Repository.SaveDialog(dialog)
 			if err != nil {
 				engine.done <- err
 			}

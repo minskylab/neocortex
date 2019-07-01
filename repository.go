@@ -2,20 +2,34 @@ package neocortex
 
 import "time"
 
-type DialogFilter struct {
-	PersonID  string
-	From      time.Time
-	Until     time.Time
-	SessionID string
-	Timezone  string
-	Limit     int64
+type TimeFrame struct {
+	From time.Time
+	To   time.Time
 }
 
 type Repository interface {
-	SaveNewDialog(dialog *Dialog) (*Dialog, error)
+	SaveDialog(dialog *Dialog) error
 	GetDialogByID(id string) (*Dialog, error)
-	GetAllDialogs() ([]*Dialog, error)
-	GetDialogs(filter DialogFilter) ([]*Dialog, error)
+	AllDialogs(frame TimeFrame) ([]*Dialog, error) // to page or not to page?
 	DeleteDialog(id string) (*Dialog, error)
-	UpdateDialog(dialog *Dialog) (*Dialog, error)
+	// Dialogs are inmutable, cause they don't have an updater
+	DialogsByView(viewID string, frame TimeFrame) ([]*Dialog, error)
+
+	RegisterIntent(intent string) error
+	RegisterEntity(entity string) error
+	RegisterDialogNode(name string) error
+	RegisterContextVar(value string) error
+	Intents() []string
+	Entities() []string
+	DialogNodes() []string
+	ContextVars() []string
+
+	SaveView(view *View) error
+	GetViewByID(id string) (*View, error)
+	FindViewByName(name string) ([]*View, error)
+	AllViews() ([]*View, error)
+	UpdateView(view *View) error
+
+	SetActionVar(name string, value string) error
+	GetActionVar(name string) (string, error)
 }

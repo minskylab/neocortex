@@ -22,7 +22,6 @@ const Suggestion ResponseType = "suggestion"
 
 const Unknown ResponseType = "unknown"
 
-
 type Response struct {
 	IsTyping bool         `json:"is_typing"`
 	Type     ResponseType `json:"type"`

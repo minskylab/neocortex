@@ -20,7 +20,7 @@ func (e *Engine) runGarbageCollector(g *garbageCollector) {
 		for t := range ticker.C {
 			for c, diag := range e.ActiveDialogs {
 				if t.Sub(diag.LastActivity) > g.maxLastResponse {
-					e.OnContextIsDone(c)
+					e.onContextIsDone(c)
 				}
 			}
 		}

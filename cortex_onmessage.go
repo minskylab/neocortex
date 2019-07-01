@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/k0kubun/pp"
-	"github.com/rs/xid"
 )
 
 func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *Input, response OutputResponse) error {
@@ -25,8 +24,8 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 
 	if dialog, activeDialogExist := engine.ActiveDialogs[c]; activeDialogExist {
 		dialog.LastActivity = time.Now()
-		dialog.Contexts[time.Now()] = *c
-		dialog.Ins[time.Now()] = *in
+		dialog.Contexts = append(dialog.Contexts, ContextRecord{At: time.Now(), Context: *c})
+		dialog.Ins = append(dialog.Ins, InputRecord{At: time.Now(), Input: *in})
 	}
 
 	out, err := engine.cognitive.GetProtoResponse(c, in)
@@ -41,15 +40,7 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 				in = f(c, in)
 			}
 
-			engine.ActiveDialogs[c] = &Dialog{
-				ID:           xid.New().String(),
-				LastActivity: time.Now(),
-				StartAt:      time.Now(),
-				EndAt:        time.Time{},
-				Ins:          TimelineInputs{},
-				Outs:         TimelineOutputs{},
-				Contexts:     TimelineContexts{},
-			}
+			engine.ActiveDialogs[c] = newDialog()
 
 			out, err = engine.cognitive.GetProtoResponse(c, in)
 			if err != nil {
@@ -75,8 +66,8 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 
 			if dialog, activeDialogExist := engine.ActiveDialogs[c]; activeDialogExist {
 				dialog.LastActivity = time.Now()
-				dialog.Contexts[time.Now()] = *c
-				dialog.Outs[time.Now()] = *out
+				dialog.Contexts = append(dialog.Contexts, ContextRecord{At: time.Now(), Context: *c})
+				dialog.Outs = append(dialog.Outs, OutputRecord{At: time.Now(), Output: *out})
 			}
 
 			exist = true
@@ -90,8 +81,8 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 
 		if dialog, activeDialogExist := engine.ActiveDialogs[c]; activeDialogExist {
 			dialog.LastActivity = time.Now()
-			dialog.Contexts[time.Now()] = *c
-			dialog.Outs[time.Now()] = *out
+			dialog.Contexts = append(dialog.Contexts, ContextRecord{At: time.Now(), Context: *c})
+			dialog.Outs = append(dialog.Outs, OutputRecord{At: time.Now(), Output: *out})
 		}
 	}
 
