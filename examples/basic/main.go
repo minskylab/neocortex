@@ -12,7 +12,7 @@ func main() {
 	box := uselessbox.NewCognitive()
 	term := terminal.NewChannel(nil)
 
-	repo, err := mongodb.New("mongodb+srv://amanda:LZlt2PQrqJW5r5RN@amanda-520ju.mongodb.net/test?retryWrites=true&w=majority")
+	repo, err := mongodb.New("asd")
 	if err != nil {
 		panic(err)
 	}
