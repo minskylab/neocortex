@@ -22,7 +22,7 @@ type Engine struct {
 
 	Repository    Repository
 	ActiveDialogs map[*Context]*Dialog
-	api           API
+	api           *API
 }
 
 func (engine *Engine) onNewContextCreated(c *Context) {
@@ -38,6 +38,7 @@ func (engine *Engine) onContextIsDone(c *Context) {
 	if dialog, ok := engine.ActiveDialogs[c]; ok {
 		dialog.EndAt = time.Now()
 		if engine.Repository != nil {
+			dialog.calcPerformance()
 			err := engine.Repository.SaveDialog(dialog)
 			if err != nil {
 				engine.done <- err

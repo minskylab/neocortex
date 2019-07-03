@@ -73,8 +73,9 @@ func New(uri string) (*Repository, error) {
 		}
 	}
 
-	if err := actions.FindOne(context.Background(), bson.M{"": "envs"}).Decode(coll); err != nil {
-		_, err := collections.InsertOne(context.Background(), action{Name: "envs", Vars: map[string]string{}})
+	act := new(action)
+	if err := actions.FindOne(context.Background(), bson.M{"name": "envs"}).Decode(act); err != nil {
+		_, err := actions.InsertOne(context.Background(), action{Name: "envs", Vars: map[string]string{}})
 		if err != nil {
 			return nil, err
 		}

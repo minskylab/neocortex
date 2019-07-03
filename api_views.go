@@ -35,7 +35,7 @@ func (api *API) registerViewsAPI(r *gin.RouterGroup) {
 
 	r.GET("/views/*name", func(c *gin.Context) {
 		name := c.Param("name")
-		if name == "" {
+		if name == "" || name == "/" {
 			views, err := api.repository.AllViews()
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

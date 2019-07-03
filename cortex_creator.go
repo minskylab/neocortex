@@ -26,11 +26,8 @@ func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChann
 func Default(repository Repository, cognitive CognitiveService, channels ...CommunicationChannel) (*Engine, error) {
 	engine := newDefaultEngine(cognitive, channels...)
 	engine.Repository = repository
-	engine.api = API{
-		repository: repository,
-		prefix:     "/api",
-		Port:       ":4200",
-	}
+
+	engine.api = newCortexAPI(repository, "/api", ":4200")
 
 	fabric := func(ctx context.Context, info PersonInfo) *Context {
 		newContext := cognitive.CreateNewContext(&ctx, info)

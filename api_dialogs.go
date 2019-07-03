@@ -2,9 +2,11 @@ package neocortex
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/araddon/dateparse"
 	"github.com/gin-gonic/gin"
+	"github.com/k0kubun/pp"
 	"github.com/rs/xid"
 )
 
@@ -34,7 +36,11 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 
 		viewID := c.Param("view")
 
-		if viewID == "" {
+		pp.Println(viewID)
+		pp.Println(from.Format(time.RFC3339))
+		pp.Println(to.Format(time.RFC3339))
+
+		if viewID == "" || viewID == "/" {
 			dialogs, err := api.repository.AllDialogs(TimeFrame{
 				From: from,
 				To:   to,

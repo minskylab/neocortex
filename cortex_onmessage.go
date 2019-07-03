@@ -24,8 +24,8 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 
 	if dialog, activeDialogExist := engine.ActiveDialogs[c]; activeDialogExist {
 		dialog.LastActivity = time.Now()
-		dialog.Contexts = append(dialog.Contexts, ContextRecord{At: time.Now(), Context: *c})
-		dialog.Ins = append(dialog.Ins, InputRecord{At: time.Now(), Input: *in})
+		dialog.Contexts = append(dialog.Contexts, &ContextRecord{At: time.Now(), Context: *c})
+		dialog.Ins = append(dialog.Ins, &InputRecord{At: time.Now(), Input: *in})
 	}
 
 	out, err := engine.cognitive.GetProtoResponse(c, in)
@@ -66,8 +66,8 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 
 			if dialog, activeDialogExist := engine.ActiveDialogs[c]; activeDialogExist {
 				dialog.LastActivity = time.Now()
-				dialog.Contexts = append(dialog.Contexts, ContextRecord{At: time.Now(), Context: *c})
-				dialog.Outs = append(dialog.Outs, OutputRecord{At: time.Now(), Output: *out})
+				dialog.Contexts = append(dialog.Contexts, &ContextRecord{At: time.Now(), Context: *c})
+				dialog.Outs = append(dialog.Outs, &OutputRecord{At: time.Now(), Output: *out})
 			}
 
 			exist = true
@@ -81,8 +81,8 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 
 		if dialog, activeDialogExist := engine.ActiveDialogs[c]; activeDialogExist {
 			dialog.LastActivity = time.Now()
-			dialog.Contexts = append(dialog.Contexts, ContextRecord{At: time.Now(), Context: *c})
-			dialog.Outs = append(dialog.Outs, OutputRecord{At: time.Now(), Output: *out})
+			dialog.Contexts = append(dialog.Contexts, &ContextRecord{At: time.Now(), Context: *c})
+			dialog.Outs = append(dialog.Outs, &OutputRecord{At: time.Now(), Output: *out})
 		}
 	}
 

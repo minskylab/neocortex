@@ -4,9 +4,11 @@ import (
 	"context"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/bregydoc/neocortex"
-	"github.com/globalsign/mgo/bson"
 	"github.com/rs/xid"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (repo *Repository) SaveDialog(dialog *neocortex.Dialog) error {
@@ -34,12 +36,15 @@ func (repo *Repository) GetDialogByID(id string) (*neocortex.Dialog, error) {
 }
 
 func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dialog, error) {
-	cursor, err := repo.dialogs.Find(context.Background(), bson.M{
+	filter := bson.M{
 		"start_at": bson.M{
-			"$gte": frame.From.String(),
-			"$lt":  frame.To.String(),
+			"$gte": primitive.NewDateTimeFromTime(frame.From),
+			"$lt":  primitive.NewDateTimeFromTime(frame.To),
 		},
-	})
+	}
+
+	cursor, err := repo.dialogs.Find(context.Background(), filter)
+
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +53,7 @@ func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dial
 	for cursor.Next(context.Background()) {
 		dialog := new(neocortex.Dialog)
 		if err := cursor.Decode(dialog); err != nil {
-			return nil, err
+			continue
 		}
 		dialogs = append(dialogs, dialog)
 	}

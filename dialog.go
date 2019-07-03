@@ -22,14 +22,14 @@ type ContextRecord struct {
 }
 
 type Dialog struct {
-	ID           string          `json:"id"`
-	StartAt      time.Time       `json:"start_at"`
-	LastActivity time.Time       `json:"last_activity"`
-	EndAt        time.Time       `json:"end_at"`
-	Ins          []InputRecord   `json:"ins"`
-	Outs         []OutputRecord  `json:"outs"`
-	Contexts     []ContextRecord `json:"contexts"`
-	Performance  float64         `json:"performance"`
+	ID           string           `json:"id" bson:"id"`
+	StartAt      time.Time        `json:"start_at" bson:"start_at"`
+	LastActivity time.Time        `json:"last_activity" bson:"last_activity"`
+	EndAt        time.Time        `json:"end_at" bson:"end_at"`
+	Ins          []*InputRecord   `json:"ins" bson:"ins"`
+	Outs         []*OutputRecord  `json:"outs" bson:"outs"`
+	Contexts     []*ContextRecord `json:"contexts" bson:"contexts"`
+	Performance  float64          `json:"performance" bson:"performance"`
 }
 
 func newDialog() *Dialog {
@@ -38,9 +38,31 @@ func newDialog() *Dialog {
 		LastActivity: time.Now(),
 		StartAt:      time.Now(),
 		EndAt:        time.Time{},
-		Ins:          []InputRecord{},
-		Outs:         []OutputRecord{},
-		Contexts:     []ContextRecord{},
+		Ins:          []*InputRecord{},
+		Outs:         []*OutputRecord{},
+		Contexts:     []*ContextRecord{},
+		Performance:  0.0,
+	}
+}
+
+// * Important: This algorithm to calc the performance should be configurable
+
+func (dialog *Dialog) calcPerformance() {
+	goods := 0
+	for _, out := range dialog.Outs {
+		valids := 0
+		for _, intent := range out.Output.Intents {
+			if intent.Confidence > 0.1 {
+				valids++
+			}
+		}
+		if valids > 0 {
+			goods++
+		}
+	}
+
+	if totalOuts := float64(len(dialog.Outs)); totalOuts > 0.0 {
+		dialog.Performance = float64(goods) / totalOuts
 	}
 }
 
