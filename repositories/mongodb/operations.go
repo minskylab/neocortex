@@ -182,7 +182,7 @@ func (repo *Repository) RegisterIntent(intent string) error {
 
 	coll.Values = append(coll.Values, intent)
 
-	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "intents"}, bson.M{"values": coll.Values})
+	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "intents"}, bson.M{"$set": bson.M{"values": coll.Values}})
 	if err != nil {
 		return err
 	}
@@ -205,7 +205,7 @@ func (repo *Repository) RegisterEntity(entity string) error {
 
 	coll.Values = append(coll.Values, entity)
 
-	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "entities"}, bson.M{"values": coll.Values})
+	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "entities"}, bson.M{"$set": bson.M{"values": coll.Values}})
 	if err != nil {
 		return err
 	}
@@ -228,7 +228,7 @@ func (repo *Repository) RegisterDialogNode(name string) error {
 
 	coll.Values = append(coll.Values, name)
 
-	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "nodes"}, bson.M{"values": coll.Values})
+	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "nodes"}, bson.M{"$set": bson.M{"values": coll.Values}})
 	if err != nil {
 		return err
 	}
@@ -251,7 +251,7 @@ func (repo *Repository) RegisterContextVar(value string) error {
 
 	coll.Values = append(coll.Values, value)
 
-	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "context_vars"}, bson.M{"values": coll.Values})
+	_, err = repo.collections.UpdateOne(context.Background(), bson.M{"box": "context_vars"}, bson.M{"$set": bson.M{"values": coll.Values}})
 	if err != nil {
 		return err
 	}

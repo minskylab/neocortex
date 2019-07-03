@@ -50,6 +50,32 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 		}
 	}
 
+	go func(intents []Intent, entities []Entity, nodes []*DialogNode, vars map[string]interface{}) {
+		var err error
+		if engine.Repository != nil {
+			for _, i := range intents {
+				if err = engine.Repository.RegisterIntent(i.Intent); err != nil {
+					log.Println(err)
+				}
+			}
+			for _, e := range entities {
+				if err = engine.Repository.RegisterEntity(e.Entity); err != nil {
+					log.Println(err)
+				}
+			}
+			for _, n := range nodes {
+				if err = engine.Repository.RegisterDialogNode(n.Title); err != nil {
+					log.Println(err)
+				}
+			}
+			for v := range vars {
+				if err = engine.Repository.RegisterContextVar(v); err != nil {
+					log.Println(err)
+				}
+			}
+		}
+	}(out.Intents, out.Entities, out.VisitedNodes, c.Variables)
+
 	resolvers, channelIsRegistered := engine.registeredResolvers[channel]
 	if !channelIsRegistered {
 		return ErrChannelIsNotRegistered

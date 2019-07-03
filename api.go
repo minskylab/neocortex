@@ -24,7 +24,8 @@ func (api *API) registerEndpoints() {
 	r := api.e.Group(api.prefix)
 	api.registerDialogsAPI(r)
 	api.registerViewsAPI(r)
-
+	api.registerActionsAPI(r)
+	api.registerCollectionsAPI(r)
 }
 
 func (api *API) Launch() error {

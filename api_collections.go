@@ -10,7 +10,7 @@ func (api *API) registerCollectionsAPI(r *gin.RouterGroup) {
 	r.GET("/collections/:type", func(c *gin.Context) {
 		t := c.Param("type")
 
-		if t != "" {
+		if t != "all" {
 			switch t {
 			case "entity", "entities":
 				ents := api.repository.Entities()
@@ -24,6 +24,10 @@ func (api *API) registerCollectionsAPI(r *gin.RouterGroup) {
 				nodes := api.repository.DialogNodes()
 				c.JSON(http.StatusOK, gin.H{"data": nodes})
 				return
+			case "context_vars", "vars":
+				vars := api.repository.ContextVars()
+				c.JSON(http.StatusOK, gin.H{"data": vars})
+				return
 			default:
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid type of collection"})
 				return
@@ -33,11 +37,13 @@ func (api *API) registerCollectionsAPI(r *gin.RouterGroup) {
 		ents := api.repository.Entities()
 		ints := api.repository.Intents()
 		nodes := api.repository.DialogNodes()
+		vars := api.repository.ContextVars()
 
 		c.JSON(http.StatusOK, gin.H{"data": gin.H{
-			"intents":  ints,
-			"entities": ents,
-			"nodes":    nodes,
+			"intents":      ints,
+			"entities":     ents,
+			"nodes":        nodes,
+			"context_vars": vars,
 		}})
 	})
 }
