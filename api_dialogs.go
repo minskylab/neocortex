@@ -2,11 +2,10 @@ package neocortex
 
 import (
 	"net/http"
-	"time"
+	"strconv"
 
 	"github.com/araddon/dateparse"
 	"github.com/gin-gonic/gin"
-	"github.com/k0kubun/pp"
 	"github.com/rs/xid"
 )
 
@@ -22,29 +21,39 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 	})
 
 	r.GET("/dialogs/*view", func(c *gin.Context) {
-		from, err := dateparse.ParseAny(c.Query("from"))
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "from date not found"})
-			return
-		}
+		frame := TimeFrame{}
 
-		to, err := dateparse.ParseAny(c.Query("to"))
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "to date not found"})
-			return
+		preset := TimeFramePreset(c.Query("preset"))
+
+		if preset != DayPreset && preset != WeekPreset && preset != MonthPreset {
+			from, err := dateparse.ParseAny(c.Query("from"))
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "from date not found"})
+				return
+			}
+
+			to, err := dateparse.ParseAny(c.Query("to"))
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "to date not found"})
+				return
+			}
+
+			frame.From = from
+			frame.To = to
+		} else {
+			frame.Preset = preset
 		}
 
 		viewID := c.Param("view")
 
-		pp.Println(viewID)
-		pp.Println(from.Format(time.RFC3339))
-		pp.Println(to.Format(time.RFC3339))
+		page, _ := strconv.Atoi(c.Query("page"))
+		size, _ := strconv.Atoi(c.Query("size"))
+
+		frame.PageNum = page
+		frame.PageSize = size
 
 		if viewID == "" || viewID == "/" {
-			dialogs, err := api.repository.AllDialogs(TimeFrame{
-				From: from,
-				To:   to,
-			})
+			dialogs, err := api.repository.AllDialogs(frame)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
@@ -59,10 +68,7 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 			return
 		}
 
-		dialogs, err := api.repository.DialogsByView(viewID, TimeFrame{
-			From: from,
-			To:   to,
-		})
+		dialogs, err := api.repository.DialogsByView(viewID, frame)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

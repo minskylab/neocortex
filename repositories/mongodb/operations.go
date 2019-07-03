@@ -4,6 +4,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/jinzhu/now"
+
+	"go.mongodb.org/mongo-driver/mongo/options"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/bregydoc/neocortex"
@@ -36,14 +40,45 @@ func (repo *Repository) GetDialogByID(id string) (*neocortex.Dialog, error) {
 }
 
 func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dialog, error) {
+	from := frame.From
+	to := frame.To
+
+	switch frame.Preset {
+	case neocortex.DayPreset:
+		from = now.BeginningOfDay()
+		to = now.EndOfDay()
+	case neocortex.WeekPreset:
+		from = now.BeginningOfWeek()
+		to = now.EndOfWeek()
+	case neocortex.MonthPreset:
+		from = now.BeginningOfMonth()
+		to = now.EndOfMonth()
+	}
+
 	filter := bson.M{
 		"start_at": bson.M{
-			"$gte": primitive.NewDateTimeFromTime(frame.From),
-			"$lt":  primitive.NewDateTimeFromTime(frame.To),
+			"$gte": primitive.NewDateTimeFromTime(from),
+			"$lte": primitive.NewDateTimeFromTime(to),
 		},
 	}
 
-	cursor, err := repo.dialogs.Find(context.Background(), filter)
+	size := int64(frame.PageSize)
+	if size <= 0 {
+		size = 20
+	}
+
+	skips := int64(size * int64(frame.PageNum-1))
+	if skips <= 0 {
+		skips = 0
+	}
+
+	opts := options.Find().SetLimit(size).SetSkip(skips)
+
+	cursor, err := repo.dialogs.Find(
+		context.Background(),
+		filter,
+		opts,
+	)
 
 	if err != nil {
 		return nil, err
@@ -53,7 +88,20 @@ func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dial
 	for cursor.Next(context.Background()) {
 		dialog := new(neocortex.Dialog)
 		if err := cursor.Decode(dialog); err != nil {
-			continue
+			m := bson.M{}
+			if err := cursor.Decode(&m); err != nil {
+				continue
+			}
+			dialog.ID, _ = m["id"].(string)
+
+			start, _ := m["start_at"].(primitive.DateTime)
+			end, _ := m["end_at"].(primitive.DateTime)
+
+			dialog.StartAt = start.Time()
+			dialog.EndAt = end.Time()
+			dialog.Ins = []*neocortex.InputRecord{}
+			dialog.Outs = []*neocortex.OutputRecord{}
+			dialog.Contexts = []*neocortex.ContextRecord{}
 		}
 		dialogs = append(dialogs, dialog)
 	}

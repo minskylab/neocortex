@@ -3,12 +3,10 @@ package neocortex
 import (
 	"log"
 	"time"
-
-	"github.com/k0kubun/pp"
 )
 
 func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *Input, response OutputResponse) error {
-	pp.Println("context on onMessage: ", c.SessionID)
+
 	inMatched := false
 	for matcher, injector := range engine.registeredInjection[channel] {
 		if in.Match(nil, matcher) {

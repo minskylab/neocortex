@@ -2,9 +2,18 @@ package neocortex
 
 import "time"
 
+type TimeFramePreset string
+
+const DayPreset TimeFramePreset = "day"
+const MonthPreset TimeFramePreset = "month"
+const WeekPreset TimeFramePreset = "week"
+
 type TimeFrame struct {
-	From time.Time
-	To   time.Time
+	From     time.Time
+	To       time.Time
+	PageSize int
+	PageNum  int
+	Preset   TimeFramePreset
 }
 
 type Repository interface {
