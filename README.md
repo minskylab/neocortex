@@ -1,6 +1,6 @@
 # Neocortex  🧠
 
-Neocortex is a tool to connect your cognitive service with your services and communication channels.
+Neocortex is a tool to connect your cognitive service with your web services and communication channels.
 
 The main goal of neocortex is offers a reliable and modern API to connect any kind of cognitive service* with any communication channel**. 
 
