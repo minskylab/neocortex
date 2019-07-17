@@ -21,10 +21,11 @@ type Engine struct {
 	registeredInjection map[CommunicationChannel]map[*Matcher]*InInjection
 	generalInjection    map[CommunicationChannel]*InInjection
 
-	Repository    Repository
-	ActiveDialogs map[*Context]*Dialog
-	api           *API
-	Register      map[string]string
+	Repository            Repository
+	ActiveDialogs         map[*Context]*Dialog
+	api                   *API
+	Register              map[string]string
+	dialogPerformanceFunc func(*Dialog) float64
 }
 
 func (engine *Engine) onNewContextCreated(c *Context) {
@@ -40,7 +41,7 @@ func (engine *Engine) onContextIsDone(c *Context) {
 	if dialog, ok := engine.ActiveDialogs[c]; ok {
 		dialog.EndAt = time.Now()
 		if engine.Repository != nil {
-			dialog.calcPerformance()
+			dialog.Performance = engine.dialogPerformanceFunc(dialog)
 			err := engine.Repository.SaveDialog(dialog)
 			if err != nil {
 				engine.done <- err

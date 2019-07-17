@@ -45,27 +45,6 @@ func newDialog() *Dialog {
 	}
 }
 
-// * Important: This algorithm to calc the performance should be configurable
-
-func (dialog *Dialog) calcPerformance() {
-	goods := 0
-	for _, out := range dialog.Outs {
-		valids := 0
-		for _, intent := range out.Output.Intents {
-			if intent.Confidence > 0.1 {
-				valids++
-			}
-		}
-		if valids > 0 {
-			goods++
-		}
-	}
-
-	if totalOuts := float64(len(dialog.Outs)); totalOuts > 0.0 {
-		dialog.Performance = float64(goods) / totalOuts
-	}
-}
-
 // TODO: To optimize, please find all at the same time (that has better performance)
 
 func (dialog *Dialog) HasEntity(entity string) bool {
