@@ -28,9 +28,6 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 	engine := newDefaultEngine(cognitive, channels...)
 	engine.Repository = repository
 
-<<<<<<< .merge_file_LkF86b
-	engine.api = newCortexAPI(nil, "/api", ":4200")
-=======
 	engine.RegisterAdmin("admin", "admin")
 
 	engine.RegisterAdmin("bregy", "1234")
@@ -38,7 +35,6 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 
 
 	engine.api = newCortexAPI(repository, "/api", ":4200")
->>>>>>> .merge_file_KdPsoF
 
 	fabric := func(ctx context.Context, info PersonInfo) *Context {
 		newContext := cognitive.CreateNewContext(&ctx, info)
