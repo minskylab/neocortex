@@ -22,7 +22,6 @@ func (api *API) registerActionsAPI(r *gin.RouterGroup) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-
 		err = api.repository.SetActionVar(name, value.Value)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

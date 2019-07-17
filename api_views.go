@@ -7,7 +7,6 @@ import (
 )
 
 func (api *API) registerViewsAPI(r *gin.RouterGroup) {
-
 	r.POST("/view", func(c *gin.Context) {
 		view := new(View)
 
@@ -78,5 +77,4 @@ func (api *API) registerViewsAPI(r *gin.RouterGroup) {
 			"data": views,
 		})
 	})
-
 }

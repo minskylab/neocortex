@@ -10,7 +10,6 @@ import (
 )
 
 func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
-
 	r.GET("/dialog/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		dialog, err := api.repository.GetDialogByID(id)
@@ -84,5 +83,4 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 		})
 		return
 	})
-
 }
