@@ -64,5 +64,14 @@ func (engine *Engine) getAdmin(Username string) (string, error) {
 	if val, ok := engine.Register[Username]; ok {
 		return val, nil
 	}
-	return "Not user found", nil
+	return "", nil
+}
+
+// RemoveAdmin let you remove the admin
+func (engine *Engine) RemoveAdmin(Username string) error {
+	if _, ok := engine.Register[Username]; ok {
+		delete(engine.Register, Username)
+	}
+
+	return errors.New("No user found")
 }

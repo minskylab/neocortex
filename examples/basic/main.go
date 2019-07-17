@@ -17,11 +17,14 @@ func main() {
 		panic(err)
 	}
 
-
 	engine, err := neo.Default(repo, box, term)
 	if err != nil {
 		panic(err)
 	}
+
+	engine.RegisterAdmin("admin", "admin")
+	engine.RegisterAdmin("antonio", "admin")
+	engine.RemoveAdmin("admin")
 
 	engine.InjectAll(term, func(c *neo.Context, in *neo.Input) *neo.Input {
 		c.Variables["user_name"] = "Bregy"
