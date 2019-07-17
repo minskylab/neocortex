@@ -12,7 +12,7 @@ func main() {
 	box := uselessbox.NewCognitive()
 	term := terminal.NewChannel(nil)
 
-	repo, err := mongodb.New("asd")
+	repo, err := mongodb.New("mongodb://localhost:27017")
 	if err != nil {
 		panic(err)
 	}

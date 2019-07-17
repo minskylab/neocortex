@@ -4,23 +4,40 @@ import (
 	"net/http"
 	"strconv"
 
+	jwt "github.com/appleboy/gin-jwt"
 	"github.com/araddon/dateparse"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/xid"
 )
 
 func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
-	r.GET("/dialog/:id", func(c *gin.Context) {
+
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+
+	r.POST("/login", getJWTAuth().LoginHandler)
+
+	auth := r.Group("/auth")
+
+	auth.GET("/refresh_token", getJWTAuth().RefreshHandler)
+	auth.Use(getJWTAuth().MiddlewareFunc())
+
+	auth.GET("/dialog/:id", func(c *gin.Context) {
+		claims := jwt.ExtractClaims(c)
 		id := c.Param("id")
 		dialog, err := api.repository.GetDialogByID(id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"data": dialog})
+		c.JSON(http.StatusOK, gin.H{
+			"userID": claims["id"],
+			"data":   dialog,
+		})
 	})
 
-	r.GET("/dialogs/*view", func(c *gin.Context) {
+	auth.GET("/dialogs/*view", func(c *gin.Context) {
+		claims := jwt.ExtractClaims(c)
 		frame := TimeFrame{}
 
 		preset := TimeFramePreset(c.Query("preset"))
@@ -59,7 +76,10 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 				return
 			}
 
-			c.JSON(http.StatusOK, gin.H{"data": dialogs})
+			c.JSON(http.StatusOK, gin.H{
+				"userID": claims["id"],
+				"data":   dialogs,
+			})
 			return
 		}
 
@@ -75,7 +95,10 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"data": dialogs})
+		c.JSON(http.StatusOK, gin.H{
+			"userID": claims["id"],
+			"data":   dialogs,
+		})
 		return
 	})
 

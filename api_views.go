@@ -3,10 +3,17 @@ package neocortex
 import (
 	"net/http"
 
+	jwt "github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 )
 
 func (api *API) registerViewsAPI(r *gin.RouterGroup) {
+
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+
+	r.POST("/login", getJWTAuth().LoginHandler)
+
 	r.POST("/view", func(c *gin.Context) {
 		view := new(View)
 
@@ -23,36 +30,6 @@ func (api *API) registerViewsAPI(r *gin.RouterGroup) {
 		c.JSON(http.StatusOK, gin.H{"data": view})
 	})
 
-	r.GET("/view/:id", func(c *gin.Context) {
-		id := c.Param("id")
-		view, err := api.repository.GetViewByID(id)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"data": view})
-	})
-
-	r.GET("/views/*name", func(c *gin.Context) {
-		name := c.Param("name")
-		if name == "" || name == "/" {
-			views, err := api.repository.AllViews()
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-			c.JSON(http.StatusOK, gin.H{"data": views})
-			return
-		}
-
-		views, err := api.repository.FindViewByName(name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"data": views})
-	})
-
 	r.PUT("/view/:id", func(c *gin.Context) {
 		view := new(View)
 
@@ -67,6 +44,55 @@ func (api *API) registerViewsAPI(r *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"data": view})
+		c.JSON(http.StatusOK, gin.H{
+			"data": view,
+		})
 	})
+
+	auth := r.Group("/auth")
+
+	auth.GET("/refresh_token", getJWTAuth().RefreshHandler)
+	auth.Use(getJWTAuth().MiddlewareFunc())
+
+	auth.GET("/view/:id", func(c *gin.Context) {
+		claims := jwt.ExtractClaims(c)
+		id := c.Param("id")
+		view, err := api.repository.GetViewByID(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"userID": claims["id"],
+			"data":   view,
+		})
+	})
+
+	auth.GET("/views/*name", func(c *gin.Context) {
+		claims := jwt.ExtractClaims(c)
+		name := c.Param("name")
+		if name == "" || name == "/" {
+			views, err := api.repository.AllViews()
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{
+				"userID": claims["id"],
+				"data":   views,
+			})
+			return
+		}
+
+		views, err := api.repository.FindViewByName(name)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"userID": claims["id"],
+			"data":   views,
+		})
+	})
+
 }
