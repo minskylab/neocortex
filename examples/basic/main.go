@@ -22,6 +22,8 @@ func main() {
 		panic(err)
 	}
 
+	engine.RegisterAdmin("admin", "admin")
+
 	engine.InjectAll(term, func(c *neo.Context, in *neo.Input) *neo.Input {
 		c.Variables["user_name"] = "Bregy"
 		if c.Variables["count"] == nil {
