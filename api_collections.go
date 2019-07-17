@@ -49,7 +49,6 @@ func (api *API) registerCollectionsAPI(r *gin.RouterGroup) {
 		vars := api.repository.ContextVars()
 
 		c.JSON(http.StatusOK, gin.H{"data": gin.H{
-			"userID":       claims["id"],
 			"intents":      ints,
 			"entities":     ents,
 			"nodes":        nodes,

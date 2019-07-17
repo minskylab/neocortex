@@ -1,6 +1,9 @@
 package neocortex
 
 import (
+	"encoding/json"
+	"errors"
+	"io/ioutil"
 	"log"
 	"time"
 
@@ -13,9 +16,13 @@ type login struct {
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
+type user struct {
+	Username string
+}
+
 var identityKey = "id"
 
-func getJWTAuth() *jwt.GinJWTMiddleware {
+func getJWTAuth(engine *Engine) *jwt.GinJWTMiddleware {
 
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "test zone",
@@ -24,41 +31,47 @@ func getJWTAuth() *jwt.GinJWTMiddleware {
 		MaxRefresh:  time.Hour,
 		IdentityKey: identityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(*Dialog); ok {
+			if v, ok := data.(*user); ok {
 				return jwt.MapClaims{
-					identityKey: v.ID,
+					identityKey: v.Username,
 				}
 			}
 			return jwt.MapClaims{}
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
-			return &Dialog{
-				ID: claims["id"].(string),
+			return &user{
+				Username: claims["id"].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var loginVals login
-			if err := c.ShouldBind(&loginVals); err != nil {
-				return "", jwt.ErrMissingLoginValues
+			data, err := ioutil.ReadAll(c.Request.Body)
+			if err != nil {
+				return "", errors.New(err.Error())
 			}
-			userID := loginVals.Username
-			password := loginVals.Password
+			l := new(login)
+			err = json.Unmarshal(data, l)
+			if err != nil {
+				return "", errors.New(err.Error())
+			}
 
-			if userID == "admin" && password == "admin" {
-				return &Dialog{
-					ID: userID,
+			userID := l.Username
+			password := l.Password
+
+			passwordAdmin, err := engine.getAdmin(userID)
+			if err != nil {
+				return nil, jwt.ErrFailedAuthentication
+			}
+			if password == passwordAdmin {
+				return &user{
+					Username: userID,
 				}, nil
 			}
 
 			return nil, jwt.ErrFailedAuthentication
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if v, ok := data.(*Dialog); ok && v.ID == "admin" {
-				return true
-			}
-
-			return false
+			return true
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			c.JSON(code, gin.H{

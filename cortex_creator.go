@@ -17,6 +17,7 @@ func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChann
 	engine.registeredInjection = map[CommunicationChannel]map[*Matcher]*InInjection{}
 	engine.generalInjection = map[CommunicationChannel]*InInjection{}
 	engine.done = make(chan error, 1)
+	engine.Register = map[string]string{}
 	// engine.logger = logrus.StandardLogger() // In the future
 	engine.ActiveDialogs = map[*Context]*Dialog{}
 	return engine
@@ -26,6 +27,12 @@ func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChann
 func Default(repository Repository, cognitive CognitiveService, channels ...CommunicationChannel) (*Engine, error) {
 	engine := newDefaultEngine(cognitive, channels...)
 	engine.Repository = repository
+
+	engine.RegisterAdmin("admin", "admin")
+
+	engine.RegisterAdmin("bregy", "1234")
+
+
 
 	engine.api = newCortexAPI(repository, "/api", ":4200")
 
@@ -82,7 +89,7 @@ func (engine *Engine) Run() error {
 	}()
 	go func() {
 		if engine.api.repository != nil {
-			engine.done <- engine.api.Launch()
+			engine.done <- engine.api.Launch(engine)
 		}
 	}()
 	return <-engine.done

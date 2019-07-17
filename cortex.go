@@ -2,6 +2,7 @@ package neocortex
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 )
@@ -23,6 +24,7 @@ type Engine struct {
 	Repository    Repository
 	ActiveDialogs map[*Context]*Dialog
 	api           *API
+	Register      map[string]string
 }
 
 func (engine *Engine) onNewContextCreated(c *Context) {
@@ -47,4 +49,20 @@ func (engine *Engine) onContextIsDone(c *Context) {
 		delete(engine.ActiveDialogs, c)
 		log.Println("finally deleting: ", c.SessionID)
 	}
+}
+
+// RegisterAdmin you can register new admin for get info purpose
+func (engine *Engine) RegisterAdmin(Username, Password string) error {
+	if engine.Register != nil {
+		engine.Register[Username] = Password
+	}
+	return errors.New("Register not initialized")
+}
+
+// getAdmin you can get the password of the admin
+func (engine *Engine) getAdmin(Username string) (string, error) {
+	if val, ok := engine.Register[Username]; ok {
+		return val, nil
+	}
+	return "Not user found", nil
 }
