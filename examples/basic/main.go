@@ -23,8 +23,6 @@ func main() {
 	}
 
 	engine.RegisterAdmin("admin", "admin")
-	engine.RegisterAdmin("antonio", "admin")
-	engine.RemoveAdmin("admin")
 
 	engine.InjectAll(term, func(c *neo.Context, in *neo.Input) *neo.Input {
 		c.Variables["user_name"] = "Bregy"
