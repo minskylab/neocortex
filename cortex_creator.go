@@ -28,12 +28,6 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 	engine := newDefaultEngine(cognitive, channels...)
 	engine.Repository = repository
 
-	engine.RegisterAdmin("admin", "admin")
-
-	engine.RegisterAdmin("bregy", "1234")
-
-
-
 	engine.api = newCortexAPI(repository, "/api", ":4200")
 
 	fabric := func(ctx context.Context, info PersonInfo) *Context {
