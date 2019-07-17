@@ -22,6 +22,7 @@ func newCortexAPI(repo Repository, prefix, port string) *API {
 
 func (api *API) registerEndpoints() {
 	r := api.e.Group(api.prefix)
+
 	api.registerDialogsAPI(r)
 	api.registerViewsAPI(r)
 	api.registerActionsAPI(r)

@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	jwt "github.com/appleboy/gin-jwt"
 	"github.com/araddon/dateparse"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/xid"
@@ -12,18 +11,7 @@ import (
 
 func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
-
-	r.POST("/login", getJWTAuth().LoginHandler)
-
-	auth := r.Group("/auth")
-
-	auth.GET("/refresh_token", getJWTAuth().RefreshHandler)
-	auth.Use(getJWTAuth().MiddlewareFunc())
-
-	auth.GET("/dialog/:id", func(c *gin.Context) {
-		claims := jwt.ExtractClaims(c)
+	r.GET("/dialog/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		dialog, err := api.repository.GetDialogByID(id)
 		if err != nil {
@@ -31,15 +19,12 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{
-			"userID": claims["id"],
-			"data":   dialog,
+			"data": dialog,
 		})
 	})
 
-	auth.GET("/dialogs/*view", func(c *gin.Context) {
-		claims := jwt.ExtractClaims(c)
+	r.GET("/dialogs/*view", func(c *gin.Context) {
 		frame := TimeFrame{}
-
 		preset := TimeFramePreset(c.Query("preset"))
 
 		if preset != DayPreset && preset != WeekPreset && preset != MonthPreset {
@@ -77,8 +62,7 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 			}
 
 			c.JSON(http.StatusOK, gin.H{
-				"userID": claims["id"],
-				"data":   dialogs,
+				"data": dialogs,
 			})
 			return
 		}
@@ -96,8 +80,7 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"userID": claims["id"],
-			"data":   dialogs,
+			"data": dialogs,
 		})
 		return
 	})
