@@ -27,6 +27,7 @@ type action struct {
 }
 
 func New(uri string) (*Repository, error) {
+	
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
