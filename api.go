@@ -20,7 +20,14 @@ func newCortexAPI(repo Repository, prefix, port string) *API {
 	}
 }
 
-func (api *API) registerEndpoints() {
+func (api *API) registerEndpoints(engine *Engine) {
+	api.e.Use(gin.Logger())
+	api.e.Use(gin.Recovery())
+	authJWTMiddleware := getJWTAuth(engine)
+	api.e.POST("/login", authJWTMiddleware.LoginHandler)
+	api.e.GET("/token_refresh", authJWTMiddleware.RefreshHandler)
+	api.e.Use(authJWTMiddleware.MiddlewareFunc())
+
 	r := api.e.Group(api.prefix)
 	api.registerDialogsAPI(r)
 	api.registerViewsAPI(r)
@@ -28,7 +35,7 @@ func (api *API) registerEndpoints() {
 	api.registerCollectionsAPI(r)
 }
 
-func (api *API) Launch() error {
-	api.registerEndpoints()
+func (api *API) Launch(engine *Engine) error {
+	api.registerEndpoints(engine)
 	return api.e.Run(api.Port)
 }

@@ -3,7 +3,6 @@ package main
 import (
 	neo "github.com/bregydoc/neocortex"
 	"github.com/bregydoc/neocortex/channels/facebook"
-	"github.com/bregydoc/neocortex/repositories/boltdb"
 
 	"github.com/bregydoc/neocortex/cognitive/uselessbox"
 )
@@ -17,19 +16,19 @@ func main() {
 		PageID:      "<Your PAGE_ID>",
 	})
 
-	repo, err := boltdb.New("neocortex.db")
+	// repo, err := boltdb.New("neocortex.db")
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	engine, err := neo.Default(nil, box, fb)
+
 	if err != nil {
 		panic(err)
 	}
 
-	engine, err := neo.Default(repo, box, fb)
-
-	if err != nil {
-		panic(err)
-	}
-
-	engine.ResolveAny(fb, func(in *neo.Input, out *neo.Output, response neo.OutputResponse) error {
-		return response(out)
+	engine.ResolveAny(fb, func(c *neo.Context, in *neo.Input, out *neo.Output, response neo.OutputResponse) error {
+		return response(c, out)
 	})
 
 	if err := engine.Run(); err != nil {

@@ -12,10 +12,15 @@ func main() {
 	box := uselessbox.NewCognitive()
 	term := terminal.NewChannel(nil)
 
-	repo, err := mongodb.New("asd")
+<<<<<<< .merge_file_H5cu6h
+	repo, err := mongodb.New("mongodb+srv://amanda:LZlt2PQrqJW5r5RN@amanda-520ju.mongodb.net/test?retryWrites=true&w=majority")
+=======
+	repo, err := mongodb.New("mongodb://localhost:27017")
+>>>>>>> .merge_file_tyoRo0
 	if err != nil {
 		panic(err)
 	}
+
 
 	engine, err := neo.Default(repo, box, term)
 	if err != nil {

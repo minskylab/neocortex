@@ -17,12 +17,13 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"data": dialog})
+		c.JSON(http.StatusOK, gin.H{
+			"data": dialog,
+		})
 	})
 
 	r.GET("/dialogs/*view", func(c *gin.Context) {
 		frame := TimeFrame{}
-
 		preset := TimeFramePreset(c.Query("preset"))
 
 		if preset != DayPreset && preset != WeekPreset && preset != MonthPreset {
@@ -59,7 +60,9 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 				return
 			}
 
-			c.JSON(http.StatusOK, gin.H{"data": dialogs})
+			c.JSON(http.StatusOK, gin.H{
+				"data": dialogs,
+			})
 			return
 		}
 
@@ -75,8 +78,9 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"data": dialogs})
+		c.JSON(http.StatusOK, gin.H{
+			"data": dialogs,
+		})
 		return
 	})
-
 }

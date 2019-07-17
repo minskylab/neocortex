@@ -34,55 +34,6 @@ func (repo *Repository) GetAllDialogs() ([]*neocortex.Dialog, error) {
 	return allDialogs, nil
 }
 
-func (repo *Repository) GetDialogs(filter neocortex.DialogFilter) ([]*neocortex.Dialog, error) {
-	allDialogs, err := repo.GetAllDialogs()
-	if err != nil {
-		return nil, err
-	}
-	filteredDialogs := make([]*neocortex.Dialog, 0)
-	for _, d := range allDialogs {
-
-		if !filter.From.IsZero() {
-			if !d.StartAt.After(filter.From) {
-				continue
-			}
-		}
-
-		if !filter.Until.IsZero() {
-			if !d.EndAt.Before(filter.Until) {
-				continue
-			}
-		}
-
-		// if filter.Timezone != "" {
-		// 	if d.Context.Person.Timezone != filter.Timezone {
-		// 		continue
-		// 	}
-		// }
-
-		// if filter.SessionID != "" {
-		// 	if d.Context.SessionID != filter.SessionID {
-		// 		continue
-		// 	}
-		// }
-
-		// if filter.PersonID != "" {
-		// 	if d.Context.Person.ID != filter.PersonID {
-		// 		continue
-		// 	}
-		// }
-
-		filteredDialogs = append(filteredDialogs, d)
-	}
-
-	if filter.Limit != 0 {
-		return filteredDialogs[:filter.Limit], nil
-	}
-
-	return filteredDialogs, nil
-
-}
-
 func (repo *Repository) DeleteDialog(id string) (*neocortex.Dialog, error) {
 	d, err := repo.GetDialogByID(id)
 	if err != nil {
