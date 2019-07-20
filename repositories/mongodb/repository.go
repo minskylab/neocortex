@@ -43,7 +43,7 @@ func New(uri string) (*Repository, error) {
 	actions := client.Database("neocortex").Collection("actions")
 	collections := client.Database("neocortex").Collection("collections")
 
-	// * Creating different boxes for intents, entities, dialog nodes and context variables
+	// * Creating different 'boxes' for intents, entities, dialog nodes and context variables
 
 	coll := new(collection)
 	if err := collections.FindOne(context.Background(), bson.M{"box": "intents"}).Decode(coll); err != nil {
