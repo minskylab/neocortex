@@ -20,13 +20,13 @@ type user struct {
 	Username string
 }
 
-var identityKey = "id"
+const identityKey = "id"
 
-func getJWTAuth(engine *Engine) *jwt.GinJWTMiddleware {
+func getJWTAuth(engine *Engine, secretKey string) *jwt.GinJWTMiddleware {
 
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "test zone",
-		Key:         []byte("secretBirkey"),
+		Key:         []byte(secretKey),
 		Timeout:     time.Hour,
 		MaxRefresh:  time.Hour,
 		IdentityKey: identityKey,

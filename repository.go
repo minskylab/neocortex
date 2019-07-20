@@ -11,9 +11,9 @@ const WeekPreset TimeFramePreset = "week"
 type TimeFrame struct {
 	From     time.Time
 	To       time.Time
+	Preset   TimeFramePreset
 	PageSize int
 	PageNum  int
-	Preset   TimeFramePreset
 }
 
 type Repository interface {
@@ -21,8 +21,10 @@ type Repository interface {
 	GetDialogByID(id string) (*Dialog, error)
 	AllDialogs(frame TimeFrame) ([]*Dialog, error) // to page or not to page?
 	DeleteDialog(id string) (*Dialog, error)
-	// Dialogs are inmutable, cause they don't have an updater
+
+	// Dialogs are inmutable, cause it doesn't have an updater
 	DialogsByView(viewID string, frame TimeFrame) ([]*Dialog, error)
+	Summary() (*Summary, error)
 
 	RegisterIntent(intent string) error
 	RegisterEntity(entity string) error

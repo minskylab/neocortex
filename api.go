@@ -1,6 +1,7 @@
 package neocortex
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,11 +22,20 @@ func newCortexAPI(repo Repository, prefix, port string) *API {
 }
 
 func (api *API) registerEndpoints(engine *Engine) {
-	api.e.Use(gin.Logger())
-	api.e.Use(gin.Recovery())
-	authJWTMiddleware := getJWTAuth(engine)
+	corsConf := cors.DefaultConfig()
+	corsConf.AllowAllOrigins = true
+
+	c := cors.New(corsConf)
+
+	api.e.Use(c)
+
+	authJWTMiddleware := getJWTAuth(engine, engine.secret)
+
 	api.e.POST("/login", authJWTMiddleware.LoginHandler)
+
 	api.e.GET("/token_refresh", authJWTMiddleware.RefreshHandler)
+
+	// * Auth
 	api.e.Use(authJWTMiddleware.MiddlewareFunc())
 
 	r := api.e.Group(api.prefix)

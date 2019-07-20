@@ -36,3 +36,15 @@ type ActionVariable struct {
 	Type  ActionVarType `json:"type"`
 	Value []byte        `json:"value"`
 }
+
+type UsersSummary struct {
+	News       int64 `json:"news"`
+	Recurrents int64 `json:"recurrents"`
+}
+
+type Summary struct {
+	TotalDialogs    int64                   `json:"total_dialogs"`
+	NewUsers        int64                   `json:"new_users"`
+	RecurrentUsers  int64                   `json:"recurrent_users"`
+	UsersByTimezone map[string]UsersSummary `json:"users_by_timezone"`
+}

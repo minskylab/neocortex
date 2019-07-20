@@ -21,11 +21,14 @@ type Engine struct {
 	registeredInjection map[CommunicationChannel]map[*Matcher]*InInjection
 	generalInjection    map[CommunicationChannel]*InInjection
 
-	Repository            Repository
-	ActiveDialogs         map[*Context]*Dialog
-	api                   *API
-	Register              map[string]string
+	Repository    Repository
+	ActiveDialogs map[*Context]*Dialog
+	api           *API
+	Register      map[string]string
+
 	dialogPerformanceFunc func(*Dialog) float64
+
+	secret string
 }
 
 func (engine *Engine) onNewContextCreated(c *Context) {
@@ -57,7 +60,7 @@ func (engine *Engine) RegisterAdmin(Username, Password string) error {
 	if engine.Register != nil {
 		engine.Register[Username] = Password
 	}
-	return errors.New("Register not initialized")
+	return errors.New("register not initialized")
 }
 
 // getAdmin you can get the password of the admin
@@ -74,5 +77,5 @@ func (engine *Engine) RemoveAdmin(Username string) error {
 		delete(engine.Register, Username)
 	}
 
-	return errors.New("No user found")
+	return errors.New("no user found")
 }

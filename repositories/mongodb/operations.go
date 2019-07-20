@@ -399,3 +399,27 @@ func (repo *Repository) GetActionVar(name string) (string, error) {
 
 	return act.Vars[name], nil
 }
+
+func (repo *Repository) Summary() (*neocortex.Summary, error) {
+
+	summary := neocortex.Summary{}
+
+	total, err := repo.dialogs.CountDocuments(context.Background(), bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	summary.TotalDialogs = total
+
+	contexts, err := repo.dialogs.Distinct(context.Background(), "contexts.0", bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	summary.NewUsers = int64(len(contexts))
+	summary.RecurrentUsers = total - summary.NewUsers
+	// summary.UsersByTimezone
+	// TODO: Implement users by timezone
+
+	return &summary, nil
+}
