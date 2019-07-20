@@ -411,6 +411,7 @@ func (repo *Repository) Summary() (*neocortex.Summary, error) {
 
 	summary.TotalDialogs = total
 
+	// ! below line is not completed, this distinct is not a complete solution
 	contexts, err := repo.dialogs.Distinct(context.Background(), "contexts.0", bson.M{})
 	if err != nil {
 		return nil, err
