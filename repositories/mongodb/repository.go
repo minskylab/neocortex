@@ -3,7 +3,7 @@ package mongodb
 import (
 	"context"
 
-	"github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -27,7 +27,7 @@ type action struct {
 }
 
 func New(uri string) (*Repository, error) {
-	
+
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err

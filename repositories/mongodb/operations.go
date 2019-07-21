@@ -55,10 +55,12 @@ func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dial
 		to = now.EndOfMonth()
 	}
 
+	// * Mongo pleaseeee
+
 	filter := bson.M{
 		"start_at": bson.M{
-			"$gte": primitive.NewDateTimeFromTime(from),
-			"$lte": primitive.NewDateTimeFromTime(to),
+			"$gte": primitive.DateTime(from.UnixNano() / 1000000),
+			"$lte": primitive.DateTime(to.UnixNano() / 1000000),
 		},
 	}
 
@@ -97,8 +99,12 @@ func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dial
 			start, _ := m["start_at"].(primitive.DateTime)
 			end, _ := m["end_at"].(primitive.DateTime)
 
-			dialog.StartAt = start.Time()
-			dialog.EndAt = end.Time()
+			// * Mongo pleaseeee
+			s := time.Unix(int64(start)/1000, int64(start)%1000*1000000)
+			e := time.Unix(int64(end)/1000, int64(end)%1000*1000000)
+
+			dialog.StartAt = s
+			dialog.EndAt = e
 			dialog.Ins = []*neocortex.InputRecord{}
 			dialog.Outs = []*neocortex.OutputRecord{}
 			dialog.Contexts = []*neocortex.ContextRecord{}
