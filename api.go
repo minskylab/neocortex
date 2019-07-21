@@ -35,7 +35,6 @@ func (api *API) registerEndpoints(engine *Engine) {
 
 	api.e.GET("/token_refresh", authJWTMiddleware.RefreshHandler)
 
-	// * Auth
 	api.e.Use(authJWTMiddleware.MiddlewareFunc())
 
 	r := api.e.Group(api.prefix)
@@ -43,6 +42,7 @@ func (api *API) registerEndpoints(engine *Engine) {
 	api.registerViewsAPI(r)
 	api.registerActionsAPI(r)
 	api.registerCollectionsAPI(r)
+	api.registerSummaryAPI(r)
 }
 
 func (api *API) Launch(engine *Engine) error {
