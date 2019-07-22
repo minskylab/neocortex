@@ -23,6 +23,8 @@ func newCortexAPI(repo Repository, prefix, port string) *API {
 
 func (api *API) registerEndpoints(engine *Engine) {
 	corsConf := cors.DefaultConfig()
+	corsConf.AddAllowHeaders("Authorization")
+
 	corsConf.AllowAllOrigins = true
 
 	c := cors.New(corsConf)
