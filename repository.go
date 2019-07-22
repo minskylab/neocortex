@@ -7,6 +7,7 @@ type TimeFramePreset string
 const DayPreset TimeFramePreset = "day"
 const MonthPreset TimeFramePreset = "month"
 const WeekPreset TimeFramePreset = "week"
+const YearPreset TimeFramePreset = "year"
 
 type TimeFrame struct {
 	From     time.Time
@@ -24,7 +25,7 @@ type Repository interface {
 
 	// Dialogs are inmutable, cause it doesn't have an updater
 	DialogsByView(viewID string, frame TimeFrame) ([]*Dialog, error)
-	Summary() (*Summary, error)
+	Summary(frame TimeFrame) (*Summary, error)
 
 	RegisterIntent(intent string) error
 	RegisterEntity(entity string) error

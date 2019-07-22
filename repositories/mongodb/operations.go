@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/jinzhu/now"
@@ -53,6 +54,11 @@ func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dial
 	case neocortex.MonthPreset:
 		from = now.BeginningOfMonth()
 		to = now.EndOfMonth()
+	case neocortex.YearPreset:
+		from = now.BeginningOfYear()
+		to = now.EndOfYear()
+	default:
+		return nil, errors.New("invalid preset, please choose between: day, week, month or year")
 	}
 
 	// * Mongo pleaseeee
@@ -406,21 +412,49 @@ func (repo *Repository) GetActionVar(name string) (string, error) {
 	return act.Vars[name], nil
 }
 
-func (repo *Repository) Summary() (*neocortex.Summary, error) {
+func (repo *Repository) Summary(frame neocortex.TimeFrame) (*neocortex.Summary, error) {
 
 	summary := neocortex.Summary{}
 	summary.UsersByTimezone = map[string]neocortex.UsersSummary{}
 
+	from := frame.From
+	to := frame.To
 
+	switch frame.Preset {
+	case neocortex.DayPreset:
+		from = now.BeginningOfDay()
+		to = now.EndOfDay()
+	case neocortex.WeekPreset:
+		from = now.BeginningOfWeek()
+		to = now.EndOfWeek()
+	case neocortex.MonthPreset:
+		from = now.BeginningOfMonth()
+		to = now.EndOfMonth()
+	case neocortex.YearPreset:
+		from = now.BeginningOfYear()
+		to = now.EndOfYear()
+	default:
+		return nil, errors.New("invalid preset, please choose between: day, week, month or year")
+	}
 
-	cursor, err := repo.dialogs.Find(context.Background(), bson.M{})
+	// * Mongo pleaseeee
+
+	filter := bson.M{
+		"start_at": bson.M{
+			"$gte": primitive.DateTime(from.UnixNano() / 1000000),
+			"$lte": primitive.DateTime(to.UnixNano() / 1000000),
+		},
+	}
+
+	opts := options.Find().SetLimit(1e8) // 100000000
+
+	cursor, err := repo.dialogs.Find(context.Background(), filter, opts)
 	if err != nil {
 		return nil, err
 	}
 
 	performanceAccum := 0.0
 	totalCorrectDialogs := int64(0)
-
 
 	usersByTimezone := map[string]map[string]int{}
 
@@ -439,16 +473,26 @@ func (repo *Repository) Summary() (*neocortex.Summary, error) {
 			usersByTimezone[c.Context.Person.Timezone][c.Context.Person.Name]++
 		}
 
-		if len(dialog.Ins) >0 {
+		if len(dialog.Ins) > 0 {
 			performanceAccum += dialog.Performance
 			totalCorrectDialogs++
 		}
 	}
 
+	if totalCorrectDialogs == 0 {
+		return &neocortex.Summary{
+			TotalDialogs:    0,
+			TotalUsers:      0,
+			RecurrentUsers:  0,
+			PerformanceMean: 0.0,
+			// UsersByTimezone: map[string,
+		}, nil
+	}
+
 	totalUsers := int64(0)
 	totalRecurrent := int64(0)
 
-	for  timezone, usersByTimezone := range usersByTimezone {
+	for timezone, usersByTimezone := range usersByTimezone {
 		recurrent := 0
 		for _, r := range usersByTimezone {
 			if r < 2 {
@@ -458,7 +502,7 @@ func (repo *Repository) Summary() (*neocortex.Summary, error) {
 
 		summary.UsersByTimezone[timezone] = neocortex.UsersSummary{
 			Recurrents: int64(recurrent),
-			News: int64(len(usersByTimezone)-recurrent),
+			News:       int64(len(usersByTimezone) - recurrent),
 		}
 
 		totalUsers += int64(len(usersByTimezone))
@@ -468,7 +512,7 @@ func (repo *Repository) Summary() (*neocortex.Summary, error) {
 	summary.TotalUsers = totalUsers
 	summary.RecurrentUsers = totalRecurrent
 	summary.TotalDialogs = totalCorrectDialogs
-	summary.PerformanceMean = performanceAccum/float64(totalCorrectDialogs)
+	summary.PerformanceMean = performanceAccum / float64(totalCorrectDialogs)
 
 	return &summary, nil
 }

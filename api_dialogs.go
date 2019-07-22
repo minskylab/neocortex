@@ -26,7 +26,7 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 		frame := TimeFrame{}
 		preset := TimeFramePreset(c.Query("preset"))
 
-		if preset != DayPreset && preset != WeekPreset && preset != MonthPreset {
+		if preset != DayPreset && preset != WeekPreset && preset != MonthPreset && preset != YearPreset {
 			from, err := dateparse.ParseAny(c.Query("from"))
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "from date not found"})
