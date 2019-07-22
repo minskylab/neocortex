@@ -60,7 +60,7 @@ func (engine *Engine) RegisterAdmin(Username, Password string) error {
 	if engine.Register != nil {
 		engine.Register[Username] = Password
 	}
-	return errors.New("register not initialized")
+	return nil
 }
 
 // getAdmin you can get the password of the admin

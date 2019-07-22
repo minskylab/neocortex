@@ -22,10 +22,7 @@ func main() {
 		panic(err)
 	}
 
-	err = engine.RegisterAdmin("admin", "admin")
-	if err != nil {
-		panic(err)
-	}
+	engine.RegisterAdmin("admin", "admin")
 
 	engine.InjectAll(term, func(c *neo.Context, in *neo.Input) *neo.Input {
 		c.Variables["user_name"] = "Bregy"

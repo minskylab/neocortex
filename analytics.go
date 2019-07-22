@@ -44,7 +44,8 @@ type UsersSummary struct {
 
 type Summary struct {
 	TotalDialogs    int64                   `json:"total_dialogs"`
-	NewUsers        int64                   `json:"new_users"`
+	TotalUsers      int64                   `json:"total_users"`
 	RecurrentUsers  int64                   `json:"recurrent_users"`
 	UsersByTimezone map[string]UsersSummary `json:"users_by_timezone"`
+	PerformanceMean float64                 `json:"performance_mean"`
 }
