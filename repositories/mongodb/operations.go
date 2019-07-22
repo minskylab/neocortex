@@ -409,24 +409,66 @@ func (repo *Repository) GetActionVar(name string) (string, error) {
 func (repo *Repository) Summary() (*neocortex.Summary, error) {
 
 	summary := neocortex.Summary{}
+	summary.UsersByTimezone = map[string]neocortex.UsersSummary{}
 
-	total, err := repo.dialogs.CountDocuments(context.Background(), bson.M{})
+
+
+	cursor, err := repo.dialogs.Find(context.Background(), bson.M{})
 	if err != nil {
 		return nil, err
 	}
 
-	summary.TotalDialogs = total
+	performanceAccum := 0.0
+	totalCorrectDialogs := int64(0)
 
-	// ! below line is not completed, this distinct is not a complete solution
-	contexts, err := repo.dialogs.Distinct(context.Background(), "contexts.0", bson.M{})
-	if err != nil {
-		return nil, err
+
+	usersByTimezone := map[string]map[string]int{}
+
+	for cursor.Next(context.Background()) {
+		dialog := new(neocortex.Dialog)
+		err = cursor.Decode(dialog)
+		if err != nil {
+			continue
+		}
+
+		if len(dialog.Contexts) > 0 {
+			c := dialog.Contexts[0]
+			if usersByTimezone[c.Context.Person.Timezone] == nil {
+				usersByTimezone[c.Context.Person.Timezone] = map[string]int{}
+			}
+			usersByTimezone[c.Context.Person.Timezone][c.Context.Person.Name]++
+		}
+
+		if len(dialog.Ins) >0 {
+			performanceAccum += dialog.Performance
+			totalCorrectDialogs++
+		}
 	}
 
-	summary.NewUsers = int64(len(contexts))
-	summary.RecurrentUsers = total - summary.NewUsers
-	// summary.UsersByTimezone
-	// TODO: Implement users by timezone
+	totalUsers := int64(0)
+	totalRecurrent := int64(0)
+
+	for  timezone, usersByTimezone := range usersByTimezone {
+		recurrent := 0
+		for _, r := range usersByTimezone {
+			if r < 2 {
+				recurrent++
+			}
+		}
+
+		summary.UsersByTimezone[timezone] = neocortex.UsersSummary{
+			Recurrents: int64(recurrent),
+			News: int64(len(usersByTimezone)-recurrent),
+		}
+
+		totalUsers += int64(len(usersByTimezone))
+		totalRecurrent += int64(recurrent)
+	}
+
+	summary.TotalUsers = totalUsers
+	summary.RecurrentUsers = totalRecurrent
+	summary.TotalDialogs = totalCorrectDialogs
+	summary.PerformanceMean = performanceAccum/float64(totalCorrectDialogs)
 
 	return &summary, nil
 }
