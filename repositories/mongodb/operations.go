@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/jinzhu/now"
@@ -57,8 +56,8 @@ func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dial
 	case neocortex.YearPreset:
 		from = now.BeginningOfYear()
 		to = now.EndOfYear()
-	default:
-		return nil, errors.New("invalid preset, please choose between: day, week, month or year")
+		// default:
+		// 	return nil, errors.New("invalid preset, please choose between: day, week, month or year")
 	}
 
 	// * Mongo pleaseeee
@@ -433,8 +432,8 @@ func (repo *Repository) Summary(frame neocortex.TimeFrame) (*neocortex.Summary, 
 	case neocortex.YearPreset:
 		from = now.BeginningOfYear()
 		to = now.EndOfYear()
-	default:
-		return nil, errors.New("invalid preset, please choose between: day, week, month or year")
+		// default:
+		// 	return nil, errors.New("invalid preset, please choose between: day, week, month or year")
 	}
 
 	// * Mongo pleaseeee
