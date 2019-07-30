@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"strings"
+
 	"github.com/araddon/dateparse"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/xid"
@@ -66,6 +68,8 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 			})
 			return
 		}
+
+		viewID = strings.Trim(viewID, "/")
 
 		log.Println("viewID, ", viewID)
 		if _, err := xid.FromString(viewID); err != nil {
