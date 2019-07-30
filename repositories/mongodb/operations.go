@@ -114,7 +114,13 @@ func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dial
 			dialog.Outs = []*neocortex.OutputRecord{}
 			dialog.Contexts = []*neocortex.ContextRecord{}
 		}
-		dialogs = append(dialogs, dialog)
+
+		if dialog.Ins != nil && dialog.Outs != nil {
+			if len(dialog.Ins) != 0 && len(dialog.Outs) != 0 {
+				dialogs = append(dialogs, dialog)
+			}
+		}
+
 	}
 
 	return dialogs, nil
