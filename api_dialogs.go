@@ -1,6 +1,7 @@
 package neocortex
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -66,7 +67,9 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 			return
 		}
 
+		log.Println("viewID, ", viewID)
 		if _, err := xid.FromString(viewID); err != nil {
+			log.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid view id"})
 			return
 		}
