@@ -26,7 +26,7 @@ func (api *API) registerEndpoints(engine *Engine) {
 	corsConf.AddAllowHeaders("Authorization")
 
 	corsConf.AllowAllOrigins = true
-	corsConf.AddAllowHeaders("Access-Control-Allow-Origin", "*")
+
 	c := cors.New(corsConf)
 
 	api.e.Use(c)

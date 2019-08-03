@@ -75,6 +75,7 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 func (engine *Engine) Run() error {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt)
+	gc := defaultGarbageCollector()
 	go func() {
 		<-signalChan
 		log.Println("Closing all dialogs, total: ", len(engine.ActiveDialogs))
@@ -88,5 +89,8 @@ func (engine *Engine) Run() error {
 			engine.done <- engine.api.Launch(engine)
 		}
 	}()
+
+	engine.runGarbageCollector(gc)
+
 	return <-engine.done
 }
