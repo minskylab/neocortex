@@ -50,6 +50,7 @@ func (engine *Engine) onContextIsDone(c *Context) {
 				engine.done <- err
 			}
 		}
+
 		delete(engine.ActiveDialogs, c)
 		log.Println("finally deleting: ", c.SessionID)
 	}
