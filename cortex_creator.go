@@ -3,6 +3,7 @@ package neocortex
 import (
 	"context"
 	"log"
+	"time"
 
 	"os"
 	"os/signal"
@@ -75,7 +76,9 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 func (engine *Engine) Run() error {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt)
-	gc := defaultGarbageCollector()
+
+	gc := defaultGarbageCollector(10 * time.Minute)
+
 	go func() {
 		<-signalChan
 		log.Println("Closing all dialogs, total: ", len(engine.ActiveDialogs))

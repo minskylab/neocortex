@@ -7,10 +7,10 @@ type garbageCollector struct {
 	maxLastResponse time.Duration
 }
 
-func defaultGarbageCollector() *garbageCollector {
+func defaultGarbageCollector(maxSessiontime time.Duration) *garbageCollector {
 	return &garbageCollector{
 		tickTime:        1 * time.Second,
-		maxLastResponse: 10 * time.Minute,
+		maxLastResponse: maxSessiontime,
 	}
 }
 
