@@ -26,6 +26,7 @@ type Engine struct {
 	api           *API
 	Register      map[string]string
 
+	Analytics             *Analytics
 	dialogPerformanceFunc func(*Dialog) float64
 
 	secret string

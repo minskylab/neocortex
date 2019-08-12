@@ -23,14 +23,19 @@ func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChann
 	engine.ActiveDialogs = map[*Context]*Dialog{}
 	engine.dialogPerformanceFunc = defaultPerformance
 	engine.secret = "neocortex2019"
+
 	return engine
 }
 
 // Default ...
 func Default(repository Repository, cognitive CognitiveService, channels ...CommunicationChannel) (*Engine, error) {
+	var err error
 	engine := newDefaultEngine(cognitive, channels...)
 	engine.Repository = repository
-
+	engine.Analytics, err = newDefaultAnalytics(engine.Repository, defaultPerformance)
+	if err != nil {
+		return nil, err
+	}
 	engine.api = newCortexAPI(repository, "/api", ":4200")
 
 	fabric := func(ctx context.Context, info PersonInfo) *Context {

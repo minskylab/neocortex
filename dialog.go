@@ -46,7 +46,6 @@ func newDialog() *Dialog {
 }
 
 // TODO: To optimize, please find all at the same time (that has better performance)
-
 func (dialog *Dialog) HasEntity(entity string) bool {
 	totalIns := len(dialog.Ins)
 	totalOuts := len(dialog.Outs)

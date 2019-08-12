@@ -51,3 +51,15 @@ type Summary struct {
 	UsersByTimezone map[string]UsersSummary `json:"users_by_timezone"`
 	PerformanceMean float64                 `json:"performance_mean"`
 }
+
+type Analytics struct {
+	performanceFunction func(dialog *Dialog) float64
+	repo                Repository
+}
+
+func newDefaultAnalytics(repo Repository, performanceFunction func(dialog *Dialog) float64) (*Analytics, error) {
+	return &Analytics{
+		performanceFunction: performanceFunction,
+		repo:                repo,
+	}, nil
+}
