@@ -13,7 +13,7 @@ type ViewClassType string
 const EntityClass ViewClassType = "entity"
 const IntentClass ViewClassType = "intent"
 const DialogNodeClass ViewClassType = "node"
-const ContextVarClass ViewClassType = "context"
+const ContextVarClass ViewClassType = "context_var"
 
 type ViewClass struct {
 	Type  ViewClassType `json:"type"`

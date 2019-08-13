@@ -139,3 +139,12 @@ func (dialog *Dialog) HasDialogNode(node string) bool {
 
 	return false
 }
+
+func (dialog *Dialog) HasContextVar(contextVar string) bool {
+	for _, c := range dialog.Contexts {
+		if _, ok := c.Context.Variables[contextVar]; ok {
+			return true
+		}
+	}
+	return false
+}

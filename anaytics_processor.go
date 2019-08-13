@@ -1,6 +1,8 @@
 package neocortex
 
 import (
+	"fmt"
+	"log"
 	"sort"
 	"time"
 )
@@ -147,15 +149,20 @@ func (analitycs *Analytics) processDialogs(dialogs []*Dialog) []*Chat {
 }
 
 type TimeAnalysisResult struct {
-	Timeline    map[time.Time]map[string]float64
-	TotalCounts int
+	Timeline     map[time.Time]map[string]float64 `json:"timeline"`
+	TotalDialogs int                              `json:"total_dialogs"`
+	TotalCounts  int                              `json:"total_counts"`
+	Individuals  map[string]float64               `json:"individuals"`
 }
 
 func (analitycs *Analytics) timeAnalysis(viewID string, frame TimeFrame) (*TimeAnalysisResult, error) {
+	log.Println("time analytic")
 	view, err := analitycs.repo.GetViewByID(viewID)
 	if err != nil {
 		return nil, err
 	}
+
+	log.Println(viewID, fmt.Sprintf("%+v", view))
 
 	dialogs, err := analitycs.repo.DialogsByView(viewID, frame)
 	if err != nil {
@@ -163,44 +170,76 @@ func (analitycs *Analytics) timeAnalysis(viewID string, frame TimeFrame) (*TimeA
 	}
 
 	timeline := map[time.Time]map[string]float64{}
+	individuals := map[string]float64{}
 	totalCounts := 0
 	for _, dialog := range dialogs {
+		valueName := ""
 		for _, class := range view.Classes {
-			valueName := ""
 			switch class.Type {
 			case EntityClass:
 				if dialog.HasEntity(class.Value) {
 					valueName = "E-" + class.Value
+					if _, ok := individuals[class.Value]; !ok {
+						individuals[class.Value] = 0
+					}
+					individuals[class.Value]++
 				}
 			case IntentClass:
 				if dialog.HasIntent(class.Value) {
 					valueName = "I-" + class.Value
+					if _, ok := individuals[class.Value]; !ok {
+						individuals[class.Value] = 0
+					}
+					individuals[class.Value]++
 				}
 			case DialogNodeClass:
 				if dialog.HasDialogNode(class.Value) {
 					valueName = "D-" + class.Value
+					if _, ok := individuals[class.Value]; !ok {
+						individuals[class.Value] = 0
+					}
+					individuals[class.Value]++
 				}
 			case ContextVarClass:
-				// TODO: Implement that
-				continue
+				if dialog.HasContextVar(class.Value) {
+					valueName = "V-" + class.Value
+					if _, ok := individuals[class.Value]; !ok {
+						individuals[class.Value] = 0
+					}
+					individuals[class.Value]++
+				}
 			default:
 				continue
 			}
+		}
+		pitch := time.Date(
+			dialog.StartAt.Year(),
+			dialog.StartAt.Month(),
+			dialog.StartAt.Day(),
+			dialog.StartAt.Hour(),
+			0,
+			0,
+			0,
+			dialog.StartAt.Location(),
+		)
 
-			if _, ok := timeline[dialog.StartAt]; !ok {
-				timeline[dialog.StartAt] = map[string]float64{}
+		if valueName != "" {
+			if _, ok := timeline[pitch]; !ok {
+				timeline[pitch] = map[string]float64{}
 			}
-			if _, ok := timeline[dialog.StartAt][valueName]; !ok {
-				timeline[dialog.StartAt][valueName] = 0.0
+			if _, ok := timeline[pitch][valueName]; !ok {
+				timeline[pitch][valueName] = 0.0
 			}
-			timeline[dialog.StartAt][valueName]++
+			timeline[pitch][valueName]++
 			totalCounts++
 		}
 	}
 
 	return &TimeAnalysisResult{
-		Timeline:    timeline,
-		TotalCounts: totalCounts,
+		Timeline:     timeline,
+		TotalCounts:  totalCounts,
+		Individuals:  individuals,
+		TotalDialogs: len(dialogs),
 	}, nil
 
 }

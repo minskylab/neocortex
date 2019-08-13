@@ -91,7 +91,7 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 		return
 	})
 
-	r.GET("/dialogs/time/*view", func(c *gin.Context) {
+	r.GET("/time/dialogs/*view", func(c *gin.Context) {
 		frame := TimeFrame{}
 		preset := TimeFramePreset(c.Query("preset"))
 
@@ -149,6 +149,7 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 		timeAnalysis, err := a.timeAnalysis(viewID, frame)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{
