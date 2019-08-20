@@ -50,6 +50,9 @@ func getJWTAuth(engine *Engine, secretKey string) *jwt.GinJWTMiddleware {
 				return "", errors.New(err.Error())
 			}
 			l := new(login)
+			if l == nil {
+				return nil, jwt.ErrFailedAuthentication
+			}
 			err = json.Unmarshal(data, l)
 			if err != nil {
 				return "", errors.New(err.Error())
@@ -59,6 +62,9 @@ func getJWTAuth(engine *Engine, secretKey string) *jwt.GinJWTMiddleware {
 			password := l.Password
 
 			passwordAdmin, err := engine.getAdmin(userID)
+			if passwordAdmin == "" {
+				return nil, jwt.ErrFailedAuthentication
+			}
 			if err != nil {
 				return nil, jwt.ErrFailedAuthentication
 			}
