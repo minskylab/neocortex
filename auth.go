@@ -62,10 +62,7 @@ func getJWTAuth(engine *Engine, secretKey string) *jwt.GinJWTMiddleware {
 			password := l.Password
 
 			passwordAdmin, err := engine.getAdmin(userID)
-			if passwordAdmin == "" {
-				return nil, jwt.ErrFailedAuthentication
-			}
-			if err != nil {
+			if err != nil || passwordAdmin == "" {
 				return nil, jwt.ErrFailedAuthentication
 			}
 			if password == passwordAdmin {
