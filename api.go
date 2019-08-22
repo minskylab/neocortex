@@ -47,6 +47,7 @@ func (api *API) registerEndpoints(engine *Engine) {
 	api.registerActionsAPI(r)
 	api.registerCollectionsAPI(r)
 	api.registerSummaryAPI(r)
+	api.registerChatsAPI(r)
 	api.registerDownloadsAPI(r)
 }
 
