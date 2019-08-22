@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package neocortex;
+
+message Input {
+  required string type = 1;
+  required bytes value = 2;
+}
