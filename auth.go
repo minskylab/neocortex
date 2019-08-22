@@ -23,7 +23,6 @@ type user struct {
 const identityKey = "id"
 
 func getJWTAuth(engine *Engine, secretKey string) *jwt.GinJWTMiddleware {
-
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "test zone",
 		Key:         []byte(secretKey),

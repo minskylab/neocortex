@@ -36,7 +36,7 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 	if err != nil {
 		return nil, err
 	}
-	engine.api = newCortexAPI(repository, "/api", ":4200")
+	engine.api = newCortexAPI(repository, engine.Analytics, "/api", ":4200")
 
 	fabric := func(ctx context.Context, info PersonInfo) *Context {
 		newContext := cognitive.CreateNewContext(&ctx, info)

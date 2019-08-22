@@ -10,14 +10,16 @@ type API struct {
 	Port       string
 	repository Repository
 	prefix     string
+	analytics  *Analytics
 }
 
-func newCortexAPI(repo Repository, prefix, port string) *API {
+func newCortexAPI(repo Repository, analytics *Analytics, prefix, port string) *API {
 	return &API{
 		e:          gin.Default(),
 		Port:       port,
 		prefix:     prefix,
 		repository: repo,
+		analytics:  analytics,
 	}
 }
 
@@ -45,6 +47,8 @@ func (api *API) registerEndpoints(engine *Engine) {
 	api.registerActionsAPI(r)
 	api.registerCollectionsAPI(r)
 	api.registerSummaryAPI(r)
+	api.registerChatsAPI(r)
+	api.registerDownloadsAPI(r)
 }
 
 func (api *API) Launch(engine *Engine) error {
