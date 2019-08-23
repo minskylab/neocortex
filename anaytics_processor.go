@@ -13,24 +13,24 @@ const Person MessageOwner = "person"
 const ChatBot MessageOwner = "bot"
 
 type MessageResponse struct {
-	Type  ResponseType
-	Value interface{}
+	Type  ResponseType `json:"type"`
+	Value interface{}  `json:"value"`
 }
 
 type Message struct {
-	At       time.Time
-	Owner    MessageOwner
-	Intents  []Intent
-	Entities []Entity
-	Response MessageResponse
+	At       time.Time       `json:"at"`
+	Owner    MessageOwner    `json:"owner"`
+	Intents  []Intent        `json:"intents"`
+	Entities []Entity        `json:"entities"`
+	Response MessageResponse `json:"response"`
 }
 
 type Chat struct {
-	ID            string
-	LastMessageAt time.Time
-	Person        PersonInfo
-	Performance   float64
-	Messages      []Message
+	ID            string     `json:"id"`
+	LastMessageAt time.Time  `json:"last_message_at"`
+	Person        PersonInfo `json:"person"`
+	Performance   float64    `json:"performance"`
+	Messages      []Message  `json:"messages"`
 }
 
 type byDate []Message
