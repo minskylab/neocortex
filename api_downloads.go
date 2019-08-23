@@ -15,7 +15,7 @@ import (
 )
 
 func (api *API) registerDownloadsAPI(r *gin.RouterGroup) {
-	r.GET("/download/chat/:userID", func(c *gin.Context) {
+	r.POST("/download/chat/:userID", func(c *gin.Context) {
 		frame := TimeFrame{}
 		preset := TimeFramePreset(c.Query("preset"))
 
@@ -178,6 +178,5 @@ func (api *API) registerDownloadsAPI(r *gin.RouterGroup) {
 		c.Status(http.StatusOK)
 		c.Header("Content-Type", "text/csv")
 		c.File(tempFile.Name())
-
 	})
 }
