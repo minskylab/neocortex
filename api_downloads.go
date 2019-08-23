@@ -15,7 +15,7 @@ import (
 )
 
 func (api *API) registerDownloadsAPI(r *gin.RouterGroup) {
-	r.POST("/download/chat/:userID", func(c *gin.Context) {
+	r.GET("/download/chat/:userID", func(c *gin.Context) {
 		frame := TimeFrame{}
 		preset := TimeFramePreset(c.Query("preset"))
 
