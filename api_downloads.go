@@ -62,7 +62,16 @@ func (api *API) registerDownloadsAPI(r *gin.RouterGroup) {
 		chatsFound := make([]*Chat, 0)
 
 		if userID == "all" {
-			chatsFound = chats
+			timezone := c.Query("timezone")
+			if timezone == "" {
+				chatsFound = chats
+			} else {
+				for _, c := range chats {
+					if c.Person.Timezone == timezone {
+						chatsFound = append(chatsFound, c)
+					}
+				}
+			}
 		} else {
 			for _, c := range chats {
 				if c.Person.ID == userID {
