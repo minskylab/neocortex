@@ -54,8 +54,20 @@ func (api *API) registerChatsAPI(r *gin.RouterGroup) {
 		}
 
 		if userID == "all" {
+			timezone := c.Query("timezone")
+			totalChats := []*Chat{}
+			if timezone != "" {
+				for _, c := range chats {
+					if timezone == c.Person.Timezone {
+						totalChats = append(totalChats, c)
+					}
+				}
+			} else {
+				totalChats = chats
+			}
+
 			c.JSON(http.StatusOK, gin.H{
-				"data": chats,
+				"data": totalChats,
 			})
 			return
 		}
