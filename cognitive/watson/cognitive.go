@@ -3,7 +3,6 @@ package watson
 import (
 	"context"
 
-	"github.com/IBM/go-sdk-core/core"
 	neo "github.com/bregydoc/neocortex"
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
@@ -15,36 +14,22 @@ type Cognitive struct {
 }
 
 type NewCognitiveParams struct {
-	URL         string
+	Url         string
 	Username    string
 	Password    string
 	Version     string
 	AssistantID string
-	APIKey      string
+	ApiKey      string
 }
 
 func NewCognitive(params NewCognitiveParams) (*Cognitive, error) {
-	var auth core.Authenticator
-	var err error
-
-	if params.Username != "" {
-		auth, err = core.NewBasicAuthenticator(params.Username, params.Password)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		auth, err = core.NewIamAuthenticator(params.APIKey, params.URL, params.Username, params.Password, false, map[string]string{})
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	assistant, err := assistantv2.NewAssistantV2(&assistantv2.AssistantV2Options{
-		Version:       params.Version,
-		URL:           params.URL,
-		Authenticator: auth,
+		Version:   params.Version,
+		Username:  params.Username,
+		Password:  params.Password,
+		URL:       params.Url,
+		IAMApiKey: params.ApiKey,
 	})
-
 	if err != nil {
 		return nil, err
 	}

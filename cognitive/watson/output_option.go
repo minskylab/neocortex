@@ -7,7 +7,7 @@ import (
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
 
-func (watson *Cognitive) newOptionResponse(gen assistantv2.RuntimeResponseGeneric) neocortex.Response {
+func (watson *Cognitive) newOptionResponse(gen assistantv2.DialogRuntimeResponseGeneric) neocortex.Response {
 	typing := false
 	if gen.Typing != nil {
 		typing = *gen.Typing

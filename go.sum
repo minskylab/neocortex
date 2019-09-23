@@ -1,5 +1,7 @@
 github.com/DataDog/zstd v1.4.1 h1:3oxKN3wbHibqx897utPC2LTQU4J+IHWWJO+glkAkpFM=
 github.com/DataDog/zstd v1.4.1/go.mod h1:1jcaCB/ufaK+sKp1NBhlGmpz41jOoPQ35bpF36t7BBo=
+github.com/IBM/go-sdk-core v0.4.1 h1:UWZ5jB7xR44AwDF73G5rCECFERCrb86ns5darN092es=
+github.com/IBM/go-sdk-core v0.4.1/go.mod h1:u7wqiIlwK3oRHbanAO4t1kwJUr1EfT2uFySklrUgMmE=
 github.com/IBM/go-sdk-core v0.8.0 h1:9SM6p3lJ9kVNM3+IjAmgg4GIZh4YFcVA3ZDQaCFEr7Y=
 github.com/IBM/go-sdk-core v0.8.0/go.mod h1:u7wqiIlwK3oRHbanAO4t1kwJUr1EfT2uFySklrUgMmE=
 github.com/Knetic/govaluate v3.0.0+incompatible/go.mod h1:r7JcOSlj0wfOMncg0iLm8Leh48TZaKVeNIfJntJ2wa0=
@@ -147,6 +149,8 @@ github.com/valyala/fasttemplate v1.0.1 h1:tY9CJiPnMXf1ERmG2EyK7gNUd+c6RKGD0IfU8W
 github.com/valyala/fasttemplate v1.0.1/go.mod h1:UQGH1tvbgY+Nz5t2n7tXsz52dQxojPUpymEIMZ47gx8=
 github.com/vmihailenco/msgpack v4.0.4+incompatible h1:dSLoQfGFAo3F6OoNhwUmLwVgaUXK79GlxNBwueZn0xI=
 github.com/vmihailenco/msgpack v4.0.4+incompatible/go.mod h1:fy3FlTQTDXWkZ7Bh6AcGMlsjHatGryHQYUTf1ShIgkk=
+github.com/watson-developer-cloud/go-sdk v0.10.0 h1:qUCMUQwOm/1w6eU4GZ6pU65OdZfjk79b6Vyxiih2xgg=
+github.com/watson-developer-cloud/go-sdk v0.10.0/go.mod h1:f2M0+zkTcfD8uf7iBc6VfGQfm1w74shLIAmOA7KQLfU=
 github.com/watson-developer-cloud/go-sdk v0.12.0 h1:sSVkGL8qBu05CmKjxxJ3LrVDP+lS/QXP+TE8cdaY8Jo=
 github.com/watson-developer-cloud/go-sdk v0.12.0/go.mod h1:f2M0+zkTcfD8uf7iBc6VfGQfm1w74shLIAmOA7KQLfU=
 github.com/wendal/errors v0.0.0-20130201093226-f66c77a7882b/go.mod h1:Q12BUT7DqIlHRmgv3RskH+UCM/4eqVMgI0EMmlSpAXc=

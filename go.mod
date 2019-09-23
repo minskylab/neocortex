@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/DataDog/zstd v1.4.1 // indirect
-	github.com/IBM/go-sdk-core v0.8.0
+	github.com/IBM/go-sdk-core v0.4.1
 	github.com/Sereal/Sereal v0.0.0-20190618215532-0b8ac451a863 // indirect
 	github.com/appleboy/gin-jwt/v2 v2.6.2
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
@@ -30,7 +30,7 @@ require (
 	github.com/tidwall/gjson v1.3.2 // indirect
 	github.com/ugorji/go v1.1.7 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
-	github.com/watson-developer-cloud/go-sdk v0.12.0
+	github.com/watson-developer-cloud/go-sdk v0.10.0
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	go.etcd.io/bbolt v1.3.3 // indirect
