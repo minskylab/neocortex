@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/jinzhu/now"
@@ -61,6 +62,9 @@ func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dial
 	}
 
 	// * Mongo pleaseeee
+
+	fmt.Println("from: ", from)
+	fmt.Println("to: ", to)
 
 	filter := bson.M{
 		"start_at": bson.M{
