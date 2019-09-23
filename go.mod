@@ -28,7 +28,7 @@ require (
 	github.com/onsi/gomega v1.7.0 // indirect
 	github.com/rs/xid v1.2.1
 	github.com/tidwall/gjson v1.3.2 // indirect
-	github.com/ugorji/go/codec v1.1.7 // indirect
+	github.com/ugorji/go v1.1.7 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/watson-developer-cloud/go-sdk v0.12.0
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
