@@ -502,7 +502,7 @@ func (repo *Repository) Summary(frame neocortex.TimeFrame) (*neocortex.Summary, 
 	for timezone, totalUsersByTimezone := range usersByTimezone {
 		recurrent := 0
 		for _, r := range totalUsersByTimezone {
-			if r > 2 {
+			if r > 1 {
 				recurrent++
 			}
 		}

@@ -35,8 +35,9 @@ func (api *API) registerSummaryAPI(r *gin.RouterGroup) {
 		}
 
 		fromScratch := time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local)
+		fromScratchFrame := TimeFrame{From: fromScratch, To: frame.From, PageSize: frame.PageSize, PageNum: frame.PageNum}
 
-		pastSummary, err := api.repository.Summary(TimeFrame{From: fromScratch, To: frame.From})
+		pastSummary, err := api.repository.Summary(fromScratchFrame)
 		summary, err := api.repository.Summary(frame)
 
 		summary.RecurrentUsers = pastSummary.RecurrentUsers - summary.RecurrentUsers
