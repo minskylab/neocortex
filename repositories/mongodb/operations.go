@@ -179,6 +179,8 @@ func (repo *Repository) DialogsByView(viewID string, frame neocortex.TimeFrame) 
 		return nil, err
 	}
 
+	fmt.Println("dialogs length: ", len(dialogs))
+
 	filteredDialogs := make([]*neocortex.Dialog, 0)
 
 	for _, dialog := range dialogs {
