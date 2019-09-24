@@ -62,6 +62,8 @@ func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dial
 	}
 
 	// * Mongo pleaseeee
+	from = from.Truncate(time.Hour)
+	to = to.Truncate(time.Hour)
 
 	fmt.Println("from: ", from, from.UnixNano())
 	fmt.Println("to: ", to, to.UnixNano())
