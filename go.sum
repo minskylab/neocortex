@@ -2,8 +2,6 @@ github.com/DataDog/zstd v1.4.1 h1:3oxKN3wbHibqx897utPC2LTQU4J+IHWWJO+glkAkpFM=
 github.com/DataDog/zstd v1.4.1/go.mod h1:1jcaCB/ufaK+sKp1NBhlGmpz41jOoPQ35bpF36t7BBo=
 github.com/IBM/go-sdk-core v0.4.1 h1:UWZ5jB7xR44AwDF73G5rCECFERCrb86ns5darN092es=
 github.com/IBM/go-sdk-core v0.4.1/go.mod h1:u7wqiIlwK3oRHbanAO4t1kwJUr1EfT2uFySklrUgMmE=
-github.com/IBM/go-sdk-core v0.8.0 h1:9SM6p3lJ9kVNM3+IjAmgg4GIZh4YFcVA3ZDQaCFEr7Y=
-github.com/IBM/go-sdk-core v0.8.0/go.mod h1:u7wqiIlwK3oRHbanAO4t1kwJUr1EfT2uFySklrUgMmE=
 github.com/Knetic/govaluate v3.0.0+incompatible/go.mod h1:r7JcOSlj0wfOMncg0iLm8Leh48TZaKVeNIfJntJ2wa0=
 github.com/Sereal/Sereal v0.0.0-20190618215532-0b8ac451a863 h1:BRrxwOZBolJN4gIwvZMJY1tzqBvQgpaZiQRuIDD40jM=
 github.com/Sereal/Sereal v0.0.0-20190618215532-0b8ac451a863/go.mod h1:D0JMgToj/WdxCgd30Kc1UcA9E+WdZoJqeVOuYW7iTBM=
@@ -151,8 +149,6 @@ github.com/vmihailenco/msgpack v4.0.4+incompatible h1:dSLoQfGFAo3F6OoNhwUmLwVgaU
 github.com/vmihailenco/msgpack v4.0.4+incompatible/go.mod h1:fy3FlTQTDXWkZ7Bh6AcGMlsjHatGryHQYUTf1ShIgkk=
 github.com/watson-developer-cloud/go-sdk v0.10.0 h1:qUCMUQwOm/1w6eU4GZ6pU65OdZfjk79b6Vyxiih2xgg=
 github.com/watson-developer-cloud/go-sdk v0.10.0/go.mod h1:f2M0+zkTcfD8uf7iBc6VfGQfm1w74shLIAmOA7KQLfU=
-github.com/watson-developer-cloud/go-sdk v0.12.0 h1:sSVkGL8qBu05CmKjxxJ3LrVDP+lS/QXP+TE8cdaY8Jo=
-github.com/watson-developer-cloud/go-sdk v0.12.0/go.mod h1:f2M0+zkTcfD8uf7iBc6VfGQfm1w74shLIAmOA7KQLfU=
 github.com/wendal/errors v0.0.0-20130201093226-f66c77a7882b/go.mod h1:Q12BUT7DqIlHRmgv3RskH+UCM/4eqVMgI0EMmlSpAXc=
 github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c h1:u40Z8hqBAAQyv+vATcGgV0YCnDjqSL7/q/JyPhhJSPk=
 github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c/go.mod h1:lB8K/P019DLNhemzwFU4jHLhdvlE6uDZjXFejJXr49I=

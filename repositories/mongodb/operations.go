@@ -63,8 +63,8 @@ func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dial
 
 	// * Mongo pleaseeee
 
-	fmt.Println("from: ", from)
-	fmt.Println("to: ", to)
+	fmt.Println("from: ", from, from.UnixNano())
+	fmt.Println("to: ", to, to.UnixNano())
 
 	filter := bson.M{
 		"start_at": bson.M{
