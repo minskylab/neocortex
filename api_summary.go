@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"time"
+
 	"github.com/araddon/dateparse"
 	"github.com/gin-gonic/gin"
 )
@@ -32,9 +34,21 @@ func (api *API) registerSummaryAPI(r *gin.RouterGroup) {
 			frame.Preset = preset
 		}
 
-		summary, err := api.repository.Summary(frame)
-		log.Println(summary)
+		fromScratch := time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local)
 
+		pastSummary, err := api.repository.Summary(TimeFrame{From: fromScratch, To: frame.From})
+		summary, err := api.repository.Summary(frame)
+
+		summary.RecurrentUsers = pastSummary.RecurrentUsers - summary.RecurrentUsers
+
+		for timezone, rec := range pastSummary.UsersByTimezone {
+			summary.UsersByTimezone[timezone] = UsersSummary{
+				News:       rec.News - summary.UsersByTimezone[timezone].News,
+				Recurrents: rec.Recurrents - summary.UsersByTimezone[timezone].Recurrents,
+			}
+		}
+
+		log.Println(summary)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
