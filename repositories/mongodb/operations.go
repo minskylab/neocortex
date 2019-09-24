@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/jinzhu/now"
@@ -62,11 +61,8 @@ func (repo *Repository) AllDialogs(frame neocortex.TimeFrame) ([]*neocortex.Dial
 	}
 
 	// * Mongo pleaseeee
-	from = from.Truncate(time.Hour * 24)
-	to = to.Truncate(time.Hour * 24)
-
-	fmt.Println("from: ", from, from.UnixNano())
-	fmt.Println("to: ", to, to.UnixNano())
+	from = from.Truncate(time.Second)
+	to = to.Truncate(time.Second)
 
 	filter := bson.M{
 		"start_at": bson.M{
@@ -178,8 +174,6 @@ func (repo *Repository) DialogsByView(viewID string, frame neocortex.TimeFrame) 
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println("dialogs length: ", len(dialogs))
 
 	filteredDialogs := make([]*neocortex.Dialog, 0)
 
@@ -505,9 +499,9 @@ func (repo *Repository) Summary(frame neocortex.TimeFrame) (*neocortex.Summary, 
 	totalUsers := int64(0)
 	totalRecurrent := int64(0)
 
-	for timezone, usersByTimezone := range usersByTimezone {
+	for timezone, totalUsersByTimezone := range usersByTimezone {
 		recurrent := 0
-		for _, r := range usersByTimezone {
+		for _, r := range totalUsersByTimezone {
 			if r < 2 {
 				recurrent++
 			}
@@ -515,10 +509,10 @@ func (repo *Repository) Summary(frame neocortex.TimeFrame) (*neocortex.Summary, 
 
 		summary.UsersByTimezone[timezone] = neocortex.UsersSummary{
 			Recurrents: int64(recurrent),
-			News:       int64(len(usersByTimezone) - recurrent),
+			News:       int64(len(totalUsersByTimezone) - recurrent),
 		}
 
-		totalUsers += int64(len(usersByTimezone))
+		totalUsers += int64(len(totalUsersByTimezone))
 		totalRecurrent += int64(recurrent)
 	}
 
