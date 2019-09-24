@@ -480,7 +480,7 @@ func (repo *Repository) Summary(frame neocortex.TimeFrame) (*neocortex.Summary, 
 			usersByTimezone[c.Context.Person.Timezone][c.Context.Person.Name]++
 		}
 
-		if len(dialog.Ins) > 0 {
+		if len(dialog.Ins) > 1 {
 			performanceAccum += dialog.Performance
 			totalCorrectDialogs++
 		}
@@ -502,7 +502,7 @@ func (repo *Repository) Summary(frame neocortex.TimeFrame) (*neocortex.Summary, 
 	for timezone, totalUsersByTimezone := range usersByTimezone {
 		recurrent := 0
 		for _, r := range totalUsersByTimezone {
-			if r > 1 {
+			if r < 2 {
 				recurrent++
 			}
 		}
