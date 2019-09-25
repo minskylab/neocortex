@@ -41,7 +41,6 @@ func (api *API) registerDialogsAPI(r *gin.RouterGroup) {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "to date not found"})
 				return
 			}
-
 			frame.From = from
 			frame.To = to
 		} else {

@@ -1,7 +1,6 @@
 package neocortex
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/araddon/dateparse"
@@ -32,13 +31,29 @@ func (api *API) registerSummaryAPI(r *gin.RouterGroup) {
 			frame.Preset = preset
 		}
 
-		summary, err := api.repository.Summary(frame)
-		log.Println(summary)
+		// fromScratch := time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local)
+		// fromScratchFrame := TimeFrame{From: fromScratch, To: frame.From, PageSize: frame.PageSize, PageNum: frame.PageNum}
 
+		// pastSummary, err := api.repository.Summary(fromScratchFrame)
+		// if err != nil {
+		// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		// 	return
+		// }
+
+		summary, err := api.repository.Summary(frame)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+
+		// summary.RecurrentUsers = pastSummary.RecurrentUsers - summary.RecurrentUsers
+
+		// for timezone, rec := range pastSummary.UsersByTimezone {
+		// 	summary.UsersByTimezone[timezone] = UsersSummary{
+		// 		News:       rec.News - summary.UsersByTimezone[timezone].News,
+		// 		Recurrents: rec.Recurrents - summary.UsersByTimezone[timezone].Recurrents,
+		// 	}
+		// }
 
 		c.JSON(http.StatusOK, gin.H{
 			"data": summary,
