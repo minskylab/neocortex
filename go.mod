@@ -33,6 +33,7 @@ require (
 	github.com/watson-developer-cloud/go-sdk v0.10.0
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
+	github.com/y0ssar1an/q v1.0.7
 	go.etcd.io/bbolt v1.3.3 // indirect
 	go.mongodb.org/mongo-driver v1.1.1
 	golang.org/x/crypto v0.0.0-20190923035154-9ee001bba392 // indirect

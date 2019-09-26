@@ -3,6 +3,8 @@ package neocortex
 import (
 	"log"
 	"time"
+
+	"github.com/y0ssar1an/q"
 )
 
 func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *Input, response OutputResponse) error {
@@ -25,6 +27,8 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 		dialog.Contexts = append(dialog.Contexts, &ContextRecord{At: time.Now(), Context: *c})
 		dialog.Ins = append(dialog.Ins, &InputRecord{At: time.Now(), Input: *in})
 	}
+
+	q.Q(in)
 
 	out, err := engine.cognitive.GetProtoResponse(c, in)
 	if err != nil {
