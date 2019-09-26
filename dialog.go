@@ -1,6 +1,7 @@
 package neocortex
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/rs/xid"
@@ -51,7 +52,7 @@ func (dialog *Dialog) HasEntity(entity string) bool {
 	totalOuts := len(dialog.Outs)
 
 	diff := totalIns - totalOuts
-
+	fmt.Println(diff)
 	if diff == 0 {
 		for i := 0; i < totalIns; i++ {
 			for _, ent := range dialog.Ins[i].Input.Entities {
