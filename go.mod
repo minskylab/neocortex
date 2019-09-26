@@ -22,6 +22,8 @@ require (
 	github.com/jinzhu/now v1.0.1
 	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/json-iterator/go v1.1.7 // indirect
+	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
+	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/onsi/ginkgo v1.10.1 // indirect
@@ -33,7 +35,6 @@ require (
 	github.com/watson-developer-cloud/go-sdk v0.10.0
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
-	github.com/y0ssar1an/q v1.0.7
 	go.etcd.io/bbolt v1.3.3 // indirect
 	go.mongodb.org/mongo-driver v1.1.1
 	golang.org/x/crypto v0.0.0-20190923035154-9ee001bba392 // indirect

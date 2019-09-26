@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/y0ssar1an/q"
+	"github.com/k0kubun/pp"
 )
 
 func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *Input, response OutputResponse) error {
@@ -28,7 +28,7 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 		dialog.Ins = append(dialog.Ins, &InputRecord{At: time.Now(), Input: *in})
 	}
 
-	q.Q(in)
+	pp.Println(in)
 
 	out, err := engine.cognitive.GetProtoResponse(c, in)
 	if err != nil {
