@@ -30,7 +30,7 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 	}
 
 	if in.Data.Type == InputText {
-		in.Data.Value = strings.ReplaceAll(in.Data.Value, "\n", "")
+		in.Data.Value = strings.ReplaceAll(in.Data.Value, "\n", " ")
 	}
 	pp.Println(in)
 
