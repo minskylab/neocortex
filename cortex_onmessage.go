@@ -4,8 +4,6 @@ import (
 	"log"
 	"strings"
 	"time"
-
-	"github.com/k0kubun/pp"
 )
 
 func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *Input, response OutputResponse) error {
@@ -32,7 +30,6 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 	if in.Data.Type == InputText {
 		in.Data.Value = strings.ReplaceAll(in.Data.Value, "\n", " ")
 	}
-	pp.Println(in)
 
 	out, err := engine.cognitive.GetProtoResponse(c, in)
 	if err != nil {

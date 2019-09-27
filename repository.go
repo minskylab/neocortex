@@ -41,6 +41,7 @@ type Repository interface {
 	FindViewByName(name string) ([]*View, error)
 	AllViews() ([]*View, error)
 	UpdateView(view *View) error
+	DeleteView(id string) (*View, error)
 
 	SetActionVar(name string, value string) error
 	GetActionVar(name string) (string, error)

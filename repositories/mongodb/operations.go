@@ -398,6 +398,22 @@ func (repo *Repository) UpdateView(view *neocortex.View) error {
 	return err
 }
 
+func (repo *Repository) DeleteView(id string) (*neocortex.View, error) {
+	view, err := repo.GetViewByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	del, err := repo.views.DeleteOne(context.Background(), bson.M{"id": view.ID})
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("del.DeletedCount =", del.DeletedCount)
+
+	return view, nil
+
+}
+
 func (repo *Repository) SetActionVar(name string, value string) error {
 	act := new(action)
 	err := repo.actions.FindOne(context.Background(), bson.M{"name": "envs"}).Decode(act)
