@@ -2,6 +2,7 @@ package neocortex
 
 import (
 	"log"
+	"strings"
 	"time"
 )
 
@@ -24,6 +25,10 @@ func (engine *Engine) onMessage(channel CommunicationChannel, c *Context, in *In
 		dialog.LastActivity = time.Now()
 		dialog.Contexts = append(dialog.Contexts, &ContextRecord{At: time.Now(), Context: *c})
 		dialog.Ins = append(dialog.Ins, &InputRecord{At: time.Now(), Input: *in})
+	}
+
+	if in.Data.Type == InputText {
+		in.Data.Value = strings.ReplaceAll(in.Data.Value, "\n", " ")
 	}
 
 	out, err := engine.cognitive.GetProtoResponse(c, in)

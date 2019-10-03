@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"fmt"
+
 	"github.com/jinzhu/now"
 
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -396,6 +398,22 @@ func (repo *Repository) UpdateView(view *neocortex.View) error {
 	return err
 }
 
+func (repo *Repository) DeleteView(id string) (*neocortex.View, error) {
+	view, err := repo.GetViewByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	del, err := repo.views.DeleteOne(context.Background(), bson.M{"id": view.ID})
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("del.DeletedCount =", del.DeletedCount)
+
+	return view, nil
+
+}
+
 func (repo *Repository) SetActionVar(name string, value string) error {
 	act := new(action)
 	err := repo.actions.FindOne(context.Background(), bson.M{"name": "envs"}).Decode(act)
@@ -453,7 +471,12 @@ func (repo *Repository) Summary(frame neocortex.TimeFrame) (*neocortex.Summary, 
 		},
 	}
 
+	fmt.Println(" ======== SUMMARY ======== ")
+	fmt.Printf("From: %s\tTo: %s\n", from, to)
+
 	opts := options.Find().SetLimit(1e8) // 100000000
+
+	fmt.Printf("opts: %v\n", opts.Limit)
 
 	cursor, err := repo.dialogs.Find(context.Background(), filter, opts)
 	if err != nil {
@@ -480,7 +503,7 @@ func (repo *Repository) Summary(frame neocortex.TimeFrame) (*neocortex.Summary, 
 			usersByTimezone[c.Context.Person.Timezone][c.Context.Person.Name]++
 		}
 
-		if len(dialog.Ins) > 1 {
+		if len(dialog.Ins) > 0 {
 			performanceAccum += dialog.Performance
 			totalCorrectDialogs++
 		}

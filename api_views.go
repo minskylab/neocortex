@@ -42,6 +42,19 @@ func (api *API) registerViewsAPI(r *gin.RouterGroup) {
 		})
 	})
 
+	r.DELETE("/view/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		view, err := api.repository.DeleteView(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"data": view,
+		})
+	})
+
 	r.GET("/view/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		view, err := api.repository.GetViewByID(id)

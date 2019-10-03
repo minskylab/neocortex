@@ -7,6 +7,7 @@ import (
 
 	"os"
 	"os/signal"
+
 )
 
 func newDefaultEngine(cognitive CognitiveService, channels ...CommunicationChannel) *Engine {
@@ -49,7 +50,6 @@ func Default(repository Repository, cognitive CognitiveService, channels ...Comm
 
 	for _, ch := range channels {
 		engine.registeredResolvers[ch] = map[*Matcher]*HandleResolver{}
-
 		ch.SetContextFabric(fabric)
 		err := ch.RegisterMessageEndpoint(func(c *Context, message *Input, response OutputResponse) error {
 			return engine.onMessage(ch, c, message, response)
