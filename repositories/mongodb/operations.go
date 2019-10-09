@@ -387,15 +387,17 @@ func (repo *Repository) AllViews() ([]*neocortex.View, error) {
 	return views, nil
 }
 
+//! MAKE GOOD UPDATE IN UPDATE VIEW
 func (repo *Repository) UpdateView(view *neocortex.View) error {
-	_, err := repo.views.UpdateOne(context.Background(), bson.M{"id": view.ID}, bson.M{
-		"name":     view.Name,
-		"styles":   view.Styles,
-		"classes":  view.Classes,
-		"children": view.Children,
-	})
+	return nil
+	// _, err := repo.views.UpdateOne(context.Background(), bson.M{"id": view.ID}, bson.M{
+	// 	"name":     view.Name,
+	// 	"styles":   view.Styles,
+	// 	"classes":  view.Classes,
+	// 	"children": view.Children,
+	// })
 
-	return err
+	// return err
 }
 
 func (repo *Repository) DeleteView(id string) (*neocortex.View, error) {
