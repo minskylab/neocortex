@@ -37,7 +37,7 @@ func main() {
 		panic(err)
 	}
 
-	match := neo.IfIntentIs("HELLO")
+	match := neo.IntentIs("HELLO")
 	engine.Resolve(fb, match, func(c *neo.Context, in *neo.Input, out *neo.Output, response neo.OutputResponse) error {
 		out.Fill(map[string]string{
 			"Name": c.Person.Name,

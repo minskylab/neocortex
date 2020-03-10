@@ -10,7 +10,7 @@ func (m *Matcher) Or(or *Matcher) *Matcher {
 	return m
 }
 
-func IfIntentIs(intent string, confidence ...float64) *Matcher {
+func IntentIs(intent string, confidence ...float64) *Matcher {
 	conf := 0.0
 	if len(confidence) > 0 {
 		conf = confidence[0]
@@ -24,11 +24,11 @@ func IfIntentIs(intent string, confidence ...float64) *Matcher {
 }
 
 func (m *Matcher) AndIntentIs(intent string, confidence ...float64) *Matcher {
-	return m.And(IfIntentIs(intent, confidence...))
+	return m.And(IntentIs(intent, confidence...))
 }
 
 func (m *Matcher) OrIntentIs(intent string, confidence ...float64) *Matcher {
-	return m.Or(IfIntentIs(intent, confidence...))
+	return m.Or(IntentIs(intent, confidence...))
 }
 
 func IfEntityIs(entity string, confidence ...float64) *Matcher {

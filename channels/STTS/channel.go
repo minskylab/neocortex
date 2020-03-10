@@ -26,7 +26,7 @@ func (stts *Channel) RegisterMessageEndpoint(handler neo.MiddleHandler) error {
 }
 
 func (stts *Channel) ToHear() error {
-	//TODO
+	// TODO
 	return nil
 }
 

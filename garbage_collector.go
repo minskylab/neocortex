@@ -14,13 +14,13 @@ func defaultGarbageCollector(maxSessiontime time.Duration) *garbageCollector {
 	}
 }
 
-func (e *Engine) runGarbageCollector(g *garbageCollector) {
+func (engine *Engine) runGarbageCollector(g *garbageCollector) {
 	ticker := time.NewTicker(g.tickTime)
 	go func() {
 		for t := range ticker.C {
-			for c, diag := range e.ActiveDialogs {
+			for c, diag := range engine.ActiveDialogs {
 				if t.Sub(diag.LastActivity) > g.maxLastResponse {
-					e.onContextIsDone(c)
+					engine.onContextIsDone(c)
 				}
 			}
 		}
