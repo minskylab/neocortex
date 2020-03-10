@@ -2,7 +2,7 @@ package facebook
 
 import (
 	"errors"
-	"github.com/bregydoc/neocortex/channels/facebook/messenger"
+	"github.com/minskylab/neocortex/channels/facebook/messenger"
 	"strconv"
 	"time"
 )

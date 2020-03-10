@@ -1,10 +1,10 @@
 package main
 
 import (
-	neo "github.com/bregydoc/neocortex"
-	"github.com/bregydoc/neocortex/channels/facebook"
+	neo "github.com/minskylab/neocortex"
+	"github.com/minskylab/neocortex/channels/facebook"
 
-	"github.com/bregydoc/neocortex/cognitive/uselessbox"
+	"github.com/minskylab/neocortex/cognitive/uselessbox"
 )
 
 func main() {

@@ -1,6 +1,6 @@
 package terminal
 
-import neo "github.com/bregydoc/neocortex"
+import neo "github.com/minskylab/neocortex"
 
 func (term *Channel) NewInputText(text string, i []neo.Intent, e []neo.Entity) *neo.Input {
 	t := neo.InputData{

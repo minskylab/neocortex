@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"github.com/bregydoc/neocortex"
+	"github.com/minskylab/neocortex"
 )
 
 type InMemoryRepo struct {

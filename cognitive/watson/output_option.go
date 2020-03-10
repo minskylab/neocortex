@@ -3,7 +3,7 @@ package watson
 import (
 	"strings"
 
-	"github.com/bregydoc/neocortex"
+	"github.com/minskylab/neocortex"
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
 

@@ -2,7 +2,7 @@ package watson
 
 import (
 	"github.com/IBM/go-sdk-core/core"
-	neo "github.com/bregydoc/neocortex"
+	neo "github.com/minskylab/neocortex"
 	"github.com/watson-developer-cloud/go-sdk/assistantv2"
 )
 

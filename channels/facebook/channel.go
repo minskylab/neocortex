@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	neo "github.com/bregydoc/neocortex"
-	"github.com/bregydoc/neocortex/channels/facebook/messenger"
+	neo "github.com/minskylab/neocortex"
+	"github.com/minskylab/neocortex/channels/facebook/messenger"
 )
 
 type Channel struct {

@@ -1,7 +1,7 @@
 package boltdb
 
 import (
-	"github.com/bregydoc/neocortex"
+	"github.com/minskylab/neocortex"
 	"github.com/rs/xid"
 )
 

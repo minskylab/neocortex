@@ -1,6 +1,6 @@
 package uselessbox
 
-import neo "github.com/bregydoc/neocortex"
+import neo "github.com/minskylab/neocortex"
 
 func (useless *Cognitive) NewOutputText(c *neo.Context) *neo.Output {
 	res := []neo.Response{{

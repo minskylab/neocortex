@@ -1,6 +1,6 @@
 package uselessbox
 
-import neo "github.com/bregydoc/neocortex"
+import neo "github.com/minskylab/neocortex"
 
 func (useless *Cognitive) NewOutput(c *neo.Context, res []neo.Response, i []neo.Intent, e []neo.Entity) *neo.Output {
 	return &neo.Output{

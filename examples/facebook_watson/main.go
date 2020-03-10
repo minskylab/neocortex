@@ -1,9 +1,9 @@
 package main
 
 import (
-	neo "github.com/bregydoc/neocortex"
-	"github.com/bregydoc/neocortex/channels/facebook"
-	"github.com/bregydoc/neocortex/cognitive/watson"
+	neo "github.com/minskylab/neocortex"
+	"github.com/minskylab/neocortex/channels/facebook"
+	"github.com/minskylab/neocortex/cognitive/watson"
 )
 
 func main() {

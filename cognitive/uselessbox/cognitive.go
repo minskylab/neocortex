@@ -3,7 +3,7 @@ package uselessbox
 import (
 	"context"
 
-	neo "github.com/bregydoc/neocortex"
+	neo "github.com/minskylab/neocortex"
 	"github.com/rs/xid"
 )
 

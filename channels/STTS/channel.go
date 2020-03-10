@@ -3,7 +3,7 @@ package speech
 import (
 	"strconv"
 
-	neo "github.com/bregydoc/neocortex"
+	neo "github.com/minskylab/neocortex"
 )
 
 type Channel struct {

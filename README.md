@@ -50,7 +50,7 @@ The main goal of neocortex is offers a reliable and modern API to connect any ki
 
 Install with:
 
-```go get -u github.com/bregydoc/neocortex```
+```go get -u github.com/minskylab/neocortex```
 
 Currently, neocortex has 2 implementations of Cognitive Services (Useless-box created by me and Watson Assistant based on the [watson official API v2](https://github.com/watson-developer-cloud/go-sdk)) and 2 implementations of Communication Channels (Terminal based UI written by me and Facebook Messenger forked from [Facebook-messenger API](https://github.com/mileusna/facebook-messenger) by [mileusna](https://github.com/mileusna)).
 
@@ -60,10 +60,10 @@ Currently, neocortex has 2 implementations of Cognitive Services (Useless-box cr
 package main
 
 import (
-	neo "github.com/bregydoc/neocortex"
-	"github.com/bregydoc/neocortex/channels/terminal"
-	"github.com/bregydoc/neocortex/cognitive/uselessbox"
-	"github.com/bregydoc/neocortex/repositories/boltdb"
+	neo "github.com/minskylab/neocortex"
+	"github.com/minskylab/neocortex/channels/terminal"
+	"github.com/minskylab/neocortex/cognitive/uselessbox"
+	"github.com/minskylab/neocortex/repositories/boltdb"
 )
 
 // Example of use useless box with terminal channel
@@ -92,7 +92,7 @@ func main() {
 }
 
 ```
-You can see more examples [here](https://github.com/bregydoc/neocortex/tree/master/examples).
+You can see more examples [here](https://github.com/minskylab/neocortex/tree/master/examples).
 
 ## Paradigm
 
@@ -111,7 +111,7 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
    }
    ```
 
-   you can see the implementation of a [Useless box](https://github.com/bregydoc/neocortex/tree/master/cognitive/uselessbox) or [Watson Assistant](https://github.com/bregydoc/neocortex/tree/master/cognitive/watson).
+   you can see the implementation of a [Useless box](https://github.com/minskylab/neocortex/tree/master/cognitive/uselessbox) or [Watson Assistant](https://github.com/minskylab/neocortex/tree/master/cognitive/watson).
 
 2. **Communication Channel**
 
@@ -127,7 +127,7 @@ Neocortex is like a middleware with a mux, with it you can catch your message in
    }
    ```
 
-   Please, read how to are implemented the [Terminal channel](https://github.com/bregydoc/neocortex/tree/master/channels/terminal) or [Facebook Messenger Channel](https://github.com/bregydoc/neocortex/tree/master/channels/facebook).
+   Please, read how to are implemented the [Terminal channel](https://github.com/minskylab/neocortex/tree/master/channels/terminal) or [Facebook Messenger Channel](https://github.com/minskylab/neocortex/tree/master/channels/facebook).
 
 3. **Context**
 

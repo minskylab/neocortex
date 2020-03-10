@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	neo "github.com/bregydoc/neocortex"
+	neo "github.com/minskylab/neocortex"
 )
 
 // This channel have particularity only one user, then we have only one user ID for all

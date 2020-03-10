@@ -1,6 +1,6 @@
 package facebook
 
-import neo "github.com/bregydoc/neocortex"
+import neo "github.com/minskylab/neocortex"
 
 func (fb *Channel) NewInputText(text string, i []neo.Intent, e []neo.Entity) *neo.Input {
 	t := neo.InputData{

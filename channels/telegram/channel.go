@@ -1,7 +1,7 @@
 package telegram
 
 import (
-	"github.com/bregydoc/neocortex"
+	"github.com/minskylab/neocortex"
 )
 
 type Channel struct {}

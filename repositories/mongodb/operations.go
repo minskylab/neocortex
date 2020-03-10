@@ -12,7 +12,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/bregydoc/neocortex"
+	"github.com/minskylab/neocortex"
 	"github.com/rs/xid"
 	"go.mongodb.org/mongo-driver/bson"
 )

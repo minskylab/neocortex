@@ -6,8 +6,8 @@ import (
 	"log"
 	"strconv"
 
-	neo "github.com/bregydoc/neocortex"
-	"github.com/bregydoc/neocortex/channels/facebook/messenger"
+	neo "github.com/minskylab/neocortex"
+	"github.com/minskylab/neocortex/channels/facebook/messenger"
 )
 
 func NewChannel(options ChannelOptions, fabric ...neo.ContextFabric) (*Channel, error) {

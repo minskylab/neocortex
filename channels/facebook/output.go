@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/bregydoc/neocortex"
-	"github.com/bregydoc/neocortex/channels/facebook/messenger"
+	"github.com/minskylab/neocortex"
+	"github.com/minskylab/neocortex/channels/facebook/messenger"
 )
 
 func decodeOutput(userID int64, msn *messenger.Messenger, out *neocortex.Output) error {

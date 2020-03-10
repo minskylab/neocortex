@@ -1,10 +1,10 @@
 package main
 
 import (
-	neo "github.com/bregydoc/neocortex"
-	"github.com/bregydoc/neocortex/channels/terminal"
-	"github.com/bregydoc/neocortex/cognitive/uselessbox"
-	"github.com/bregydoc/neocortex/repositories/mongodb"
+	neo "github.com/minskylab/neocortex"
+	"github.com/minskylab/neocortex/channels/terminal"
+	"github.com/minskylab/neocortex/cognitive/uselessbox"
+	"github.com/minskylab/neocortex/repositories/mongodb"
 )
 
 // Example of use useless box with terminal channel
