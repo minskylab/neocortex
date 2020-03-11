@@ -17,41 +17,46 @@ func (watson *Cognitive) NewOutput(c *neo.Context, r *assistantv2.MessageRespons
 	}
 
 	logs := make([]*neo.LogMessage, 0)
-	for _, l := range r.Output.Debug.LogMessages {
-		logs = append(logs,
-			&neo.LogMessage{
-				Level:   neo.LogLevelType(*l.Message),
-				Message: *l.Level,
+	if r.Output.Debug != nil {
+		for _, l := range r.Output.Debug.LogMessages {
+			logs = append(logs,
+				&neo.LogMessage{
+					Level:   neo.LogLevelType(*l.Message),
+					Message: *l.Level,
+				})
+		}
+
+		for _, n := range r.Output.Debug.NodesVisited {
+			title := ""
+			conditions := ""
+			name := ""
+
+			if n.Title != nil {
+				title = *n.Title
+			}
+			if n.Conditions != nil {
+				conditions = *n.Conditions
+			}
+
+			if n.DialogNode != nil {
+				name = *n.DialogNode
+			}
+
+			nodes = append(nodes, &neo.DialogNode{
+				Title:      title,
+				Conditions: conditions,
+				Name:       name,
 			})
+		}
 	}
+
 
 	if c.Variables == nil {
 		c.Variables = map[string]interface{}{}
 	}
 
 	nodes := make([]*neo.DialogNode, 0)
-	for _, n := range r.Output.Debug.NodesVisited {
-		title := ""
-		conditions := ""
-		name := ""
 
-		if n.Title != nil {
-			title = *n.Title
-		}
-		if n.Conditions != nil {
-			conditions = *n.Conditions
-		}
-
-		if n.DialogNode != nil {
-			name = *n.DialogNode
-		}
-
-		nodes = append(nodes, &neo.DialogNode{
-			Title:      title,
-			Conditions: conditions,
-			Name:       name,
-		})
-	}
 
 	responses := make([]neo.Response, 0)
 	for _, gen := range r.Output.Generic {
