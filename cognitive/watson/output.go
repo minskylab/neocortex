@@ -17,6 +17,8 @@ func (watson *Cognitive) NewOutput(c *neo.Context, r *assistantv2.MessageRespons
 	}
 
 	logs := make([]*neo.LogMessage, 0)
+	nodes := make([]*neo.DialogNode, 0)
+
 	if r.Output.Debug != nil {
 		for _, l := range r.Output.Debug.LogMessages {
 			logs = append(logs,
@@ -54,8 +56,6 @@ func (watson *Cognitive) NewOutput(c *neo.Context, r *assistantv2.MessageRespons
 	if c.Variables == nil {
 		c.Variables = map[string]interface{}{}
 	}
-
-	nodes := make([]*neo.DialogNode, 0)
 
 
 	responses := make([]neo.Response, 0)
